@@ -1,3 +1,4 @@
+/*
 package com.springbootjsp.controller
 
 import java.util.*
@@ -5,7 +6,7 @@ import javax.servlet.http.HttpServletRequest
 
 object WebUtils {
 
-    /*fun parseRequestParams(request: HttpServletRequest): Map<String, String> {
+    fun parseRequestParams(request: HttpServletRequest): Map<String, String> {
         val map: MutableMap<String, String> = HashMap()
         val paramNames = request.parameterNames
         while (paramNames.hasMoreElements()) {
@@ -19,5 +20,5 @@ object WebUtils {
             }
         }
         return map
-    }*/
-}
+    }
+}*/
