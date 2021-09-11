@@ -29,3 +29,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+###web
+.DS_Store
+node_modules/
+dist/
+npm-debug.log
+.idea
+
