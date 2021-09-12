@@ -1,4 +1,4 @@
-package com.springbootjsp.controller;
+package com.springbootjsp.config;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
 
 @Configuration
-public class Config {
+public class UploadFileConfig {
     /**
      * 文件上传配置
      */
@@ -16,7 +16,7 @@ public class Config {
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         //文件最大
-        factory.setMaxFileSize(DataSize.parse(30 * 1024+"KB")); //KB,MB
+        factory.setMaxFileSize(DataSize.parse(30 * 1024 + "KB")); //KB,MB
         /// 设置总上传数据总大小
         factory.setMaxRequestSize(DataSize.parse(10 * 1024 * 1024 + "KB"));
         return factory.createMultipartConfig();

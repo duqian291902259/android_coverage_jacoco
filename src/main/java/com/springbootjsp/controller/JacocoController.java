@@ -61,14 +61,13 @@ public class JacocoController {
                 versionCode = this.versionCode;
             }
             String dirPath = getSaveDir(appName, versionCode).getAbsolutePath();
-            //new File(dirPath).mkdirs();
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
-            factory.setSizeThreshold(300 * 1024 * 1024);
+            //factory.setSizeThreshold(300 * 1024 * 1024);//无效
             factory.setRepository(new File(dirPath));
 
             ServletFileUpload fileUpload = new ServletFileUpload(factory);
-            fileUpload.setSizeMax(30 * 1024 * 1024);
+            //fileUpload.setSizeMax(30 * 1024 * 1024);
 
             String contentType = request.getContentType();//"multipart/form-data"
             // 这种方式获取file有问题
