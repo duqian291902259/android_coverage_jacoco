@@ -3,9 +3,9 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Insert title here</title>
+    <title>覆盖率报告平台</title>
 </head>
 <body>
-    Maven + springBoot + jsp!!!
+    Jacoco test page,Maven + springBoot + jsp
 </body>
 </html>
