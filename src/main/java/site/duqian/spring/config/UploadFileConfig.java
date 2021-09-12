@@ -1,4 +1,4 @@
-package com.springbootjsp.config;
+package site.duqian.spring.config;
 
 import javax.servlet.MultipartConfigElement;
 

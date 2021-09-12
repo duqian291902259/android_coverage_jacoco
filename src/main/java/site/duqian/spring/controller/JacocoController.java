@@ -1,4 +1,4 @@
-package com.springbootjsp.controller;
+package site.duqian.spring.controller;
 
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
