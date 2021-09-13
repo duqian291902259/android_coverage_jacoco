@@ -11,6 +11,7 @@ import org.springframework.util.unit.DataSize;
 public class UploadFileConfig {
     /**
      * 文件上传配置
+     * factory.setSizeThreshold(300 * 1024 * 1024);//无效
      */
     @Bean
     public MultipartConfigElement multipartConfigElement() {

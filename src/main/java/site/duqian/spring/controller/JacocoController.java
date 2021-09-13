@@ -40,6 +40,9 @@ public class JacocoController {
         realQueryEcFile(request, resp);
     }
 
+    /**
+     * 本地server地址上传，一定要确保测试设备与server在同一个局域网
+     */
     private void realUploadEcFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         //输出到客户端
@@ -59,16 +62,14 @@ public class JacocoController {
             String dirPath = getSaveDir(appName, versionCode).getAbsolutePath();
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
-            //factory.setSizeThreshold(300 * 1024 * 1024);//无效
             factory.setRepository(new File(dirPath));
 
-            ServletFileUpload fileUpload = new ServletFileUpload(factory);
-            //fileUpload.setSizeMax(30 * 1024 * 1024);
+            // 这种方式获取file有问题
+            /*ServletFileUpload fileUpload = new ServletFileUpload(factory);
+            fileUpload.setSizeMax(30 * 1024 * 1024);
+            List<FileItem> fileItemList = fileUpload.parseRequest(new ServletRequestContext(request));*/
 
             String contentType = request.getContentType();//"multipart/form-data"
-            // 这种方式获取file有问题
-            //List<FileItem> fileItemList = fileUpload.parseRequest(new ServletRequestContext(request));
-
             MultipartFile fileItem = ((StandardMultipartHttpServletRequest) request).getFile("file");
             System.out.println(",contentType=" + contentType + ",appName=" + appName + ",versionCode=" + versionCode);
 
@@ -78,7 +79,6 @@ public class JacocoController {
                 System.out.println("fileName=" + fileName + ",inputStream=" + inputStream);
                 saveFile(dirPath, fileName, inputStream);
                 out.println("{\"code\":200,\"msg\":\"上传成功\",\"dirPath\":\"dirPath\"}");
-                //fileItem.delete();
             } else {
                 out.println("{\"code\":402,\"msg\":\"上传失败,file is null,appName=" + appName + " versionCode=" + versionCode + "\"}");
             }

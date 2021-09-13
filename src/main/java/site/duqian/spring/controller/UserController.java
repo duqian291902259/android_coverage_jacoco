@@ -30,7 +30,7 @@ public class UserController {
                 System.out.println("param:key=" + entry.getKey() + ",value=" + entry.getValue());
             }
         }
-        return "{\"result\":0}";
+        return "{\"result\":0,\"data\":\"duqian\",}";
     }
 
     private Map<String, String> parseRequestParams(HttpServletRequest request) {
