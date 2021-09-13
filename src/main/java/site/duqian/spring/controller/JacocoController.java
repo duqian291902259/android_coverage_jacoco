@@ -77,6 +77,7 @@ public class JacocoController {
                 System.out.println("fileName=" + fileName + ",inputStream=" + inputStream);
                 saveFile(dirPath, fileName, inputStream);
                 out.println("{\"code\":200,\"msg\":\"上传成功\",\"dirPath\":\"dirPath\"}");
+                //fileItem.delete();
             } else {
                 out.println("{\"code\":402,\"msg\":\"上传失败,file is null,appName=" + appName + " versionCode=" + versionCode + "\"}");
             }
