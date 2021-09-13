@@ -37,4 +37,5 @@ dist/
 npm-debug.log
 .idea
 temp/
+download/
 
