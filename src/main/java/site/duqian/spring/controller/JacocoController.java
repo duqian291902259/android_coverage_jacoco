@@ -3,6 +3,7 @@ package site.duqian.spring.controller;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -146,7 +147,12 @@ public class JacocoController {
     }
 
     private File getSaveDir(String appName, String verCode) {
-        return new File(System.getProperty("user.home") + fileDir, appName + "/" + verCode);
+        String rootDir = System.getProperty("user.home") + fileDir;
+        String rootDir2 = System.getProperty("user.dir") + fileDir;
+        String rootDir3 = System.getProperty("user.dir") + fileDir;
+        //String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+        System.out.println("rootDir=" + rootDir + ",rootDir2=" + rootDir2+ ",rootDir3=" + rootDir3);
+        return new File(rootDir, appName + "/" + verCode);
     }
 
     public static boolean isEmpty(Object[] arr) {
