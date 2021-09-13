@@ -147,11 +147,11 @@ public class JacocoController {
     }
 
     private File getSaveDir(String appName, String verCode) {
-        String rootDir = System.getProperty("user.home") + fileDir;
-        String rootDir2 = System.getProperty("user.dir") + fileDir;
-        String rootDir3 = System.getProperty("user.dir") + fileDir;
+        //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
+        //String rootDir = System.getProperty("user.home") + fileDir;
+        String rootDir = System.getProperty("user.dir") + fileDir;
         //String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-        System.out.println("rootDir=" + rootDir + ",rootDir2=" + rootDir2+ ",rootDir3=" + rootDir3);
+        System.out.println("rootDir=" + rootDir);
         return new File(rootDir, appName + "/" + verCode);
     }
 
