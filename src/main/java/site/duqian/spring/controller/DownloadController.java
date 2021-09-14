@@ -26,6 +26,7 @@ import java.util.Set;
 @Controller
 public class DownloadController {
     private static final String KEY_PARAM_PATH = "path";
+    private static final String KEY_PARAM_FILENAME = "fileName";
     private final String fileDir = "/download/";
 
     @RequestMapping("/static")
@@ -45,14 +46,14 @@ public class DownloadController {
 
     private void handleDownloadFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String path = request.getParameter(KEY_PARAM_PATH);
+        String filename = request.getParameter(KEY_PARAM_FILENAME);
         //如果是中文数据，需要转码。
         path = new String(path.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
-        System.out.println("handleDownloadFile path=" + path);
+        filename = new String(filename.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
 
         //得到保存文件的位置
-        String fileRealPath = getSaveDir() +File.separator+ path;
-        //通过文件名拿到文件绝对路径
-        System.out.println(fileRealPath);
+        String fileRealPath = getSaveDir() + File.separator + path + filename;
+        System.out.println("handleDownloadFile fileRealPath=" + fileRealPath);
 
         //判断文件是否存在
         File file = new File(fileRealPath);
@@ -83,8 +84,7 @@ public class DownloadController {
         }
 
         //设置消息头，告诉浏览器，这是下载的文件
-        String name = path;
-        resp.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(name, "UTF-8"));
+        resp.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
     }
 
     private String getSaveDir() {
