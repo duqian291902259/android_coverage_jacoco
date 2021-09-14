@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
+import site.duqian.spring.Utils.CommonUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +41,7 @@ public class JacocoController {
     //http://192.168.56.1:8090/WebServer/JacocoApi/queryEcFile?appName=duqian&versionCode=100
     @RequestMapping(value = "/queryEcFile", method = {RequestMethod.GET})
     protected void queryEcFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
-        printParams(request);
+        CommonUtils.printParams(request);
         resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
         realQueryEcFile(request, resp);
@@ -55,7 +56,7 @@ public class JacocoController {
         //PrintWriter out = response.getWriter();
         String responseMsg = "ok";
         try {
-            Map<String, String> paramsMap = parseRequestParams(request);
+            Map<String, String> paramsMap = CommonUtils.parseRequestParams(request);
             String appName = paramsMap.get(KEY_APP_NAME);
             String versionCode = paramsMap.get(KEY_VERSION_CODE);
             System.out.println("parseRequestParams:appName=" + appName + ",versionCode=" + versionCode);
@@ -99,11 +100,6 @@ public class JacocoController {
     }
 
     private void saveFile(String dirPath, String fileName, InputStream ins) throws IOException {
-        //String fileName = fileItem.getName();
-        //String remoteFilename = new String(fileName.getBytes(), "UTF-8");
-        //File remoteFile = new File(remoteFilename);
-        //String saveFileName = remoteFile.getName();
-
         //设置服务器端存放文件的位置
         File locate = new File(dirPath, fileName);
         System.out.println("save=" + locate.getAbsolutePath());
@@ -145,7 +141,7 @@ public class JacocoController {
             StringBuilder sb = new StringBuilder();
             for (File file : files) {
                 if (!file.getName().startsWith(".")) {//隐藏文件
-                    sb.append("\"/download/").append(appName).append("/").append(verCode).append("/").append(file.getName()).append("\",");
+                    sb.append(fileDir).append(appName).append("/").append(verCode).append("/").append(file.getName()).append("\",");
                 }
             }
             sb.delete(sb.length() - 1, sb.length());
@@ -165,32 +161,5 @@ public class JacocoController {
 
     public static boolean isEmpty(Object[] arr) {
         return arr == null || arr.length == 0;
-    }
-
-    private void printParams(HttpServletRequest request) {
-        //遍历请求参数
-        Set<Map.Entry<String, String>> set = parseRequestParams(request).entrySet();
-        for (Map.Entry<String, String> entry : set) {
-            String key = entry.getKey();
-            if (!key.equals("submit")) {
-                System.out.println("param:key=" + key + ",value=" + entry.getValue());
-            }
-        }
-    }
-
-    private Map<String, String> parseRequestParams(HttpServletRequest request) {
-        Map<String, String> map = new HashMap<>();
-        Enumeration<String> paramNames = request.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            String paramName = paramNames.nextElement();
-            String[] paramValues = request.getParameterValues(paramName);
-            if (paramValues.length == 1) {
-                String paramValue = paramValues[0];
-                if (paramValue.length() != 0) {
-                    map.put(paramName, paramValue);
-                }
-            }
-        }
-        return map;
     }
 }
