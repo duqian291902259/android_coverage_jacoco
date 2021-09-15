@@ -1,14 +1,13 @@
 package site.duqian.spring.controller;
 
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
+import site.duqian.spring.Constants;
 import site.duqian.spring.Utils.CommonUtils;
 
 import javax.servlet.ServletException;
@@ -20,11 +19,8 @@ import java.util.*;
 @Controller
 @RequestMapping("/WebServer/JacocoApi")
 public class JacocoController {
-    private final String fileDir = "/download/";
     private String appName = "cc-android";
     private String versionCode = "3.8.1";
-    private static final String KEY_APP_NAME = "appName";
-    private static final String KEY_VERSION_CODE = "versionCode";
 
     //URL_HOST + "/WebServer/JacocoApi/uploadEcFile")
     @RequestMapping(value = "/uploadEcFile", method = {RequestMethod.POST, RequestMethod.GET})
@@ -57,8 +53,8 @@ public class JacocoController {
         String responseMsg = "ok";
         try {
             Map<String, String> paramsMap = CommonUtils.parseRequestParams(request);
-            String appName = paramsMap.get(KEY_APP_NAME);
-            String versionCode = paramsMap.get(KEY_VERSION_CODE);
+            String appName = paramsMap.get(Constants.KEY_APP_NAME);
+            String versionCode = paramsMap.get(Constants.KEY_VERSION_CODE);
             System.out.println("parseRequestParams:appName=" + appName + ",versionCode=" + versionCode);
 
             if (appName == null || "".equals(appName)) {
@@ -121,8 +117,8 @@ public class JacocoController {
     }
 
     private void realQueryEcFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
-        String appName = request.getParameter(KEY_APP_NAME);
-        String verCode = request.getParameter(KEY_VERSION_CODE);
+        String appName = request.getParameter(Constants.KEY_APP_NAME);
+        String verCode = request.getParameter(Constants.KEY_VERSION_CODE);
         if (appName == null || verCode == null) {
             resp.setStatus(401);
             resp.getWriter().write("error appName==null || versionCode==null");
@@ -141,7 +137,8 @@ public class JacocoController {
             StringBuilder sb = new StringBuilder();
             for (File file : files) {
                 if (!file.getName().startsWith(".")) {//隐藏文件
-                    sb.append(fileDir).append(appName).append("/").append(verCode).append("/").append(file.getName()).append("\",");
+                    //sb.append(Constants.fileDir).append(appName).append("/").append(verCode).append("/").append(file.getName()).append("\",");
+                    sb.append(Constants.fileDir).append(appName).append("/").append(verCode).append("/&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
                 }
             }
             sb.delete(sb.length() - 1, sb.length());
@@ -153,8 +150,7 @@ public class JacocoController {
     private File getSaveDir(String appName, String verCode) {
         //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
         //String rootDir = System.getProperty("user.home") + fileDir;
-        String rootDir = System.getProperty("user.dir") + fileDir;
-        //String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+        String rootDir = System.getProperty("user.dir") + Constants.fileDir;
         System.out.println("rootDir=" + rootDir);
         return new File(rootDir, appName + "/" + verCode);
     }

@@ -3,7 +3,6 @@ package site.duqian.spring.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import site.duqian.spring.Utils.CommonUtils;
 
 import javax.servlet.ServletException;
@@ -15,19 +14,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import static site.duqian.spring.Constants.KEY_PARAM_FILENAME;
+import static site.duqian.spring.Constants.KEY_PARAM_PATH;
 
 /**
  * 文件下载管理
  */
 @Controller
 public class DownloadController {
-    private static final String KEY_PARAM_PATH = "path";
-    private static final String KEY_PARAM_FILENAME = "fileName";
-    private final String fileDir = "/download/";
 
     @RequestMapping("/static")
     public String index() {
@@ -44,6 +39,7 @@ public class DownloadController {
         handleDownloadFile(request, resp);
     }
 
+    //http://172.18.69.161:8090/download?path=/download/cc-android/3.8.1/&fileName=coverage.ec
     private void handleDownloadFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String path = request.getParameter(KEY_PARAM_PATH);
         String filename = request.getParameter(KEY_PARAM_FILENAME);
