@@ -6,6 +6,6 @@
     <title>覆盖率报告平台</title>
 </head>
 <body>
-    Jacoco test page,Maven + springBoot + jsp
+    Jacoco page,Maven + springBoot + jsp
 </body>
 </html>
