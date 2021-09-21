@@ -1,4 +1,4 @@
-package site.duqian.spring.git;
+package site.duqian.spring.git_helper;
 
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.springframework.util.CollectionUtils;

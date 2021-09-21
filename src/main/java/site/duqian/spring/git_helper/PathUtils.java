@@ -1,4 +1,4 @@
-package site.duqian.spring.git;
+package site.duqian.spring.git_helper;
 
 import org.springframework.util.StringUtils;
 
