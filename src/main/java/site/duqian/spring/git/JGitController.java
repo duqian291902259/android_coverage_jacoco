@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.io.File;
 
 @RestController
@@ -18,12 +19,16 @@ public class JGitController {
     /**
      * git仓路径
      */
-    final String patch = "/opt/webapps/blog/.git";
+    private static final String gitLocalDir = "/Users/duqian/Development/MyGitHub/springweb/git/";
+    private static final String gitLocalPath = "/Users/duqian/Development/MyGitHub/AndroidUI/.git";
+    private static final String gitUrl = "https://github.com/duqian291902259/AndroidUI.git";
 
     /**
      * 代码分支
      */
-    final String branch = "origin/gh-pages";
+    private static final String branch = "origin/main";
+    private static final String gitUserName = "duqian291902259";
+    private static final String gitPassword = "";
 
     /**
      * 拉取
@@ -33,9 +38,8 @@ public class JGitController {
         String result;
         Repository repo = null;
         try {
-            repo = new FileRepository(new File(patch));
+            repo = new FileRepository(new File(gitLocalPath));
             Git git = new Git(repo);
-
             log.info("开始重置");
             //重置
             git.reset()
@@ -43,11 +47,10 @@ public class JGitController {
                     .setRef(branch).call();
 
             log.info("开始拉取");
-
             //拉取
             git.pull()
                     .setRemote("origin")
-                    .setRemoteBranchName("gh-pages")
+                    .setRemoteBranchName("main")
                     .call();
             result = "拉取成功!";
             log.info(result);
@@ -63,20 +66,16 @@ public class JGitController {
 
     /**
      * 重置
-     *
-     * @return
-     */
+     **/
     @RequestMapping("/reset")
     public String reset() {
         String result;
-
         Repository repo = null;
         try {
-            repo = new FileRepository(new File(patch));
+            repo = new FileRepository(new File(gitLocalPath));
             Git git = new Git(repo);
             git.reset().setMode(ResetCommand.ResetType.HARD).setRef(branch).call();
             result = "重置成功!";
-
         } catch (Exception e) {
             result = e.getMessage();
         } finally {
@@ -93,14 +92,12 @@ public class JGitController {
     @RequestMapping("/revert")
     public String revert() {
         String result;
-
         Repository repo = null;
         try {
-            repo = new FileRepository(new File(patch));
+            repo = new FileRepository(new File(gitLocalPath));
             Git git = new Git(repo);
             git.revert().call();
             result = "恢复成功!";
-
         } catch (Exception e) {
             result = e.getMessage();
         } finally {
@@ -113,19 +110,19 @@ public class JGitController {
 
     /**
      * 克隆
-     *
-     * @return
      */
     @RequestMapping("/clone")
     public String clone() {
         String result;
         try {
-            Git.cloneRepository()
-                    .setURI("https://github.com/smltq/blog.git")
-                    .setDirectory(new File("/blog"))
-                    .call();
+            /*Git.cloneRepository()
+                    .setURI(gitUrl)
+                    .setDirectory(new File(System.getProperty("user.dir") + "/jacoco/"))
+                    .call();*/
+
+            GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, "ed512db04d45c5a1148658fef775b6ac9aec846a", gitUserName, gitPassword);
             result = "克隆成功了!";
-        } catch (GitAPIException e) {
+        } catch (Exception e) {
             result = e.getMessage();
             e.printStackTrace();
         }
@@ -137,7 +134,7 @@ public class JGitController {
      */
     @RequestMapping("/status")
     public static void status() {
-        File RepoGitDir = new File("/blog/.git");
+        File RepoGitDir = new File("/jacoco/.git");
         Repository repo = null;
         try {
             repo = new FileRepository(RepoGitDir.getAbsolutePath());
