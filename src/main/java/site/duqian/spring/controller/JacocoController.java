@@ -23,7 +23,7 @@ public class JacocoController {
     private String versionCode = "3.8.1";
 
     //URL_HOST + "/WebServer/JacocoApi/uploadEcFile")
-    @RequestMapping(value = "/uploadEcFile", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/uploadEcFile", method = {RequestMethod.POST})
     @ResponseBody
     protected String uploadEcFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json;charset=utf-8");
