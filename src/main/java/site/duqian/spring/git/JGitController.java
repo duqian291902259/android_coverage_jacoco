@@ -117,7 +117,7 @@ public class JGitController {
         try {
             /*Git.cloneRepository()
                     .setURI(gitUrl)
-                    .setDirectory(new File(System.getProperty("user.dir") + "/jacoco/"))
+                    .setDirectory(new File(System.getProperty("user.dir") + "/git/"))
                     .call();*/
 
             GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, "ed512db04d45c5a1148658fef775b6ac9aec846a", gitUserName, gitPassword);
@@ -134,7 +134,7 @@ public class JGitController {
      */
     @RequestMapping("/status")
     public static void status() {
-        File RepoGitDir = new File("/jacoco/.git");
+        File RepoGitDir = new File("/git/.git");
         Repository repo = null;
         try {
             repo = new FileRepository(RepoGitDir.getAbsolutePath());

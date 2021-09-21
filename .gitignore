@@ -38,4 +38,5 @@ npm-debug.log
 .idea
 temp/
 download/
+git/
 
