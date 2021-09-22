@@ -61,7 +61,7 @@ public class JacocoController {
             String appName = paramsMap.get(Constants.KEY_APP_NAME);
             String versionCode = paramsMap.get(Constants.KEY_VERSION_CODE);
             String branchName = paramsMap.get(Constants.KEY_BRANCH_NAME);
-            System.out.println("parseRequestParams:branchName=" + branchName + ",versionCode=" + versionCode+ ",versionCode=" + versionCode);
+            System.out.println("parseRequestParams:branchName=" + branchName + ",versionCode=" + versionCode + ",versionCode=" + versionCode);
 
             if (appName == null || "".equals(appName)) {
                 appName = this.appName;
@@ -123,7 +123,11 @@ public class JacocoController {
         ins.close();
         ous.close();
         String md5 = Md5Util.string2MD5(savedFile.getAbsolutePath());
-        savedFile.renameTo(new File(dirPath,md5+".ec"));
+        File dest = new File(dirPath, md5 + ".ec");
+        if (dest.exists()) {
+            dest.delete();
+        }
+        savedFile.renameTo(dest);
         return md5;
     }
 
