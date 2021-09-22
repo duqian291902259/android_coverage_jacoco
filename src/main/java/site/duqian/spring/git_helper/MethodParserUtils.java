@@ -8,7 +8,7 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import site.duqian.spring.Utils.MD5Utils;
+import site.duqian.spring.Utils.Md5Util;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class MethodParserUtils {
             //删除注释
             n.removeComment();
             //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
-            String md5 = MD5Utils.string2MD5(n.toString());
+            String md5 = Md5Util.string2MD5(n.toString());
             //参数处理
             StringBuilder params = new StringBuilder();
             NodeList<Parameter> parameters = n.getParameters();

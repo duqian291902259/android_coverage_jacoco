@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import site.duqian.spring.Constants;
 import site.duqian.spring.Utils.CommonUtils;
+import site.duqian.spring.Utils.MD5Utils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -82,6 +83,7 @@ public class JacocoController {
 
             if (fileItem != null) {
                 String fileName = fileItem.getOriginalFilename();
+                //String fileName = MD5Utils.string2MD5(fileItem.get);
                 InputStream inputStream = fileItem.getInputStream();
                 System.out.println("fileName=" + fileName + ",inputStream=" + inputStream);
                 saveFile(dirPath, fileName, inputStream);
@@ -151,12 +153,12 @@ public class JacocoController {
         out.close();
     }
 
-    private File getSaveDir(String appName, String verCode) {
+    private File getSaveDir(String appName, String branchName) {
         //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
         //String rootDir = System.getProperty("user.home") + fileDir;
         String rootDir = System.getProperty("user.dir") + Constants.KEY_PARAM_DOWNLOAD_DIR;
         System.out.println("rootDir=" + rootDir);
-        return new File(rootDir, appName + "/" + verCode);
+        return new File(rootDir, appName + "/" + branchName);
     }
 
     public static boolean isEmpty(Object[] arr) {
