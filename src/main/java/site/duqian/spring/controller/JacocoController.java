@@ -1,5 +1,7 @@
 package site.duqian.spring.controller;
 
+import org.apache.catalina.core.ApplicationPart;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import site.duqian.spring.Constants;
 import site.duqian.spring.Utils.CommonUtils;
-import site.duqian.spring.Utils.MD5Utils;
+import site.duqian.spring.Utils.Md5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -83,10 +85,11 @@ public class JacocoController {
 
             if (fileItem != null) {
                 String fileName = fileItem.getOriginalFilename();
+                //((DiskFileItem) ((ApplicationPart) ((StandardMultipartHttpServletRequest.StandardMultipartFile) fileItem).part).fileItem).tempFile;
                 //String fileName = MD5Utils.string2MD5(fileItem.get);
                 InputStream inputStream = fileItem.getInputStream();
                 System.out.println("fileName=" + fileName + ",inputStream=" + inputStream);
-                saveFile(dirPath, fileName, inputStream);
+                fileName = saveFile(dirPath, fileName, inputStream);
                 responseMsg = "{\"code\":200,\"msg\":\"上传成功\",\"fileName\":" + fileName + "}";
             } else {
                 responseMsg = "{\"code\":402,\"msg\":\"上传失败,file is null,appName=" + appName + " versionCode=" + versionCode + "\"}";
@@ -100,18 +103,18 @@ public class JacocoController {
         return responseMsg;
     }
 
-    private void saveFile(String dirPath, String fileName, InputStream ins) throws IOException {
+    private String saveFile(String dirPath, String fileName, InputStream ins) throws IOException {
         //设置服务器端存放文件的位置
-        File locate = new File(dirPath, fileName);
-        System.out.println("save=" + locate.getAbsolutePath());
+        File savedFile = new File(dirPath, fileName);
+        System.out.println("save=" + savedFile.getAbsolutePath());
 
-        File parentFile = locate.getParentFile();
+        File parentFile = savedFile.getParentFile();
         if (parentFile != null) {
             parentFile.mkdirs();//用于确保文件目录存在,如果为单级目录可以去掉
         }
-        locate.createNewFile(); //创建新文件
+        savedFile.createNewFile(); //创建新文件
 
-        OutputStream ous = new FileOutputStream(locate); //输出
+        OutputStream ous = new FileOutputStream(savedFile); //输出
 
         byte[] buffer = new byte[1024]; //缓冲字节
         int len = 0;
@@ -119,6 +122,9 @@ public class JacocoController {
             ous.write(buffer, 0, len);
         ins.close();
         ous.close();
+        String md5 = Md5Util.string2MD5(savedFile.getAbsolutePath());
+        savedFile.renameTo(new File(dirPath,md5+".ec"));
+        return md5;
     }
 
     private void realQueryEcFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
