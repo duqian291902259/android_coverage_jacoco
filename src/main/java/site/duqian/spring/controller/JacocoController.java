@@ -21,6 +21,7 @@ import java.util.*;
 public class JacocoController {
     private String appName = "cc-android";
     private String versionCode = "3.8.1";
+    private String branchName = "dev";//当前需要覆盖率报告的分支
 
     //URL_HOST + "/WebServer/JacocoApi/uploadEcFile")
     @RequestMapping(value = "/uploadEcFile", method = {RequestMethod.POST})
@@ -56,15 +57,16 @@ public class JacocoController {
             Map<String, String> paramsMap = CommonUtils.parseRequestParams(request);
             String appName = paramsMap.get(Constants.KEY_APP_NAME);
             String versionCode = paramsMap.get(Constants.KEY_VERSION_CODE);
-            System.out.println("parseRequestParams:appName=" + appName + ",versionCode=" + versionCode);
+            String branchName = paramsMap.get(Constants.KEY_BRANCH_NAME);
+            System.out.println("parseRequestParams:branchName=" + branchName + ",versionCode=" + versionCode+ ",versionCode=" + versionCode);
 
             if (appName == null || "".equals(appName)) {
                 appName = this.appName;
             }
-            if (versionCode == null || "".equals(versionCode)) {
-                versionCode = this.versionCode;
+            if (branchName == null || "".equals(branchName)) {
+                branchName = this.branchName;
             }
-            String dirPath = getSaveDir(appName, versionCode).getAbsolutePath();
+            String dirPath = getSaveDir(appName, branchName).getAbsolutePath();
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setRepository(new File(dirPath));
@@ -120,6 +122,7 @@ public class JacocoController {
     private void realQueryEcFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
         String appName = request.getParameter(Constants.KEY_APP_NAME);
         String verCode = request.getParameter(Constants.KEY_VERSION_CODE);
+        String branchName = request.getParameter(Constants.KEY_BRANCH_NAME);
         if (appName == null || verCode == null) {
             resp.setStatus(401);
             resp.getWriter().write("error appName==null || versionCode==null");
@@ -129,7 +132,7 @@ public class JacocoController {
         resp.setStatus(200);
         PrintWriter out = resp.getWriter();
 
-        File f = getSaveDir(appName, verCode);
+        File f = getSaveDir(appName, branchName);
         System.out.println("realQueryEcFile getSaveDir=" + f.getAbsolutePath() + ",exists=" + f.exists() + ",appName=" + appName + ",verCode=" + verCode);
         File[] files;
         if (!f.exists() || isEmpty(files = f.listFiles())) {

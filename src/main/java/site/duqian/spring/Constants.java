@@ -11,4 +11,5 @@ public class Constants {
     public static final String KEY_VERSION_CODE = "versionCode";
     public static final String KEY_PARAM_UID = "uid";
     public static final String KEY_PARAM_USER_NAME = "userName";
+    public static final String KEY_BRANCH_NAME = "branch";
 }
