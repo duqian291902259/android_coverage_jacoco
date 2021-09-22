@@ -16,10 +16,10 @@ import java.io.File;
 public class JGitController {
     private static final Logger log = LoggerFactory.getLogger(JGitController.class);// slf4j日志记录器
     /**
-     * git仓路径
+     * 测试git仓路径
      */
-    private static final String gitLocalDir = "/Users/duqian/Development/MyGitHub/springweb/git/";
-    private static final String gitLocalPath = "/Users/duqian/Development/MyGitHub/AndroidUI/.git";
+    private static final String gitLocalDir = System.getProperty("user.dir") + "/jacoco/git/";
+    private static final String gitLocalPath = System.getProperty("user.dir") + "/git/.git";
     private static final String gitUrl = "https://github.com/duqian291902259/AndroidUI.git";
 
     /**
@@ -118,7 +118,6 @@ public class JGitController {
                     .setURI(gitUrl)
                     .setDirectory(new File(System.getProperty("user.dir") + "/git/"))
                     .call();*/
-
             GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, "ed512db04d45c5a1148658fef775b6ac9aec846a", gitUserName, gitPassword);
             result = "克隆成功了!";
         } catch (Exception e) {

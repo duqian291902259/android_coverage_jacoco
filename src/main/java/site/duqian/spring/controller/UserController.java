@@ -23,6 +23,12 @@ public class UserController {
         return "index";
     }
 
+    @RequestMapping("/static")
+    public String test() {
+        System.out.println("进入MainController中的方法！");
+        return "index.html";
+    }
+
     @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String test(HttpServletRequest request, HttpServletResponse resp) {

@@ -12,14 +12,20 @@ object CmdUtil {
     fun main(args: Array<String>) {
         try {
             runProcess("pwd")
-            println("**********")
-            runProcess("cd jacoco")
-            runProcess("ls")
+            println("********** start")
+            //runProcess("cd jacoco")
+            //runProcess("git log")
+            val rootDir = System.getProperty("user.dir")
+            runProcess("chmod -r 777 $rootDir/jacoco/jacococli.jar")
+            runProcess("java -jar $rootDir/jacoco/jacococli.jar report  $rootDir/download/cc-android/3.8.1/coverage.exec --classfiles classes --sourcefiles  $rootDir/jacoco/git/app/src/main/java/ --html  $rootDir/src/main/resources/web/temp/cc")
+            println("********** end")
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    @JvmStatic
     @Throws(Exception::class)
     private fun printLines(cmd: String, ins: InputStream) {
         var line: String? = null
@@ -29,14 +35,21 @@ object CmdUtil {
         while (`in`.readLine().also { line = it } != null) {
             println("$cmd $line")
         }
+        `in`.close()
     }
 
-    @Throws(Exception::class)
-    fun runProcess(command: String) {
-        val pro = Runtime.getRuntime().exec(command)
-        printLines("$command out:", pro.inputStream)
-        printLines("$command err:", pro.errorStream)
-        pro.waitFor()
-        println(command + " exitValue() " + pro.exitValue())
+    @JvmStatic
+    fun runProcess(command: String): Boolean {
+        try {
+            val pro = Runtime.getRuntime().exec(command)
+            printLines("$command out:", pro.inputStream)
+            printLines("$command err:", pro.errorStream)
+            pro.waitFor()
+            println(command + " exitValue() " + pro.exitValue())
+            return true
+        } catch (e: Exception) {
+            println("runProcess $e")
+        }
+        return false
     }
 }

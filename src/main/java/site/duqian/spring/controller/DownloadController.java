@@ -24,12 +24,6 @@ import static site.duqian.spring.Constants.KEY_PARAM_PATH;
 @Controller
 public class DownloadController {
 
-    @RequestMapping("/static")
-    public String index() {
-        System.out.println("进入MainController中的方法！");
-        return "index.html";
-    }
-
     //http://192.168.56.1:8090/download?path=path
     @RequestMapping(value = "/download", method = {RequestMethod.GET})
     protected void queryEcFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
