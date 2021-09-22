@@ -26,6 +26,7 @@ public class JacocoController {
     @RequestMapping(value = "/uploadEcFile", method = {RequestMethod.POST})
     @ResponseBody
     protected String uploadEcFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+        CommonUtils.printParams(request);
         resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
         if ("get".equalsIgnoreCase(request.getMethod())) {
@@ -138,7 +139,7 @@ public class JacocoController {
             for (File file : files) {
                 if (!file.getName().startsWith(".")) {//隐藏文件
                     //sb.append(Constants.fileDir).append(appName).append("/").append(verCode).append("/").append(file.getName()).append("\",");
-                    sb.append(Constants.fileDir).append(appName).append("/").append(verCode).append("/&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
+                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR).append(appName).append("/").append(verCode).append("/&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
                 }
             }
             sb.delete(sb.length() - 1, sb.length());
@@ -150,7 +151,7 @@ public class JacocoController {
     private File getSaveDir(String appName, String verCode) {
         //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
         //String rootDir = System.getProperty("user.home") + fileDir;
-        String rootDir = System.getProperty("user.dir") + Constants.fileDir;
+        String rootDir = System.getProperty("user.dir") + Constants.KEY_PARAM_DOWNLOAD_DIR;
         System.out.println("rootDir=" + rootDir);
         return new File(rootDir, appName + "/" + verCode);
     }
