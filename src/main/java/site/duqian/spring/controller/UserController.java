@@ -36,6 +36,7 @@ public class UserController {
         CommonUtils.printParams(request);
         String appName = request.getParameter(KEY_APP_NAME);
         log.debug("appName="+appName);
+        
         return "{\"result\":0,\"data\":\"duqian\"}";
     }
 }

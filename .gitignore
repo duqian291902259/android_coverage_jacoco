@@ -36,7 +36,10 @@ node_modules/
 dist/
 npm-debug.log
 .idea
+
+## jacoco
 temp/
 download/
 git/
+classes/
 
