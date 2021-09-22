@@ -100,6 +100,7 @@ public class JacocoController {
         }
         //out.println(responseMsg);
         //out.close();
+        System.out.println("responseMsg=" + responseMsg);
         return responseMsg;
     }
 
