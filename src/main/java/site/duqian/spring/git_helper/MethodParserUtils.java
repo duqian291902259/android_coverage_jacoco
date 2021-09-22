@@ -8,7 +8,7 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import site.duqian.spring.Utils.Md5Util;
+import site.duqian.spring.utils.Md5Util;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;

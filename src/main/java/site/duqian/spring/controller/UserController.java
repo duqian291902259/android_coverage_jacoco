@@ -6,18 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import site.duqian.spring.Utils.CommonUtils;
-import site.duqian.spring.git_helper.JGitController;
+import site.duqian.spring.utils.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import static site.duqian.spring.Constants.KEY_APP_NAME;
-import static site.duqian.spring.Constants.KEY_PARAM_PATH;
 
 @Controller
 @RequestMapping("/user")

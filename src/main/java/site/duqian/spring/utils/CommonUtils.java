@@ -1,4 +1,4 @@
-package site.duqian.spring.Utils;
+package site.duqian.spring.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;

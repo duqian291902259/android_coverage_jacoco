@@ -1,4 +1,4 @@
-package site.duqian.spring.Utils;
+package site.duqian.spring.utils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.DigestInputStream;

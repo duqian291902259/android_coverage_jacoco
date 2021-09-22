@@ -10,7 +10,7 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import site.duqian.spring.Utils.FileUtil;
+import site.duqian.spring.utils.FileUtil;
 import site.duqian.spring.exception.CustomException;
 
 import java.io.File;

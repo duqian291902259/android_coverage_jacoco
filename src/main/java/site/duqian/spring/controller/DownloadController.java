@@ -3,7 +3,7 @@ package site.duqian.spring.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import site.duqian.spring.Utils.CommonUtils;
+import site.duqian.spring.utils.CommonUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;

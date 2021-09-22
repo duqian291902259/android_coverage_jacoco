@@ -1,7 +1,5 @@
 package site.duqian.spring.controller;
 
-import org.apache.catalina.core.ApplicationPart;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,8 +8,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import site.duqian.spring.Constants;
-import site.duqian.spring.Utils.CommonUtils;
-import site.duqian.spring.Utils.Md5Util;
+import site.duqian.spring.utils.CommonUtils;
+import site.duqian.spring.utils.Md5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
