@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import site.duqian.spring.git_helper.GitRepoUtil;
+import site.duqian.spring.utils.CmdUtil;
 
 import java.io.File;
 
@@ -112,14 +112,21 @@ public class JGitController {
      */
     @RequestMapping("/clone")
     public String clone() {
-        String result;
+        String result = "";
         try {
             /*Git.cloneRepository()
                     .setURI(gitUrl)
                     .setDirectory(new File(System.getProperty("user.dir") + "/git/"))
                     .call();*/
-            Git cloneRepository = GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, commitId, gitUserName, gitPassword);
-            result = cloneRepository != null ? "clone repository success!" : "clone failed";
+            //Git cloneRepository = GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, commitId, gitUserName, gitPassword);
+            //result = cloneRepository != null ? "clone repository success!" : "clone failed";
+
+            Process process = CmdUtil.execute("git clone https://github.com/duqian291902259/AndroidUI.git");
+            result = CmdUtil.getText(process);
+            System.out.println("clone end:" + result);
+            if ("".equals(result)){
+                result = "clone repository success!";
+            }
         } catch (Exception e) {
             result = e.getMessage();
             e.printStackTrace();

@@ -10,11 +10,10 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import site.duqian.spring.utils.FileUtil;
 import site.duqian.spring.exception.CustomException;
+import site.duqian.spring.utils.FileUtil;
 
 import java.io.File;
-import java.io.IOException;
 
 public class GitRepoUtil {
 
@@ -76,9 +75,9 @@ public class GitRepoUtil {
     }
 
     /**
-     * 判断工作目录是否存在，本来可以每次拉去代码时删除再拉取，但是这样代码多的化IO比较大，所以就代码可以复用
+     * 判断工作目录是否存在，可以每次拉去代码时删除再拉取，但是代码多IO大，所以代码可以复用
      */
-    public static boolean checkGitWorkSpace(String gitUrl, String codePath) throws IOException {
+    public static boolean checkGitWorkSpace(String gitUrl, String codePath) {
         boolean isExist = false;
         File gitRootFile = new File(codePath);
         try {

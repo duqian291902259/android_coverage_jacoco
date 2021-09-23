@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import site.duqian.spring.Constants;
 import site.duqian.spring.utils.CommonUtils;
+import site.duqian.spring.utils.FileUtil;
 import site.duqian.spring.utils.Md5Util;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ public class UploadQueryController {
     @RequestMapping(value = "/queryFile", method = {RequestMethod.GET})
     protected void queryFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         CommonUtils.printParams(request);
+        request.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
         realQueryFile(request, resp);
@@ -66,7 +68,7 @@ public class UploadQueryController {
             if (branchName == null || "".equals(branchName)) {
                 branchName = this.branchName;
             }
-            String dirPath = getSaveDir(appName, branchName).getAbsolutePath();
+            String dirPath = FileUtil.getSaveDir(appName, branchName).getAbsolutePath();
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setRepository(new File(dirPath));
@@ -146,7 +148,7 @@ public class UploadQueryController {
         resp.setStatus(200);
         PrintWriter out = resp.getWriter();
 
-        File f = getSaveDir(appName, branchName);
+        File f = FileUtil.getSaveDir(appName, branchName);
         System.out.println("realQueryFile getSaveDir=" + f.getAbsolutePath() + ",exists=" + f.exists() + ",appName=" + appName + ",branchName=" + branchName);
         File[] files;
         if (!f.exists() || isEmpty(files = f.listFiles())) {
@@ -155,21 +157,13 @@ public class UploadQueryController {
             StringBuilder sb = new StringBuilder();
             for (File file : files) {
                 if (!file.getName().startsWith(".")) {//忽略隐藏文件
-                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR).append(appName).append("/").append(branchName).append("/&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
+                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR).append(appName).append(File.separator).append(branchName).append(File.separator+"&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
                 }
             }
             sb.delete(sb.length() - 1, sb.length());
             out.println(String.format("{\"files\":[%s]}", sb));
         }
         out.close();
-    }
-
-    private File getSaveDir(String appName, String branchName) {
-        //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
-        //String rootDir = System.getProperty("user.home") + fileDir;
-        String rootDir = System.getProperty("user.dir") + Constants.KEY_PARAM_DOWNLOAD_DIR;
-        System.out.println("rootDir=" + rootDir);
-        return new File(rootDir, appName + "/" + branchName);
     }
 
     public static boolean isEmpty(Object[] arr) {

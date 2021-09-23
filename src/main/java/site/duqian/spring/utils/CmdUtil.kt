@@ -43,9 +43,10 @@ object CmdUtil {
             //runProcess("java -jar $jarPath report $execPath --classfiles $classesPath --sourcefiles $srcPath --html $reportPath")
 
             val currentBranchName = "dev_dq_#411671_coverage"
-            val process:Process = execute("git diff origin/master origin/${currentBranchName} --name-only")
-            val text = getText(process)
-            println("********** end $text")
+            //val process:Process = execute("git diff origin/master origin/${currentBranchName} --name-only")
+            //val process:Process = execute("git clone https://github.com/duqian291902259/AndroidUI.git")
+            //val text = getText(process)
+            println("********** end")
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -103,11 +104,13 @@ object CmdUtil {
     }
 
     @Throws(IOException::class)
+    @JvmStatic
     fun execute(self: String?): Process {
         return Runtime.getRuntime().exec(self)
     }
 
     @Throws(IOException::class)
+    @JvmStatic
     fun getText(self: Process): String {
         val text: String = getText(BufferedReader(InputStreamReader(self.inputStream)))
         closeStreams(self)
