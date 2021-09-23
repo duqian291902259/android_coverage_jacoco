@@ -15,7 +15,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/coverage")
@@ -37,13 +39,13 @@ public class UploadQueryController {
         return handleUpload(request, resp);
     }
 
-    //http://192.168.56.1:8090/coverage/queryEcFile?appName=duqian&versionCode=100
-    @RequestMapping(value = "/queryEcFile", method = {RequestMethod.GET})
-    protected void queryEcFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+    //http://192.168.56.1:8090/coverage/queryFile?appName=duqian&versionCode=100
+    @RequestMapping(value = "/queryFile", method = {RequestMethod.GET})
+    protected void queryFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         CommonUtils.printParams(request);
         resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
-        realQueryEcFile(request, resp);
+        realQueryFile(request, resp);
     }
 
     /**
@@ -64,6 +66,8 @@ public class UploadQueryController {
             }
             if (branchName == null || "".equals(branchName)) {
                 branchName = this.branchName;
+            } else {
+                //branchName = branchName.replace("#", "");
             }
             String dirPath = getSaveDir(appName, branchName).getAbsolutePath();
 
@@ -96,6 +100,7 @@ public class UploadQueryController {
         }
         //out.println(responseMsg);
         //out.close();
+        responseMsg = new String(responseMsg.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
         System.out.println("responseMsg=" + responseMsg);
         return responseMsg;
     }
@@ -125,38 +130,38 @@ public class UploadQueryController {
         }
         savedFile.renameTo(dest);
         System.out.println("saved to:" + dest.getAbsolutePath());
-
         return md5;
     }
 
-    private void realQueryEcFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
+    private void realQueryFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
         String appName = request.getParameter(Constants.KEY_APP_NAME);
-        String verCode = request.getParameter(Constants.KEY_VERSION_CODE);
+        //String verCode = request.getParameter(Constants.KEY_VERSION_CODE);
         String branchName = request.getParameter(Constants.KEY_BRANCH_NAME);
-        if (appName == null || verCode == null) {
+        branchName = URLDecoder.decode(branchName, "utf-8");
+        if (appName == null || branchName == null) {
             resp.setStatus(401);
             resp.getWriter().write("error appName==null || versionCode==null");
             return;
         }
+        //branchName = branchName.replace("#", "");
         //设置状态码
         resp.setStatus(200);
         PrintWriter out = resp.getWriter();
 
         File f = getSaveDir(appName, branchName);
-        System.out.println("realQueryEcFile getSaveDir=" + f.getAbsolutePath() + ",exists=" + f.exists() + ",appName=" + appName + ",verCode=" + verCode);
+        System.out.println("realQueryFile getSaveDir=" + f.getAbsolutePath() + ",exists=" + f.exists() + ",appName=" + appName + ",branchName=" + branchName);
         File[] files;
         if (!f.exists() || isEmpty(files = f.listFiles())) {
             out.println("{\"files\":[]}");
         } else {
             StringBuilder sb = new StringBuilder();
             for (File file : files) {
-                if (!file.getName().startsWith(".")) {//隐藏文件
-                    //sb.append(Constants.fileDir).append(appName).append("/").append(verCode).append("/").append(file.getName()).append("\",");
-                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR).append(appName).append("/").append(verCode).append("/&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
+                if (!file.getName().startsWith(".")) {//忽略隐藏文件
+                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR).append(appName).append("/").append(branchName).append("/&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
                 }
             }
             sb.delete(sb.length() - 1, sb.length());
-            out.println(String.format("{\"files\":[%s]}", sb.toString()));
+            out.println(String.format("{\"files\":[%s]}", sb));
         }
         out.close();
     }

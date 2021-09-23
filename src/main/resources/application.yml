@@ -11,5 +11,5 @@ spring:
     #static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
   mvc:
     view:
-      prefix: /jsp/
+      prefix: /web/
       suffix: .jsp

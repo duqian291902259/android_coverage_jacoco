@@ -3,9 +3,9 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>覆盖率报告平台</title>
+    <title>Android覆盖率报告平台</title>
 </head>
 <body>
-    Jacoco page,Maven + springBoot + jsp
+    Jacoco page for android. by 杜小菜
 </body>
 </html>

@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import static site.duqian.spring.Constants.KEY_PARAM_FILENAME;
-import static site.duqian.spring.Constants.KEY_PARAM_PATH;
+import static site.duqian.spring.Constants.*;
 
 /**
  * 文件下载管理
@@ -33,7 +32,7 @@ public class DownloadController {
         handleDownloadFile(request, resp);
     }
 
-    //http://172.18.69.161:8090/download?path=/download/cc-android/3.8.1/&fileName=coverage.ec
+    //http://172.18.69.161:8090/download?path=/download/cc-android/&fileName=coverage.ec
     private void handleDownloadFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String path = request.getParameter(KEY_PARAM_PATH);
         String filename = request.getParameter(KEY_PARAM_FILENAME);

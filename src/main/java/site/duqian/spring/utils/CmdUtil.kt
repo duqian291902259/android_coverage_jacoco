@@ -29,7 +29,7 @@ object CmdUtil {
     @JvmStatic
     @Throws(Exception::class)
     private fun printLines(cmd: String, ins: InputStream) {
-        var line: String? = null
+        var line: String? = ""
         val `in` = BufferedReader(
             InputStreamReader(ins)
         )
@@ -43,10 +43,14 @@ object CmdUtil {
     fun runProcess(command: String): Boolean {
         try {
             val pro = Runtime.getRuntime().exec(command)
-            printLines("$command out:", pro.inputStream)
-            printLines("$command err:", pro.errorStream)
+            val inputStream = pro.inputStream
+            printLines("$command out:", inputStream)
+            val errorStream = pro.errorStream
+            printLines("$command err:", errorStream)
             pro.waitFor()
             println(command + " exitValue() " + pro.exitValue())
+            inputStream.close()
+            errorStream.close()
             return true
         } catch (e: Exception) {
             println("runProcess $e")
