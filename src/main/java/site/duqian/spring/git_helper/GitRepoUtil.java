@@ -93,8 +93,7 @@ public class GitRepoUtil {
                 isExist = true;
             } else {
                 Logger.info("本地存在其他仓的代码，先删除");
-                FileUtil.removeDir(gitRootFile);
-                gitRootFile.delete();
+                FileUtil.deleteDirectory(codePath);
             }
         } catch (Exception e) {
             e.printStackTrace();
