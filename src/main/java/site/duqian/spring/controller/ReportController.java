@@ -3,6 +3,7 @@ package site.duqian.spring.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import site.duqian.spring.Constants;
 import site.duqian.spring.git_helper.GitRepoUtil;
 import site.duqian.spring.utils.CmdUtil;
@@ -12,7 +13,6 @@ import site.duqian.spring.utils.FileUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.PrintWriter;
 import java.util.Map;
 
 @Controller
@@ -22,12 +22,9 @@ public class ReportController {
     private static final String repositoryUrl = "https://git-cc.nie.netease.com/android/cc.git";
 
     @RequestMapping(value = "/report", method = {RequestMethod.GET, RequestMethod.POST})
-    //@ResponseBody
-    public void report(HttpServletRequest request, HttpServletResponse resp) throws Exception {
+    @ResponseBody
+    public String report(HttpServletRequest request, HttpServletResponse resp) throws Exception {
         request.setCharacterEncoding("UTF-8");
-        resp.setContentType("application/json;charset=utf-8");
-        resp.setStatus(200);
-
         //遍历请求参数
         //CommonUtils.printParams(request);
         Map<String, String> paramsMap = CommonUtils.parseRequestParams(request);
@@ -40,39 +37,35 @@ public class ReportController {
         String sourceDir = FileUtil.getSaveDir(appName, branchName + "_src").getAbsolutePath();
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(repositoryUrl, sourceDir + File.separator + "cc");
         System.out.println("checkGitWorkSpace " + checkGitWorkSpace);
-        //new Thread(() -> {
-        PrintWriter printWriter = null;
         String msg = "{\"cmd\":0,\"data\":\"success,Please wait for a moment...\"}";
-
+        // PrintWriter printWriter = null;
         try {
             String cmd = "";
+            String cmdPull = "git -C " + sourceDir + " pull";
             if (!checkGitWorkSpace) {
                 cmd = "git clone -b " + branchName + " " + repositoryUrl + " " + sourceDir;
             } else {
-                cmd = "git -C " + sourceDir + " pull";
+                cmd = cmdPull;
             }
-            printWriter = new PrintWriter(resp.getWriter());
-            printWriter.write("cloning or update repository");
+            //printWriter = new PrintWriter(resp.getWriter());
+            //printWriter.write("cloning or update repository");
             //String result = CmdUtil.execute(cmd);
             System.out.println("runProcess cmd:" + cmd);
-            boolean result = CmdUtil.runProcess(cmd);
+            int result = CmdUtil.runProcess(cmd);
+            if (!checkGitWorkSpace && result == 128) {
+                CmdUtil.runProcess(cmdPull);
+                System.out.println("cmdPull:" + result);
+            }
             System.out.println("clone or update end:" + result);
-            printWriter.write("generateReport");
-            generateReport(appName, branchName);
-            printWriter.write(msg);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                printWriter.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
-        // });
+        generateReport(appName, branchName);
 
         System.out.println("handle report=" + msg);
-        //return msg;
+        resp.setContentType("application/json;charset=utf-8");
+        resp.setStatus(200);
+        return msg;
     }
 
     private void generateReport(String appName, String branchName) {

@@ -47,7 +47,7 @@ object CmdUtil {
         classesPath: String,
         srcPath: String,
         reportPath: String
-    ) :Boolean{
+    ): Boolean {
         val cmds = arrayOf(
             "java",
             "-jar",
@@ -96,7 +96,7 @@ object CmdUtil {
     }
 
     @JvmStatic
-    fun runProcess(command: String): Boolean {
+    fun runProcess(command: String): Int {
         try {
             val pro = Runtime.getRuntime().exec(command)
             val inputStream = pro.inputStream
@@ -104,14 +104,15 @@ object CmdUtil {
             val errorStream = pro.errorStream
             printLines("$command err:", errorStream)
             pro.waitFor()
-            println(command + " exitValue=${pro.exitValue()}")
+            val exitValue = pro.exitValue()
+            println("$command exitValue=$exitValue")
             inputStream.close()
             errorStream.close()
-            return true
+            return exitValue
         } catch (e: Exception) {
             println("runProcess $e")
         }
-        return false
+        return -1
     }
 
     @Throws(IOException::class)
