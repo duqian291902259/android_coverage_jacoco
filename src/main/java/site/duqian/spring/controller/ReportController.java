@@ -13,6 +13,7 @@ import site.duqian.spring.utils.FileUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.Map;
 
 @Controller
@@ -36,26 +37,60 @@ public class ReportController {
         String baseBranchName = paramsMap.get(Constants.KEY_BASE_BRANCH_NAME);
         System.out.println("parseRequestParams:branchName=" + branchName + ",appName=" + appName + ",baseBranchName=" + baseBranchName);
 
-        //String rootDir = System.getProperty("user.dir");
-        String sourceDir = FileUtil.getSaveDir(appName, branchName).getAbsolutePath();
-        boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(repositoryUrl, sourceDir+File.separator+"cc");
-        String result = "";
-        if (!checkGitWorkSpace) {
+        //git clone pull update
+        String sourceDir = FileUtil.getSaveDir(appName, branchName + "_src").getAbsolutePath();
+        boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(repositoryUrl, sourceDir + File.separator + "cc");
+        System.out.println("checkGitWorkSpace " + checkGitWorkSpace);
+        new Thread(() -> {
+            PrintWriter printWriter = null;
             try {
-                Process process = CmdUtil.execute("git clone " + repositoryUrl+" "+sourceDir);
-                result = CmdUtil.getText(process);
-                System.out.println("clone end:" + result);
-                if ("".equals(result)) {
-                    result = "clone repository success!";
+                String cmd = "";
+                if (!checkGitWorkSpace) {
+                    cmd = "git clone " + repositoryUrl + " " + sourceDir;
+                } else {
+                    cmd = "git -C " + sourceDir + " pull";
                 }
+                printWriter = new PrintWriter(resp.getWriter());
+                printWriter.write("cloning or update repository");
+                String checkOutCmd = "git checkout " + branchName;
+
+                /*String result = CmdUtil.execute(cmd);
+                String result2 = CmdUtil.execute(checkOutCmd);*/
+                System.out.println("runProcess cmd:" + cmd);
+                boolean result = CmdUtil.runProcess(cmd);
+                boolean result2 = CmdUtil.runProcess(checkOutCmd);
+                System.out.println("clone end:" + result + ",checkout result " + result2);
+                printWriter.write("generateReport");
+                generateReport(appName, branchName);
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    printWriter.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        System.out.println("checkGitWorkSpace=" + checkGitWorkSpace + ",result:" + result);
+        });
 
-        //todo-dq git clone pull update
-        CmdUtil.runProcess("java -jar jacoco/jacococli.jar report /download/cc-android/3.8.1/coverage.exec --classfiles classes --sourcefiles /jacoco/git/app/src/main/java/ --html /src/main/resources/web/temp/cc");
-        return "{\"result\":0,\"data\":\"success\"}";
+        String msg = "{\"cmd\":0,\"data\":\"success,Please wait for a moment...\"}";
+        System.out.println("handle report=" + msg);
+        return msg;
+    }
+
+    private void generateReport(String appName, String branchName) {
+        // TODO: 2021/9/23 合并ec为一个文件 路径动态配置
+        String rootDir = System.getProperty("user.dir") + File.separator;
+        String jarPath = rootDir + "jacococli.jar";
+        String execPath = rootDir + "download/cc-android/dev_dq_#411671_coverage/8ab3adfcec889990a6db1fbaae361d59.ec";
+        String classesPath = rootDir + "jacoco/classes/";
+        String srcPath = rootDir + "jacoco/tempSrc/main/java/";
+        String reportPath = rootDir + "jacoco/report";
+        boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,
+                execPath,
+                classesPath,
+                srcPath,
+                reportPath);
+        System.out.println("generateReport=" + isGenerated);
     }
 }

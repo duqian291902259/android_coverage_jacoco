@@ -39,6 +39,7 @@ npm-debug.log
 ## jacoco
 temp/
 download/
+download/**
 git/
 classes/
 report/

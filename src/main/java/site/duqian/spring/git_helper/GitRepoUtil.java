@@ -81,10 +81,10 @@ public class GitRepoUtil {
         boolean isExist = false;
         File gitRootFile = new File(codePath);
         try {
-            File repoGitDir = new File(codePath + "/.git");
+            /*File repoGitDir = new File(codePath + "/.git");
             if (!repoGitDir.exists()) {
                 return false;
-            }
+            }*/
             Git git = Git.open(gitRootFile);
             Repository repository = git.getRepository();
             //解析本地代码，获取远程uri,是否是我们需要的git远程仓库

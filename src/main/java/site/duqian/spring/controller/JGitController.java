@@ -120,11 +120,9 @@ public class JGitController {
                     .call();*/
             //Git cloneRepository = GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, commitId, gitUserName, gitPassword);
             //result = cloneRepository != null ? "clone repository success!" : "clone failed";
-
-            Process process = CmdUtil.execute("git clone https://github.com/duqian291902259/AndroidUI.git");
-            result = CmdUtil.getText(process);
+            result = CmdUtil.execute("git clone "+gitUrl);
             System.out.println("clone end:" + result);
-            if ("".equals(result)){
+            if ("".equals(result)) {
                 result = "clone repository success!";
             }
         } catch (Exception e) {
