@@ -12,12 +12,13 @@ object CmdUtil {
     fun main(args: Array<String>) {
         try {
             runProcess("pwd")
+            runProcess("pwd")
             println("********** start")
             //runProcess("cd jacoco")
             //runProcess("git log")
-            val rootDir = System.getProperty("user.dir")
-            runProcess("chmod -r 777 $rootDir/jacoco/jacococli.jar")
-            runProcess("java -jar $rootDir/jacoco/jacococli.jar report  $rootDir/download/cc-android/3.8.1/coverage.exec --classfiles classes --sourcefiles  $rootDir/jacoco/git/app/src/main/java/ --html  $rootDir/src/main/resources/web/temp/cc")
+            val rootDir = "/"//System.getProperty("user.dir")
+            runProcess("chmod -r 777 ${rootDir}jacoco/jacococli.jar")
+            runProcess("java -jar ${rootDir}jacoco/jacococli.jar report  ${rootDir}download/cc-android/3.8.1/coverage.exec --classfiles classes --sourcefiles  ${rootDir}jacoco/git/app/src/main/java/ --html  ${rootDir}src/main/resources/web/temp/cc")
             println("********** end")
 
         } catch (e: Exception) {
