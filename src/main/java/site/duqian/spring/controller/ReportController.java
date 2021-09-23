@@ -37,8 +37,6 @@ public class ReportController {
         String sourceDir = FileUtil.getSaveDir(appName, branchName + "_src").getAbsolutePath();
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(repositoryUrl, sourceDir + File.separator + "cc");
         System.out.println("checkGitWorkSpace " + checkGitWorkSpace);
-        String msg = "{\"cmd\":0,\"data\":\"success,Please wait for a moment...\"}";
-        // PrintWriter printWriter = null;
         try {
             String cmd = "";
             String cmdPull = "git -C " + sourceDir + " pull";
@@ -49,7 +47,6 @@ public class ReportController {
             }
             //printWriter = new PrintWriter(resp.getWriter());
             //printWriter.write("cloning or update repository");
-            //String result = CmdUtil.execute(cmd);
             System.out.println("runProcess cmd:" + cmd);
             int result = CmdUtil.runProcess(cmd);
             if (!checkGitWorkSpace && result == 128) {
@@ -60,8 +57,10 @@ public class ReportController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         generateReport(appName, branchName);
 
+        String msg = "{\"cmd\":0,\"data\":\"success\"}";
         System.out.println("handle report=" + msg);
         resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
