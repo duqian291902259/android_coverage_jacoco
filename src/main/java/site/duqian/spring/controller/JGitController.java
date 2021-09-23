@@ -1,4 +1,4 @@
-package site.duqian.spring.git_helper;
+package site.duqian.spring.controller;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import site.duqian.spring.git_helper.GitRepoUtil;
 
 import java.io.File;
 
@@ -16,18 +17,17 @@ import java.io.File;
 public class JGitController {
     private static final Logger log = LoggerFactory.getLogger(JGitController.class);// slf4j日志记录器
     /**
-     * 测试git仓路径
+     * git仓路径
      */
-    private static final String gitLocalDir = System.getProperty("user.dir") + "/jacoco/git/";
+    private static final String gitLocalDir = System.getProperty("user.dir") + "/jacoco/git";
     private static final String gitLocalPath = System.getProperty("user.dir") + "/git/.git";
     private static final String gitUrl = "https://github.com/duqian291902259/AndroidUI.git";
-
-    /**
-     * 代码分支
-     */
+    //todo-dq not authorized
     private static final String branch = "origin/main";
     private static final String gitUserName = "duqian291902259";
     private static final String gitPassword = "";
+    private static final String commitId = "ed512db04d45c5a1148658fef775b6ac9aec846a";
+    //private static final String commitId = "951dbee2d9ad3b9ba997f7cdba0c483ae8b11733";
 
     /**
      * 拉取
@@ -118,8 +118,8 @@ public class JGitController {
                     .setURI(gitUrl)
                     .setDirectory(new File(System.getProperty("user.dir") + "/git/"))
                     .call();*/
-            GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, "ed512db04d45c5a1148658fef775b6ac9aec846a", gitUserName, gitPassword);
-            result = "克隆成功了!";
+            Git cloneRepository = GitRepoUtil.cloneRepository(gitUrl, gitLocalDir, commitId, gitUserName, gitPassword);
+            result = cloneRepository != null ? "clone repository success!" : "clone failed";
         } catch (Exception e) {
             result = e.getMessage();
             e.printStackTrace();

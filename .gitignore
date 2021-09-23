@@ -35,11 +35,15 @@ build/
 node_modules/
 dist/
 npm-debug.log
-.idea
 
 ## jacoco
 temp/
 download/
 git/
 classes/
+report/
+jacoco/
+jacoco/tempSrc/
+jacoco/classes/
+jacoco/report/
 

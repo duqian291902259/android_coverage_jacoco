@@ -27,7 +27,8 @@ public class GitRepoUtil {
         Git git = null;
         try {
             if (!checkGitWorkSpace(gitUrl, codePath)) {
-                Logger.debug(String.format("本地代码不存在，clone=%s,codePath=%s", gitUrl, codePath));
+                boolean delete = new File(codePath).delete();
+                System.out.println(String.format("本地代码不存在，clone=%s,codePath=%s,delete=" + delete, gitUrl, codePath));
                 git = Git.cloneRepository()
                         .setURI(gitUrl)
                         .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord))
@@ -37,7 +38,7 @@ public class GitRepoUtil {
                 // 下载指定commitId/branch
                 git.checkout().setName(commitId).call();
             } else {
-                Logger.info("本地代码存在,直接使用" + codePath);
+                System.out.println("本地代码存在,直接使用" + codePath);
                 git = Git.open(new File(codePath));
                 git.getRepository().getFullBranch();
                 //判断是分支还是commitId，分支做更新，commitId无法改变用原有的
@@ -77,21 +78,28 @@ public class GitRepoUtil {
     /**
      * 判断工作目录是否存在，本来可以每次拉去代码时删除再拉取，但是这样代码多的化IO比较大，所以就代码可以复用
      */
-    public static Boolean checkGitWorkSpace(String gitUrl, String codePath) throws IOException {
-        Boolean isExist = Boolean.FALSE;
-        File repoGitDir = new File(codePath + "/.git");
-        if (!repoGitDir.exists()) {
-            return false;
-        }
-        Git git = Git.open(new File(codePath));
-        Repository repository = git.getRepository();
-        //解析本地代码，获取远程uri,是否是我们需要的git远程仓库
-        String repoUrl = repository.getConfig().getString("remote", "origin", "url");
-        if (gitUrl.equals(repoUrl)) {
-            isExist = Boolean.TRUE;
-        } else {
-            Logger.info("本地存在其他仓的代码，先删除");
-            FileUtil.removeDir(new File(codePath));
+    public static boolean checkGitWorkSpace(String gitUrl, String codePath) throws IOException {
+        boolean isExist = false;
+        File gitRootFile = new File(codePath);
+        try {
+            File repoGitDir = new File(codePath + "/.git");
+            if (!repoGitDir.exists()) {
+                return false;
+            }
+            Git git = Git.open(gitRootFile);
+            Repository repository = git.getRepository();
+            //解析本地代码，获取远程uri,是否是我们需要的git远程仓库
+            String repoUrl = repository.getConfig().getString("remote", "origin", "url");
+            if (gitUrl.equals(repoUrl)) {
+                isExist = true;
+            } else {
+                Logger.info("本地存在其他仓的代码，先删除");
+                FileUtil.removeDir(gitRootFile);
+                gitRootFile.delete();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            gitRootFile.delete();
         }
         return isExist;
     }
