@@ -10,7 +10,6 @@ import org.springframework.web.multipart.support.StandardMultipartHttpServletReq
 import site.duqian.spring.Constants;
 import site.duqian.spring.utils.CommonUtils;
 import site.duqian.spring.utils.Md5Util;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +38,7 @@ public class UploadQueryController {
         return handleUpload(request, resp);
     }
 
-    //http://192.168.56.1:8090/coverage/queryFile?appName=duqian&versionCode=100
+    //http://192.168.56.1:8090/coverage/queryFile?appName=duqian&versionCode=100&branch=dev
     @RequestMapping(value = "/queryFile", method = {RequestMethod.GET})
     protected void queryFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         CommonUtils.printParams(request);
@@ -66,8 +65,6 @@ public class UploadQueryController {
             }
             if (branchName == null || "".equals(branchName)) {
                 branchName = this.branchName;
-            } else {
-                //branchName = branchName.replace("#", "");
             }
             String dirPath = getSaveDir(appName, branchName).getAbsolutePath();
 
@@ -85,22 +82,19 @@ public class UploadQueryController {
 
             if (fileItem != null) {
                 String fileName = fileItem.getOriginalFilename();
-                //((DiskFileItem) ((ApplicationPart) ((StandardMultipartHttpServletRequest.StandardMultipartFile) fileItem).part).fileItem).tempFile;
-                //String fileName = MD5Utils.string2MD5(fileItem.get);
                 InputStream inputStream = fileItem.getInputStream();
                 System.out.println("fileName=" + fileName + ",inputStream=" + inputStream);
                 fileName = saveFile(dirPath, fileName, inputStream);
-                responseMsg = "{\"code\":200,\"msg\":\"上传成功\",\"fileName\":" + fileName + "}";
+                responseMsg = "{\"code\":200,\"msg\":\"upload success\",\"fileName\":" + fileName + "}";
             } else {
-                responseMsg = "{\"code\":402,\"msg\":\"上传失败,file is null,appName=" + appName + " versionCode=" + versionCode + "\"}";
+                responseMsg = "{\"code\":402,\"msg\":\"upload failed,file is null,appName=" + appName + " versionCode=" + versionCode + "\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            responseMsg = "{\"code\":401,\"msg\":\"上传失败，" + e.getMessage() + "\"}";
+            responseMsg = "{\"code\":401,\"msg\":\"upload failed，" + e.getMessage() + "\"}";
         }
-        //out.println(responseMsg);
-        //out.close();
-        responseMsg = new String(responseMsg.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
+        //todo-dq 中文乱码
+        responseMsg = new String(responseMsg.getBytes(), StandardCharsets.UTF_8);
         System.out.println("responseMsg=" + responseMsg);
         return responseMsg;
     }
@@ -123,14 +117,19 @@ public class UploadQueryController {
             ous.write(buffer, 0, len);
         ins.close();
         ous.close();
-        String md5 = Md5Util.string2MD5(savedFile.getAbsolutePath());
-        File dest = new File(dirPath, md5 + suffix);
-        if (dest.exists()) {
-            dest.delete();
+        String lastFileName = Md5Util.string2MD5(savedFile.getAbsolutePath());
+        if (suffix.startsWith(".ec")) {
+            File dest = new File(dirPath, lastFileName + suffix);
+            if (dest.exists()) {
+                dest.delete();
+            }
+            savedFile.renameTo(dest);
+            System.out.println("saved to:" + dest.getAbsolutePath());
+        } else {
+            lastFileName = fileName;
+            System.out.println("saved to:" + savedFile.getAbsolutePath());
         }
-        savedFile.renameTo(dest);
-        System.out.println("saved to:" + dest.getAbsolutePath());
-        return md5;
+        return lastFileName;
     }
 
     private void realQueryFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
@@ -143,7 +142,6 @@ public class UploadQueryController {
             resp.getWriter().write("error appName==null || versionCode==null");
             return;
         }
-        //branchName = branchName.replace("#", "");
         //设置状态码
         resp.setStatus(200);
         PrintWriter out = resp.getWriter();

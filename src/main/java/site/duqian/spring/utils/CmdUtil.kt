@@ -1,12 +1,6 @@
 package site.duqian.spring.utils
 
-import kotlin.jvm.JvmStatic
-import kotlin.Throws
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.lang.Exception
+import java.io.*
 
 object CmdUtil {
     @JvmStatic
@@ -47,7 +41,11 @@ object CmdUtil {
             runProcess(cmds)
             //win两个命令都能执行，todo-dq mac不行
             //runProcess("java -jar $jarPath report $execPath --classfiles $classesPath --sourcefiles $srcPath --html $reportPath")
-            println("********** end")
+
+            val currentBranchName = "dev_dq_#411671_coverage"
+            val process:Process = execute("git diff origin/master origin/${currentBranchName} --name-only")
+            val text = getText(process)
+            println("********** end $text")
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -102,5 +100,66 @@ object CmdUtil {
             println("runProcess $e")
         }
         return false
+    }
+
+    @Throws(IOException::class)
+    fun execute(self: String?): Process {
+        return Runtime.getRuntime().exec(self)
+    }
+
+    @Throws(IOException::class)
+    fun getText(self: Process): String {
+        val text: String = getText(BufferedReader(InputStreamReader(self.inputStream)))
+        closeStreams(self)
+        return text
+    }
+
+    @Throws(IOException::class)
+    fun getText(reader: BufferedReader?): String {
+        var bufferedReader = reader
+        val answer = StringBuilder()
+        val charBuffer = CharArray(8192)
+        var nbCharRead: Int
+        try {
+            while (bufferedReader!!.read(charBuffer).also { nbCharRead = it } != -1) {
+                answer.append(charBuffer, 0, nbCharRead)
+            }
+            val temp = bufferedReader
+            bufferedReader = null
+            temp.close()
+        } finally {
+            tryClose(bufferedReader, true) // ignore result
+        }
+        return answer.toString()
+    }
+
+    fun tryClose(closeable: AutoCloseable?, logWarning: Boolean): Throwable? {
+        var thrown: Throwable? = null
+        if (closeable != null) {
+            try {
+                closeable.close()
+            } catch (e: Exception) {
+                thrown = e
+                if (logWarning) {
+                    println("tryClose error $e")
+                }
+            }
+        }
+        return thrown
+    }
+
+    fun closeStreams(self: Process) {
+        try {
+            self.errorStream.close()
+        } catch (ignore: IOException) {
+        }
+        try {
+            self.inputStream.close()
+        } catch (ignore: IOException) {
+        }
+        try {
+            self.outputStream.close()
+        } catch (ignore: IOException) {
+        }
     }
 }
