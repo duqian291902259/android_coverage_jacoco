@@ -71,7 +71,8 @@ public class ReportController {
         // TODO: 2021/9/23 合并ec为一个文件 路径动态配置
         String rootDir = System.getProperty("user.dir") + File.separator;
         String jarPath = rootDir + "jacococli.jar";
-        String execPath = rootDir + "download/cc-android/dev_dq_#411671_coverage/8ab3adfcec889990a6db1fbaae361d59.ec";
+        //String execPath = rootDir + "download/cc-android/dev_dq_#411671_coverage/8ab3adfcec889990a6db1fbaae361d59.ec";
+        String execPath = rootDir + "download/cc-android/dev_dq_#411671_coverage/95a210bd1e80b0c26ebc1dc0dc48dadd.ec";
         String classesPath = rootDir + "jacoco/classes/";
         String srcPath = rootDir + "jacoco/tempSrc/main/java/";
         String reportPath = rootDir + "jacoco/report";

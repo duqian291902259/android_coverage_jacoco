@@ -60,7 +60,7 @@ public class UploadQueryController {
             String appName = paramsMap.get(Constants.KEY_APP_NAME);
             String versionCode = paramsMap.get(Constants.KEY_VERSION_CODE);
             String branchName = paramsMap.get(Constants.KEY_BRANCH_NAME);
-            System.out.println("parseRequestParams:branchName=" + branchName + ",versionCode=" + versionCode + ",versionCode=" + versionCode);
+            System.out.println("parseRequestParams:branchName=" + branchName + ",appName=" + appName + ",versionCode=" + versionCode);
 
             if (appName == null || "".equals(appName)) {
                 appName = this.appName;
@@ -72,11 +72,6 @@ public class UploadQueryController {
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setRepository(new File(dirPath));
-
-            // 这种方式获取file有问题
-            /*ServletFileUpload fileUpload = new ServletFileUpload(factory);
-            fileUpload.setSizeMax(30 * 1024 * 1024);
-            List<FileItem> fileItemList = fileUpload.parseRequest(new ServletRequestContext(request));*/
 
             String contentType = request.getContentType();//"multipart/form-data"
             MultipartFile fileItem = ((StandardMultipartHttpServletRequest) request).getFile("file");

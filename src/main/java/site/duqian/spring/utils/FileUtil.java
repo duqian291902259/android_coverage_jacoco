@@ -6,17 +6,19 @@ import java.io.File;
 
 public class FileUtil {
 
-    public static String getSaveDir() {
+    public static String getRootDir() {
         //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
         String rootDir = System.getProperty("user.dir");
+        File parentFile = new File(rootDir).getParentFile();
+        if (parentFile!=null){
+            rootDir = parentFile.getAbsolutePath();
+        }
         System.out.println("rootDir=" + rootDir);
         return rootDir;
     }
 
     public static File getSaveDir(String appName, String branchName) {
-        //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
-        //String rootDir = System.getProperty("user.home") + fileDir;
-        String rootDir = System.getProperty("user.dir") + Constants.KEY_PARAM_DOWNLOAD_DIR;
+        String rootDir = getRootDir() + Constants.KEY_PARAM_DOWNLOAD_DIR;
         System.out.println("rootDir=" + rootDir);
         return new File(rootDir, appName + File.separator + branchName);
     }
