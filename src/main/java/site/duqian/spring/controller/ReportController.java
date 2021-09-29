@@ -34,6 +34,17 @@ public class ReportController {
         System.out.println("parseRequestParams:branchName=" + branchName + ",appName=" + appName + ",baseBranchName=" + baseBranchName);
 
         //git clone pull update
+        //cloneSrc(appName, branchName);
+        generateReport(appName, branchName);
+
+        String msg = "{\"cmd\":0,\"data\":\"success\"}";
+        System.out.println("handle report=" + msg);
+        resp.setContentType("application/json;charset=utf-8");
+        resp.setStatus(200);
+        return msg;
+    }
+
+    private void cloneSrc(String appName, String branchName) {
         String sourceDir = FileUtil.getSaveDir(appName, branchName + "_src").getAbsolutePath();
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(repositoryUrl, sourceDir + File.separator + "cc");
         System.out.println("checkGitWorkSpace " + checkGitWorkSpace);
@@ -57,14 +68,6 @@ public class ReportController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        generateReport(appName, branchName);
-
-        String msg = "{\"cmd\":0,\"data\":\"success\"}";
-        System.out.println("handle report=" + msg);
-        resp.setContentType("application/json;charset=utf-8");
-        resp.setStatus(200);
-        return msg;
     }
 
     private void generateReport(String appName, String branchName) {
@@ -72,7 +75,7 @@ public class ReportController {
         String rootDir = System.getProperty("user.dir") + File.separator;
         String jarPath = rootDir + "jacococli.jar";
         //String execPath = rootDir + "download/cc-android/dev_dq_#411671_coverage/8ab3adfcec889990a6db1fbaae361d59.ec";
-        String execPath = rootDir + "download/cc-android/dev_dq_#411671_coverage/95a210bd1e80b0c26ebc1dc0dc48dadd.ec";
+        String execPath = rootDir + "download/cc-android/dev_dq_#411671_coverage/**.ec";
         String classesPath = rootDir + "jacoco/classes/";
         String srcPath = rootDir + "jacoco/tempSrc/main/java/";
         String reportPath = rootDir + "jacoco/report";
