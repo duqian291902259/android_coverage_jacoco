@@ -59,7 +59,7 @@ public class FileUtil {
     }
 
     public static String getClassDir(CommonParams commonParams) {
-        String rootDir = getSaveDir(commonParams) + File.separator + "class";
+        String rootDir = getSaveDir(commonParams) + File.separator + "classes";
         System.out.println("getClassDir=" + rootDir);
         return rootDir;
     }

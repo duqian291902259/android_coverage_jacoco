@@ -47,6 +47,11 @@ public class ReportController {
         String classesPath = FileUtil.getClassDir(commonParams);
         String srcPath = FileUtil.getSourceDir(commonParams);
         String reportPath = FileUtil.getJacocoReportPath(commonParams);
+        File classFile = new File(classesPath);
+        if (!classFile.exists()) {
+            String saveDir = FileUtil.getSaveDir(commonParams);
+            FileUtil.unzip(saveDir, saveDir + File.separator + "classes.zip");
+        }
         boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,
                 execPath,
                 classesPath,
