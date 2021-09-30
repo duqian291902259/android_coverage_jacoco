@@ -43,7 +43,7 @@ public class DownloadController {
         filename = new String(filename.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
 
         //得到保存文件的位置
-        String fileRealPath = FileUtil.getRootDir() + File.separator + path + filename;
+        String fileRealPath = FileUtil.getJacocoDownloadDir() + path + filename;
         System.out.println("handleDownloadFile fileRealPath=" + fileRealPath);
 
         //判断文件是否存在

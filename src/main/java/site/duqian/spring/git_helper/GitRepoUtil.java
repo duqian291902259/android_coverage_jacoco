@@ -10,14 +10,57 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import site.duqian.spring.Constants;
+import site.duqian.spring.bean.CommonParams;
 import site.duqian.spring.exception.CustomException;
+import site.duqian.spring.utils.CmdUtil;
 import site.duqian.spring.utils.FileUtil;
 
 import java.io.File;
 
+/**
+ * Description:git工具类
+ * @author n20241 Created by 杜小菜 on 2021/9/30 - 11:50 .
+ * E-mail: duqian2010@gmail.com
+ */
 public class GitRepoUtil {
 
     private static final Logger Logger = LoggerFactory.getLogger(GitRepoUtil.class);
+
+    public static void checkOut(CommonParams commonParams) {
+        try {
+            String cmd = "git checkout -b " + commonParams.getBranchName() + " " + commonParams.getCommitId();
+            System.out.println("runProcess checkOut cmd:" + cmd);
+            int result = CmdUtil.runProcess(cmd);
+            System.out.println("checkOut end:" + result);
+        } catch (Exception e) {
+            System.out.println("checkOut error:" + e);
+        }
+    }
+
+    public static void cloneSrc(CommonParams commonParams) {
+        String sourceDir = FileUtil.getSourceDir(commonParams);
+        boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir + File.separator + "cc");
+        System.out.println("cloneSrc " + checkGitWorkSpace);
+        try {
+            String cmd = "";
+            String cmdPull = "git -C " + sourceDir + " pull";
+            if (!checkGitWorkSpace) {
+                cmd = "git clone -b " + commonParams.getBranchName() + " " + Constants.REPOSITORY_URL + " " + sourceDir;
+            } else {
+                cmd = cmdPull;
+            }
+            System.out.println("runProcess cmd:" + cmd);
+            int result = CmdUtil.runProcess(cmd);
+            if (!checkGitWorkSpace && result == 128) {
+                CmdUtil.runProcess(cmdPull);
+                System.out.println("cmdPull:" + result);
+            }
+            System.out.println("clone or update end:" + result);
+        } catch (Exception e) {
+            System.out.println("clone or update error:" + e);
+        }
+    }
 
     /**
      * 克隆代码到本地
@@ -27,7 +70,7 @@ public class GitRepoUtil {
         try {
             if (!checkGitWorkSpace(gitUrl, codePath)) {
                 boolean delete = new File(codePath).delete();
-                System.out.println(String.format("本地代码不存在，clone=%s,codePath=%s,delete=" + delete, gitUrl, codePath));
+                System.out.printf("本地代码不存在，clone=%s,codePath=%s,delete=" + delete + "%n", gitUrl, codePath);
                 git = Git.cloneRepository()
                         .setURI(gitUrl)
                         .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord))
@@ -106,8 +149,7 @@ public class GitRepoUtil {
      * 获取class文件的地址
      */
     public String getClassFile(Git git, String classPackage) {
-        StringBuilder builder = new StringBuilder(git.getRepository().getDirectory().getParent());
-        return builder.append("/").append(classPackage).toString();
+        return git.getRepository().getDirectory().getParent() + "/" + classPackage;
     }
 
 }

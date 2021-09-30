@@ -9,38 +9,49 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
+import site.duqian.spring.git_helper.GitRepoUtil;
 import site.duqian.spring.utils.CommonUtils;
 import site.duqian.spring.utils.FileUtil;
 import site.duqian.spring.utils.Md5Util;
+import site.duqian.spring.utils.SpringContextUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
-import java.util.Map;
+import java.util.concurrent.Executor;
 
 @Controller
 @RequestMapping("/coverage")
 public class UploadQueryController {
-    private String appName = "cc-android";
-    private String versionCode = "3.8.1";
-    private String branchName = "dev";//当前需要覆盖率报告的分支
-
     //URL_HOST + "/coverage/upload")
     @RequestMapping(value = "/upload", method = {RequestMethod.POST})
     @ResponseBody
     protected String upload(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
-        CommonUtils.printParams(request);
+        //CommonUtils.printParams(request);
         resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
         if ("get".equalsIgnoreCase(request.getMethod())) {
             return "{\"result\":404,\"data\":\"not supported\"}";
         }
-        return handleUpload(request, resp);
+        CommonParams commonParams = CommonUtils.getCommonParams(request, "upload");
+
+        updateRepoSource(commonParams);
+
+        return handleUpload(request, commonParams);
     }
 
-    //http://192.168.56.1:8090/coverage/queryFile?appName=duqian&versionCode=100&branch=dev
+    private void updateRepoSource(CommonParams commonParams) {
+        Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
+        prodExecutor.execute(() -> {
+            //后台执行clone代码的逻辑
+            GitRepoUtil.cloneSrc(commonParams);
+            GitRepoUtil.checkOut(commonParams);
+        });
+    }
+
+    //http://192.168.56.1:8090/coverage/queryFile?appName=duqian&versionCode=100&branch=dev&commitId=xxx
     @RequestMapping(value = "/queryFile", method = {RequestMethod.GET})
     protected void queryFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         CommonUtils.printParams(request);
@@ -53,26 +64,10 @@ public class UploadQueryController {
     /**
      * 本地server地址上传，一定要确保测试设备与server在同一个局域网
      */
-    private String handleUpload(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private String handleUpload(HttpServletRequest request, CommonParams commonParams) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String responseMsg = "ok";
         try {
-            Map<String, String> paramsMap = CommonUtils.parseRequestParams(request);
-            String appName = paramsMap.get(Constants.KEY_APP_NAME);
-            String versionCode = paramsMap.get(Constants.KEY_VERSION_CODE);
-            String branchName = paramsMap.get(Constants.KEY_BRANCH_NAME);
-            String commitId = paramsMap.get(Constants.KEY_COMMIT_ID);
-            String type = paramsMap.get(Constants.KEY_PARAM_TYPE);
-
-            if (appName == null || "".equals(appName)) {
-                appName = this.appName;
-            }
-            if (branchName == null || "".equals(branchName)) {
-                branchName = this.branchName;
-            }
-            CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, type);
-            System.out.println("parseRequestParams:commonParams=" + commonParams);
-
             String dirPath = FileUtil.getSaveDir(commonParams);
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -80,7 +75,7 @@ public class UploadQueryController {
 
             String contentType = request.getContentType();//"multipart/form-data"
             MultipartFile fileItem = ((StandardMultipartHttpServletRequest) request).getFile("file");
-            System.out.println(",contentType=" + contentType + ",appName=" + appName + ",versionCode=" + versionCode);
+            System.out.println(",contentType=" + contentType);
 
             if (fileItem != null) {
                 String fileName = fileItem.getOriginalFilename();
@@ -89,7 +84,7 @@ public class UploadQueryController {
                 fileName = saveFile(dirPath, fileName, inputStream);
                 responseMsg = "{\"code\":200,\"msg\":\"upload success\",\"fileName\":" + fileName + "}";
             } else {
-                responseMsg = "{\"code\":402,\"msg\":\"upload failed,file is null,appName=" + appName + " versionCode=" + versionCode + "\"}";
+                responseMsg = "{\"code\":402,\"msg\":\"upload failed,fileItem is null" + "\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +92,6 @@ public class UploadQueryController {
         }
         //todo-dq 中文乱码
         //responseMsg = new String(responseMsg.getBytes(), StandardCharsets.UTF_8);
-        System.out.println("responseMsg=" + responseMsg);
         return responseMsg;
     }
 
@@ -131,7 +125,22 @@ public class UploadQueryController {
             lastFileName = fileName;
             System.out.println("saved to:" + savedFile.getAbsolutePath());
         }
+
+        unZipClasses(savedFile, suffix, parentFile);
+
         return lastFileName;
+    }
+
+    private void unZipClasses(File savedFile, String suffix, File parentFile) {
+        Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
+        prodExecutor.execute(() -> {
+            //解压zip-》class
+            if (suffix.contains(".zip") || suffix.contains(".rar")) {
+                if (parentFile != null && savedFile.length() > 0) {
+                    FileUtil.unzip(parentFile.getAbsolutePath(), savedFile.getAbsolutePath());
+                }
+            }
+        });
     }
 
     private void realQueryFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
@@ -164,8 +173,8 @@ public class UploadQueryController {
                 String fileName = file.getName();
                 if (!fileName.startsWith(".") && fileName.endsWith(suffix)) {
                     //忽略隐藏文件? ,/rootDir/appName/branchName/commitId/&fileName=xxx
-                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR)
-                            .append(appName).append(File.separator)
+                    //sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR)
+                    sb.append(appName).append(File.separator)
                             .append(branchName).append(File.separator)
                             .append(commitId).append(File.separator)
                             .append("&").append(Constants.KEY_PARAM_FILENAME).append("=").append(fileName)
