@@ -21,12 +21,21 @@ public class Constants {
     public static final String KEY_BASE_BRANCH_NAME = "base_branch";
     public static final String KEY_COMMIT_ID = "commitId";
     public static final String KEY_PARAM_TYPE = "type";//type 1=ec,
+    public static final String KEY_PARAM_INCREMENTAL = "incremental";//是否增量
 
-    public static final int TYPE_FILE_ALL = 100;//ALL
+    public static final String TYPE_FILE_ALL = "";//ALL
+    public static final String TYPE_FILE_EC = ".ec";
+    public static final String TYPE_FILE_CLASS = ".class";
+    public static final String TYPE_FILE_APK = ".apk";
+    public static final String TYPE_FILE_ZIP = ".zip";
+    public static final String TYPE_FILE_TXT = ".txt";
+    public static final String TYPE_FILE_RAR = ".rar";
+
+   /* public static final int TYPE_FILE_ALL = 100;//ALL
     public static final int TYPE_FILE_EC = 0;//.ec
     public static final int TYPE_FILE_CLASS = 1;//.class
     public static final int TYPE_FILE_APK = 2;//.apk
     public static final int TYPE_FILE_ZIP = 3;//.zip
     public static final int TYPE_FILE_TXT = 4;//.txt
-    public static final int TYPE_FILE_RAR = 5;//.rar
+    public static final int TYPE_FILE_RAR = 5;//.rar*/
 }

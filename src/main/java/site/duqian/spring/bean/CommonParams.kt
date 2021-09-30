@@ -1,5 +1,6 @@
 package site.duqian.spring.bean
 
+import site.duqian.spring.Constants
 import java.io.Serializable
 
 /**
@@ -12,8 +13,11 @@ data class CommonParams(
     var versionCode: String? = "3.8.3",
     val branchName: String? = "dev",
     val commitId: String? = "10000",
-    val type: String? = ""
+    val type: String? = Constants.TYPE_FILE_EC
 ) : Serializable {
+
+    var isIncremental = false //是否增量
+
     override fun toString(): String {
         return "CommonParams(appName=$appName, versionCode=$versionCode, branchName=$branchName, commitId=$commitId, type=$type)"
     }

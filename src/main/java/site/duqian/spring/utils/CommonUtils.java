@@ -28,7 +28,7 @@ public class CommonUtils {
         String commitId = paramsMap.get(Constants.KEY_COMMIT_ID);
         String type = paramsMap.get(Constants.KEY_PARAM_TYPE);
 
-        if (commitId==null){
+        if (commitId == null) {
             commitId = "577082371ba3f40f848904baa39083f14b2695b0"; // TODO-dq: 2021/9/30 表单提交
         }
         CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, type);

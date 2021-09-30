@@ -19,7 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.concurrent.Executor;
 
 @Controller
@@ -47,7 +46,7 @@ public class UploadQueryController {
         prodExecutor.execute(() -> {
             //后台执行clone代码的逻辑
             GitRepoUtil.cloneSrc(commonParams);
-            GitRepoUtil.checkOut(commonParams);
+            //GitRepoUtil.checkOut(commonParams);
         });
     }
 
@@ -143,40 +142,34 @@ public class UploadQueryController {
         });
     }
 
+    /**
+     * 查询可下载的文件流列表
+     */
     private void realQueryFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
-        String appName = request.getParameter(Constants.KEY_APP_NAME);
-        String versionCode = request.getParameter(Constants.KEY_VERSION_CODE);
-        String branchName = request.getParameter(Constants.KEY_BRANCH_NAME);
-        String commitId = request.getParameter(Constants.KEY_COMMIT_ID);
-        String typeString = request.getParameter(Constants.KEY_PARAM_TYPE);
-        branchName = URLDecoder.decode(branchName, "utf-8");
-        if (commitId == null || branchName == null) {
-            resp.setStatus(401);
-            resp.getWriter().write("error commitId is " + commitId + ",or branchName is null");
-            return;
-        }
         //设置状态码
+        request.setCharacterEncoding("UTF-8");
+        //todo-dq resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
         PrintWriter out = resp.getWriter();
-        CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, typeString);
+        CommonParams commonParams = CommonUtils.getCommonParams(request, "realQueryFile");
         System.out.println("realQueryFile=" + commonParams);
         String dirPath = FileUtil.getSaveDir(commonParams);
         File rootFile = new File(dirPath);
-        System.out.println("realQueryFile getSaveDir=" + rootFile.getAbsolutePath() + ",exists=" + rootFile.exists() + ",appName=" + appName + ",branchName=" + branchName);
-        File[] files;
-        if (!rootFile.exists() || FileUtil.isEmpty(files = rootFile.listFiles())) {
+        System.out.println("realQueryFile getSaveDir=" + rootFile.getAbsolutePath() + ",exists=" + rootFile.exists());
+        File[] files = rootFile.listFiles();
+        if (FileUtil.isEmpty(files)) {
             out.println("{\"files\":[]}");
         } else {
             StringBuilder sb = new StringBuilder();
-            String suffix = FileUtil.getFileSuffixByType(typeString);
+            //String suffix = FileUtil.getFileSuffixByType(typeString);
             for (File file : files) {
                 String fileName = file.getName();
-                if (!fileName.startsWith(".") && fileName.endsWith(suffix)) {
+                if (!fileName.startsWith(".") && fileName.contains(commonParams.getType() + "")) {
                     //忽略隐藏文件? ,/rootDir/appName/branchName/commitId/&fileName=xxx
                     //sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR)
-                    sb.append(appName).append(File.separator)
-                            .append(branchName).append(File.separator)
-                            .append(commitId).append(File.separator)
+                    sb.append(commonParams.getAppName()).append(File.separator)
+                            .append(commonParams.getBranchName()).append(File.separator)
+                            .append(commonParams.getCommitId()).append(File.separator)
                             .append("&").append(Constants.KEY_PARAM_FILENAME).append("=").append(fileName)
                             .append("\",");
                 }

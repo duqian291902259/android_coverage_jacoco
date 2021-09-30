@@ -1,10 +1,8 @@
 server:
   port: 8090
   context-path: /
+
 spring:
-  level:
-    #日志级别，目录: 级别
-    com.company: debug
   resources:
     static-locations: classpath:web/
     #指定静态资源路径，默认为classpath:[/META-INF/resources/,/resources/, /static/, /public/]以及context:/
@@ -13,3 +11,9 @@ spring:
     view:
       prefix: /web/
       suffix: .jsp
+
+logging:
+  level:
+    #日志级别，目录: 级别
+    site.duqian.spring: debug
+  file: log/jacoco_web.log

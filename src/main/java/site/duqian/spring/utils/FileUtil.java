@@ -20,7 +20,7 @@ public class FileUtil {
 
     public static String getProjectDir() {
         String rootDir = System.getProperty("user.dir");
-        System.out.println("getProjectDir=" + rootDir);
+        //System.out.println("getProjectDir=" + rootDir);
         return rootDir;
     }
 
@@ -30,7 +30,7 @@ public class FileUtil {
         if (parentFile != null) {
             rootDir = parentFile.getAbsolutePath();
         }
-        System.out.println("getRootDir=" + rootDir);
+        //System.out.println("getRootDir=" + rootDir);
         return rootDir;
     }
 
@@ -42,51 +42,52 @@ public class FileUtil {
 
     public static String getJacocoDownloadDir() {
         String rootDir = getRootDir() + Constants.KEY_PARAM_DOWNLOAD_DIR;
-        System.out.println("getBranchDir=" + rootDir);
+        //System.out.println("getBranchDir=" + rootDir);
         return rootDir;
     }
 
     public static String getBranchDir(CommonParams commonParams) {
         String rootDir = getJacocoDownloadDir() + commonParams.getAppName() + File.separator + commonParams.getBranchName();
-        System.out.println("getBranchDir=" + rootDir);
+        //System.out.println("getBranchDir=" + rootDir);
         return rootDir;
     }
 
     public static String getSourceDir(CommonParams commonParams) {
         String rootDir = getBranchDir(commonParams) + File.separator + "src";
-        System.out.println("getSourceDir=" + rootDir);
+        //System.out.println("getSourceDir=" + rootDir);
         return rootDir;
     }
 
     public static String getClassDir(CommonParams commonParams) {
         String rootDir = getSaveDir(commonParams) + File.separator + "classes";
-        System.out.println("getClassDir=" + rootDir);
+        //System.out.println("getClassDir=" + rootDir);
         return rootDir;
     }
 
     public static String getEcFilesDir(CommonParams commonParams) {
         String rootDir = getSaveDir(commonParams);
-        System.out.println("getEcFilesDir=" + rootDir);
+        //System.out.println("getEcFilesDir=" + rootDir);
         return rootDir;
     }
 
     public static String getJacocoJarPath() {
         String rootDir = FileUtil.getProjectDir() + File.separator;
         String jarPath = rootDir + "jacococli.jar";
-        System.out.println("getJacocoJarPath=" + jarPath);
+        //System.out.println("getJacocoJarPath=" + jarPath);
         return jarPath;
     }
 
     public static String getJacocoReportPath(CommonParams commonParams) {
-        String rootDir = FileUtil.getJacocoDownloadDir() + "report" + File.separator + commonParams.getAppName() + File.separator + commonParams.getBranchName() + File.separator + commonParams.getCommitId();
+        //String rootDir = FileUtil.getJacocoDownloadDir() + "report" + File.separator + commonParams.getAppName() + File.separator + commonParams.getBranchName() + File.separator + commonParams.getCommitId();
+        String rootDir = FileUtil.getJacocoDownloadDir() + "report" + File.separator + commonParams.getCommitId();
         String reportPath = rootDir + "jacoco/report";
-        System.out.println("getJacocoJarPath=" + reportPath);
+        //System.out.println("getJacocoJarPath=" + reportPath);
         File file = new File(reportPath);
         file.mkdirs();
         return reportPath;
     }
 
-    public static String getFileSuffixByType(String typeString) {
+    /*public static String getFileSuffixByType(String typeString) {
         String suffix = ".ec";
         int type = 0;
         try {
@@ -107,7 +108,7 @@ public class FileUtil {
             suffix = ".apk";
         }
         return suffix;
-    }
+    }*/
 
     public static boolean isEmpty(Object[] arr) {
         return arr == null || arr.length == 0;
