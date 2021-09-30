@@ -139,7 +139,7 @@ public class UploadQueryController {
         String versionCode = request.getParameter(Constants.KEY_VERSION_CODE);
         String branchName = request.getParameter(Constants.KEY_BRANCH_NAME);
         String commitId = request.getParameter(Constants.KEY_COMMIT_ID);
-        String type = request.getParameter(Constants.KEY_PARAM_TYPE);
+        String typeString = request.getParameter(Constants.KEY_PARAM_TYPE);
         branchName = URLDecoder.decode(branchName, "utf-8");
         if (commitId == null || branchName == null) {
             resp.setStatus(401);
@@ -149,24 +149,26 @@ public class UploadQueryController {
         //设置状态码
         resp.setStatus(200);
         PrintWriter out = resp.getWriter();
-        CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, type);
+        CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, typeString);
         System.out.println("realQueryFile=" + commonParams);
         String dirPath = FileUtil.getSaveDir(commonParams);
         File rootFile = new File(dirPath);
         System.out.println("realQueryFile getSaveDir=" + rootFile.getAbsolutePath() + ",exists=" + rootFile.exists() + ",appName=" + appName + ",branchName=" + branchName);
         File[] files;
-        if (!rootFile.exists() || isEmpty(files = rootFile.listFiles())) {
+        if (!rootFile.exists() || FileUtil.isEmpty(files = rootFile.listFiles())) {
             out.println("{\"files\":[]}");
         } else {
             StringBuilder sb = new StringBuilder();
+            String suffix = FileUtil.getFileSuffixByType(typeString);
             for (File file : files) {
-                if (!file.getName().startsWith(".")) {
+                String fileName = file.getName();
+                if (!fileName.startsWith(".") && fileName.endsWith(suffix)) {
                     //忽略隐藏文件? ,/rootDir/appName/branchName/commitId/&fileName=xxx
                     sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR)
                             .append(appName).append(File.separator)
                             .append(branchName).append(File.separator)
                             .append(commitId).append(File.separator)
-                            .append("&").append(Constants.KEY_PARAM_FILENAME).append("=").append(file.getName())
+                            .append("&").append(Constants.KEY_PARAM_FILENAME).append("=").append(fileName)
                             .append("\",");
                 }
             }
@@ -174,9 +176,5 @@ public class UploadQueryController {
             out.println(String.format("{\"files\":[%s]}", sb));
         }
         out.close();
-    }
-
-    public static boolean isEmpty(Object[] arr) {
-        return arr == null || arr.length == 0;
     }
 }

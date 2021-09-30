@@ -35,6 +35,31 @@ public class FileUtil {
         return new File(rootDir, appName + File.separator + branchName);
     }
 
+    public static String getFileSuffixByType(String typeString) {
+        String suffix = ".ec";
+        int type = 0;
+        try {
+            type = Integer.parseInt(typeString);
+        } catch (Exception e) {
+        }
+        if (type == Constants.TYPE_FILE_EC) {
+            suffix = ".ec";
+        } else if (type == Constants.TYPE_FILE_ZIP) {
+            suffix = ".zip";
+        } else if (type == Constants.TYPE_FILE_TXT) {
+            suffix = ".txt";
+        } else if (type == Constants.TYPE_FILE_CLASS) {
+            suffix = ".class";
+        } else {
+
+        }
+        return suffix;
+    }
+
+    public static boolean isEmpty(Object[] arr) {
+        return arr == null || arr.length == 0;
+    }
+
     public static boolean deleteDirectory(String filePath) {
         //如果filePath不以文件分隔符结尾，自动添加文件分隔符
         if (!filePath.endsWith(File.separator)) {

@@ -18,7 +18,10 @@ public class Constants {
     public static final String KEY_COMMIT_ID = "commitId";
     public static final String KEY_PARAM_TYPE = "type";//type 1=ec,
 
-    public static final int TYPE_FILE_EC = 0;
-    public static final int TYPE_FILE_CLASS = 1;
-    public static final int TYPE_FILE_APK = 2;
+    public static final int TYPE_FILE_EC = 0;//.ec
+    public static final int TYPE_FILE_CLASS = 1;//.class
+    public static final int TYPE_FILE_APK = 2;//.apk
+    public static final int TYPE_FILE_ZIP = 3;//.zip
+    public static final int TYPE_FILE_TXT = 4;//.txt
+    public static final int TYPE_FILE_ALL = 10;//ALL
 }
