@@ -53,6 +53,11 @@ public class FileUtil {
     }
 
     public static String getSourceDir(CommonParams commonParams) {
+        String rootDir = getSaveDir(commonParams) + File.separator + Constants.SOURCE_DIR_NAME;
+        //System.out.println("getSourceDir=" + rootDir);
+        return rootDir;
+    }
+    public static String getGitCloneDir(CommonParams commonParams) {
         String rootDir = getBranchDir(commonParams) + File.separator + Constants.SOURCE_DIR_NAME;
         //System.out.println("getSourceDir=" + rootDir);
         return rootDir;

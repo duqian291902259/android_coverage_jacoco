@@ -36,18 +36,22 @@ public class UploadQueryController {
         }
         CommonParams commonParams = CommonUtils.getCommonParams(request, "upload");
 
+        //上传了文件后，clone代码
         updateRepoSource(commonParams);
 
         return handleUpload(request, commonParams);
     }
 
     private void updateRepoSource(CommonParams commonParams) {
-        Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
-        prodExecutor.execute(() -> {
-            //后台执行clone代码的逻辑
-            GitRepoUtil.cloneSrc(commonParams);
-            //GitRepoUtil.checkOut(commonParams);
-        });
+        //上传了ec文件才clone源码
+        if (commonParams != null && Constants.TYPE_FILE_EC.equals(commonParams.getType())) {
+            Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
+            prodExecutor.execute(() -> {
+                //后台执行clone代码的逻辑
+                GitRepoUtil.cloneSrc(commonParams);
+                //GitRepoUtil.checkOut(commonParams);
+            });
+        }
     }
 
     //http://192.168.56.1:8090/coverage/queryFile?appName=duqian&versionCode=100&branch=dev&commitId=xxx
@@ -174,7 +178,9 @@ public class UploadQueryController {
                             .append("\",");
                 }
             }
-            sb.delete(sb.length() - 1, sb.length());
+            if (sb.length() > 0) {
+                sb.delete(sb.length() - 1, sb.length());
+            }
             out.println(String.format("{\"files\":[%s]}", sb));
         }
         out.close();

@@ -98,7 +98,7 @@ public class ReportController {
             FileUtil.unzip(saveDir, saveDir + File.separator + "classes.zip");
         }
         if (commonParams.isIncremental()) {
-            //todo diff 报告  copy出指定的class文件到另外的目录 , 删除web里面的临时报告 html
+            //todo diff 报告  copy出指定的class文件到另外的目录 , 删除web里面的临时报告 html  源码路径的问题
         }
 
         boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,

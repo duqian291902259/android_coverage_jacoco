@@ -41,12 +41,14 @@ public class GitRepoUtil {
 
     public static void cloneSrc(CommonParams commonParams) {
         String sourceDir = FileUtil.getSourceDir(commonParams);
-        boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir + File.separator + "cc");
-        File indexLockFile = new File(sourceDir + File.separator + ".git" + File.separator + "index.lock");
+        //String sourceDir = FileUtil.getGitCloneDir(commonParams);
+        boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir);
+        //todo 源码重复下载的问题
+        /*File indexLockFile = new File(sourceDir + File.separator + ".git" + File.separator + "index.lock");
         if (indexLockFile.exists()) {
             indexLockFile.delete();
         }
-        /*if (checkGitWorkSpace) {
+        if (checkGitWorkSpace) {
             FileUtil.deleteDirectory(sourceDir);
         }*/
         System.out.println("cloneSrc " + checkGitWorkSpace);
