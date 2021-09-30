@@ -12,7 +12,7 @@ data class CommonParams(
     val appName: String? = "cc-android",
     var versionCode: String? = "3.8.3",
     val branchName: String? = "dev",
-    val commitId: String? = "10000",
+    var commitId: String? = "10000",
     val type: String? = Constants.TYPE_FILE_EC
 ) : Serializable {
 

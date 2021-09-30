@@ -20,6 +20,7 @@ import java.io.File;
 
 /**
  * Description:git工具类
+ *
  * @author n20241 Created by 杜小菜 on 2021/9/30 - 11:50 .
  * E-mail: duqian2010@gmail.com
  */
@@ -41,6 +42,13 @@ public class GitRepoUtil {
     public static void cloneSrc(CommonParams commonParams) {
         String sourceDir = FileUtil.getSourceDir(commonParams);
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir + File.separator + "cc");
+        File indexLockFile = new File(sourceDir + File.separator + ".git" + File.separator + "index.lock");
+        if (indexLockFile.exists()) {
+            indexLockFile.delete();
+        }
+        /*if (checkGitWorkSpace) {
+            FileUtil.deleteDirectory(sourceDir);
+        }*/
         System.out.println("cloneSrc " + checkGitWorkSpace);
         try {
             String cmd = "";

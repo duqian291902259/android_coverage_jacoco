@@ -41,7 +41,7 @@ public class FileUtil {
     }
 
     public static String getJacocoDownloadDir() {
-        String rootDir = getRootDir() + Constants.KEY_PARAM_DOWNLOAD_DIR;
+        String rootDir = getRootDir() + Constants.REPORT_DOWNLOAD_ROOT_DIR;
         //System.out.println("getBranchDir=" + rootDir);
         return rootDir;
     }
@@ -53,13 +53,13 @@ public class FileUtil {
     }
 
     public static String getSourceDir(CommonParams commonParams) {
-        String rootDir = getBranchDir(commonParams) + File.separator + "src";
+        String rootDir = getBranchDir(commonParams) + File.separator + Constants.SOURCE_DIR_NAME;
         //System.out.println("getSourceDir=" + rootDir);
         return rootDir;
     }
 
     public static String getClassDir(CommonParams commonParams) {
-        String rootDir = getSaveDir(commonParams) + File.separator + "classes";
+        String rootDir = getSaveDir(commonParams) + File.separator + Constants.CLASS_DIR_NAME;
         //System.out.println("getClassDir=" + rootDir);
         return rootDir;
     }
@@ -77,38 +77,35 @@ public class FileUtil {
         return jarPath;
     }
 
-    public static String getJacocoReportPath(CommonParams commonParams) {
-        //String rootDir = FileUtil.getJacocoDownloadDir() + "report" + File.separator + commonParams.getAppName() + File.separator + commonParams.getBranchName() + File.separator + commonParams.getCommitId();
-        String rootDir = FileUtil.getJacocoDownloadDir() + "report" + File.separator + commonParams.getCommitId();
-        String reportPath = rootDir + "jacoco/report";
-        //System.out.println("getJacocoJarPath=" + reportPath);
-        File file = new File(reportPath);
-        file.mkdirs();
-        return reportPath;
+    public static String getReportRelativePath(CommonParams commonParams) {
+        //return File.separator + commonParams.getBranchName() + File.separator + commonParams.getCommitId();
+        //return File.separator + commonParams.getBranchName().replaceAll("#","") + File.separator + commonParams.getCommitId();
+        return File.separator + commonParams.getCommitId();
     }
 
-    /*public static String getFileSuffixByType(String typeString) {
-        String suffix = ".ec";
-        int type = 0;
-        try {
-            type = Integer.parseInt(typeString);
-        } catch (Exception e) {
+    /**
+     * 报告的根目录
+     */
+    public static String getJacocoReportPath(CommonParams commonParams) {
+        String rootDir = getReportRootDir() + getReportRelativePath(commonParams) + File.separator + Constants.REPORT_DIR_NAME;
+        File file = new File(rootDir);
+        if (!file.exists()) {
+            file.mkdirs();
         }
-        if (type == Constants.TYPE_FILE_EC) {
-            suffix = ".ec";
-        } else if (type == Constants.TYPE_FILE_ZIP) {
-            suffix = ".zip";
-        } else if (type == Constants.TYPE_FILE_RAR) {
-            suffix = ".rar";
-        } else if (type == Constants.TYPE_FILE_TXT) {
-            suffix = ".txt";
-        } else if (type == Constants.TYPE_FILE_CLASS) {
-            suffix = ".class";
-        } else if (type == Constants.TYPE_FILE_APK) {
-            suffix = ".apk";
-        }
-        return suffix;
-    }*/
+        return rootDir;
+    }
+
+    public static String getReportZipFileName(CommonParams commonParams) {
+        return commonParams.getCommitId() + Constants.TYPE_FILE_ZIP;
+    }
+
+    public static String getReportZipPath(CommonParams commonParams) {
+        return getReportRootDir() + getReportRelativePath(commonParams) + File.separator + getReportZipFileName(commonParams);
+    }
+
+    public static String getReportRootDir() {
+        return FileUtil.getJacocoDownloadDir() + Constants.REPORT_DIR_NAME;
+    }
 
     public static boolean isEmpty(Object[] arr) {
         return arr == null || arr.length == 0;
