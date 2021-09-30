@@ -26,6 +26,14 @@ public class ReportController {
 
     private static final org.slf4j.Logger Log = LoggerFactory.getLogger(GitRepoUtil.class);
 
+    /**
+     * 生成报告
+     * http://127.0.0.1:8090/temp/cc-start-coverage/index.html
+     * http://127.0.0.1:8090/temp/cc-all-coverage/index.html
+     *
+     * http://127.0.0.1:8090/temp/cc-start-coverage.rar
+     * http://127.0.0.1:8090/temp/cc-all-coverage.rar
+     */
     @RequestMapping(value = "/report", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String report(HttpServletRequest request, HttpServletResponse resp) throws Exception {
