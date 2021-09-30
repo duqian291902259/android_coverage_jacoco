@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import site.duqian.spring.utils.CommonUtils;
+import site.duqian.spring.utils.FileUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -15,7 +16,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import static site.duqian.spring.Constants.*;
+import static site.duqian.spring.Constants.KEY_PARAM_FILENAME;
+import static site.duqian.spring.Constants.KEY_PARAM_PATH;
 
 /**
  * 文件下载管理
@@ -41,7 +43,7 @@ public class DownloadController {
         filename = new String(filename.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
 
         //得到保存文件的位置
-        String fileRealPath = getSaveDir() + File.separator + path + filename;
+        String fileRealPath = FileUtil.getRootDir() + File.separator + path + filename;
         System.out.println("handleDownloadFile fileRealPath=" + fileRealPath);
 
         //判断文件是否存在
@@ -74,12 +76,5 @@ public class DownloadController {
 
         //设置消息头，告诉浏览器，这是下载的文件
         resp.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
-    }
-
-    private String getSaveDir() {
-        //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
-        String rootDir = System.getProperty("user.dir");
-        System.out.println("rootDir=" + rootDir);
-        return rootDir;
     }
 }

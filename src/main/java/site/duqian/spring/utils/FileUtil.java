@@ -1,25 +1,37 @@
 package site.duqian.spring.utils;
 
 import site.duqian.spring.Constants;
+import site.duqian.spring.bean.CommonParams;
 
 import java.io.File;
 
+/**
+ * Description:文件、存储路径管理
+ *
+ * @author n20241 Created by 杜小菜 on 2021/9/30 - 10:02 .
+ * E-mail: duqian2010@gmail.com
+ */
 public class FileUtil {
 
     public static String getRootDir() {
-        //rootDir=C:\Users\N20241/download/,rootDir2=D:\DusanAndroid\SpringWeb/download/,rootDir3=D:\DusanAndroid\SpringWeb/download/
         String rootDir = System.getProperty("user.dir");
         File parentFile = new File(rootDir).getParentFile();
-        if (parentFile!=null){
+        if (parentFile != null) {
             rootDir = parentFile.getAbsolutePath();
         }
-        System.out.println("rootDir=" + rootDir);
+        System.out.println("getRootDir=" + rootDir);
+        return rootDir;
+    }
+
+    public static String getSaveDir(CommonParams commonParams) {
+        String rootDir = getRootDir() + Constants.KEY_PARAM_DOWNLOAD_DIR + commonParams.getAppName() + File.separator + commonParams.getBranchName() + File.separator + commonParams.getCommitId();
+        System.out.println("getSaveDir=" + rootDir);
         return rootDir;
     }
 
     public static File getSaveDir(String appName, String branchName) {
         String rootDir = getRootDir() + Constants.KEY_PARAM_DOWNLOAD_DIR;
-        System.out.println("rootDir=" + rootDir);
+        System.out.println("getSaveDir=" + rootDir);
         return new File(rootDir, appName + File.separator + branchName);
     }
 
@@ -72,5 +84,4 @@ public class FileUtil {
         }
         return result;
     }
-
 }

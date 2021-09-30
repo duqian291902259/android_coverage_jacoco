@@ -15,4 +15,10 @@ public class Constants {
     public static final String KEY_PARAM_USER_NAME = "userName";
     public static final String KEY_BRANCH_NAME = "branch";
     public static final String KEY_BASE_BRANCH_NAME = "base_branch";
+    public static final String KEY_COMMIT_ID = "commitId";
+    public static final String KEY_PARAM_TYPE = "type";//type 1=ec,
+
+    public static final int TYPE_FILE_EC = 0;
+    public static final int TYPE_FILE_CLASS = 1;
+    public static final int TYPE_FILE_APK = 2;
 }

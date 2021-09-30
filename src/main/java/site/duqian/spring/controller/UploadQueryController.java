@@ -8,15 +8,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import site.duqian.spring.Constants;
+import site.duqian.spring.bean.CommonParams;
 import site.duqian.spring.utils.CommonUtils;
 import site.duqian.spring.utils.FileUtil;
 import site.duqian.spring.utils.Md5Util;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Controller
@@ -60,7 +61,8 @@ public class UploadQueryController {
             String appName = paramsMap.get(Constants.KEY_APP_NAME);
             String versionCode = paramsMap.get(Constants.KEY_VERSION_CODE);
             String branchName = paramsMap.get(Constants.KEY_BRANCH_NAME);
-            System.out.println("parseRequestParams:branchName=" + branchName + ",appName=" + appName + ",versionCode=" + versionCode);
+            String commitId = paramsMap.get(Constants.KEY_COMMIT_ID);
+            String type = paramsMap.get(Constants.KEY_PARAM_TYPE);
 
             if (appName == null || "".equals(appName)) {
                 appName = this.appName;
@@ -68,7 +70,10 @@ public class UploadQueryController {
             if (branchName == null || "".equals(branchName)) {
                 branchName = this.branchName;
             }
-            String dirPath = FileUtil.getSaveDir(appName, branchName).getAbsolutePath();
+            CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, type);
+            System.out.println("parseRequestParams:commonParams=" + commonParams);
+
+            String dirPath = FileUtil.getSaveDir(commonParams);
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setRepository(new File(dirPath));
@@ -91,7 +96,7 @@ public class UploadQueryController {
             responseMsg = "{\"code\":401,\"msg\":\"upload failed，" + e.getMessage() + "\"}";
         }
         //todo-dq 中文乱码
-        responseMsg = new String(responseMsg.getBytes(), StandardCharsets.UTF_8);
+        //responseMsg = new String(responseMsg.getBytes(), StandardCharsets.UTF_8);
         System.out.println("responseMsg=" + responseMsg);
         return responseMsg;
     }
@@ -131,28 +136,38 @@ public class UploadQueryController {
 
     private void realQueryFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
         String appName = request.getParameter(Constants.KEY_APP_NAME);
-        //String verCode = request.getParameter(Constants.KEY_VERSION_CODE);
+        String versionCode = request.getParameter(Constants.KEY_VERSION_CODE);
         String branchName = request.getParameter(Constants.KEY_BRANCH_NAME);
+        String commitId = request.getParameter(Constants.KEY_COMMIT_ID);
+        String type = request.getParameter(Constants.KEY_PARAM_TYPE);
         branchName = URLDecoder.decode(branchName, "utf-8");
-        if (appName == null || branchName == null) {
+        if (commitId == null || branchName == null) {
             resp.setStatus(401);
-            resp.getWriter().write("error appName==null || versionCode==null");
+            resp.getWriter().write("error commitId is " + commitId + ",or branchName is null");
             return;
         }
         //设置状态码
         resp.setStatus(200);
         PrintWriter out = resp.getWriter();
-
-        File f = FileUtil.getSaveDir(appName, branchName);
-        System.out.println("realQueryFile getSaveDir=" + f.getAbsolutePath() + ",exists=" + f.exists() + ",appName=" + appName + ",branchName=" + branchName);
+        CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, type);
+        System.out.println("realQueryFile=" + commonParams);
+        String dirPath = FileUtil.getSaveDir(commonParams);
+        File rootFile = new File(dirPath);
+        System.out.println("realQueryFile getSaveDir=" + rootFile.getAbsolutePath() + ",exists=" + rootFile.exists() + ",appName=" + appName + ",branchName=" + branchName);
         File[] files;
-        if (!f.exists() || isEmpty(files = f.listFiles())) {
+        if (!rootFile.exists() || isEmpty(files = rootFile.listFiles())) {
             out.println("{\"files\":[]}");
         } else {
             StringBuilder sb = new StringBuilder();
             for (File file : files) {
-                if (!file.getName().startsWith(".")) {//忽略隐藏文件
-                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR).append(appName).append(File.separator).append(branchName).append(File.separator+"&" + Constants.KEY_PARAM_FILENAME + "=").append(file.getName()).append("\",");
+                if (!file.getName().startsWith(".")) {
+                    //忽略隐藏文件? ,/rootDir/appName/branchName/commitId/&fileName=xxx
+                    sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR)
+                            .append(appName).append(File.separator)
+                            .append(branchName).append(File.separator)
+                            .append(commitId).append(File.separator)
+                            .append("&").append(Constants.KEY_PARAM_FILENAME).append("=").append(file.getName())
+                            .append("\",");
                 }
             }
             sb.delete(sb.length() - 1, sb.length());
