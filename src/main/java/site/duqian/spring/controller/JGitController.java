@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.duqian.spring.utils.CmdUtil;
-
 import java.io.File;
 
 @RestController
@@ -20,24 +19,19 @@ public class JGitController {
      * git仓路径
      */
     private static final String gitLocalDir = System.getProperty("user.dir") + "/jacoco/git";
-    private static final String gitLocalPath = System.getProperty("user.dir") + "/git/.git";
     private static final String gitUrl = "https://github.com/duqian291902259/AndroidUI.git";
     //todo-dq not authorized
     private static final String branch = "origin/main";
     private static final String gitUserName = "duqian291902259";
     private static final String gitPassword = "";
     private static final String commitId = "ed512db04d45c5a1148658fef775b6ac9aec846a";
-    //private static final String commitId = "951dbee2d9ad3b9ba997f7cdba0c483ae8b11733";
 
-    /**
-     * 拉取
-     */
     @RequestMapping("/pull")
     public String pull() {
         String result;
         Repository repo = null;
         try {
-            repo = new FileRepository(new File(gitLocalPath));
+            repo = new FileRepository(new File(gitLocalDir));
             Git git = new Git(repo);
             log.info("开始重置");
             //重置
@@ -71,7 +65,7 @@ public class JGitController {
         String result;
         Repository repo = null;
         try {
-            repo = new FileRepository(new File(gitLocalPath));
+            repo = new FileRepository(new File(gitLocalDir));
             Git git = new Git(repo);
             git.reset().setMode(ResetCommand.ResetType.HARD).setRef(branch).call();
             result = "重置成功!";
@@ -93,7 +87,7 @@ public class JGitController {
         String result;
         Repository repo = null;
         try {
-            repo = new FileRepository(new File(gitLocalPath));
+            repo = new FileRepository(new File(gitLocalDir));
             Git git = new Git(repo);
             git.revert().call();
             result = "恢复成功!";

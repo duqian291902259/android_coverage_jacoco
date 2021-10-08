@@ -46,7 +46,7 @@ public class MethodParserUtils {
         public void visit(MethodDeclaration n, List<MethodInfoResult> list) {
             //删除注释
             n.removeComment();
-            //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异？建议提交代码时统一工具格式化
+            //计算方法体的hash值，疑问，空格，特殊转义字符会影响结果，导致相同匹配为差异
             String md5 = Md5Util.string2MD5(n.toString());
             //参数处理
             StringBuilder params = new StringBuilder();

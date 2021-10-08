@@ -78,7 +78,7 @@ public class ReportController {
      */
     private boolean generateReport(CommonParams commonParams) {
         String reportPath = FileUtil.getJacocoReportPath(commonParams);
-        File reportIndexFile = new File(reportPath + File.separator + "index.html");
+        /*File reportIndexFile = new File(reportPath + File.separator + "index.html");
         if (reportIndexFile.exists()) {
             System.out.println("has generateReport=" + true);
             String reportZipPath = FileUtil.getReportZipPath(commonParams);
@@ -86,7 +86,7 @@ public class ReportController {
                 zipReport(reportPath, commonParams);
             }
             return true;
-        }
+        }*/
 
         String jarPath = FileUtil.getJacocoJarPath();
         String execPath = FileUtil.getEcFilesDir(commonParams) + File.separator + "**.ec";
@@ -95,10 +95,12 @@ public class ReportController {
         File classFile = new File(classesPath);
         if (!classFile.exists()) {
             String saveDir = FileUtil.getSaveDir(commonParams);
-            FileUtil.unzip(saveDir, saveDir + File.separator + "classes.zip");
+            String zipFile = FileUtil.getReportZipFileName(commonParams);
+            FileUtil.unzip(saveDir, zipFile);
         }
         if (commonParams.isIncremental()) {
             //todo diff 报告  copy出指定的class文件到另外的目录 , 删除web里面的临时报告 html  源码路径的问题
+            classesPath = getDiffClasses(commonParams);
         }
 
         boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,
@@ -107,10 +109,15 @@ public class ReportController {
                 srcPath,
                 reportPath);
         System.out.println("generateReport=" + isGenerated);
+        Log.debug("generateReport=" + isGenerated+","+commonParams);
         if (isGenerated) {
             zipReport(reportPath, commonParams);
         }
         return isGenerated;
+    }
+
+    private String getDiffClasses(CommonParams commonParams) {
+        return "";
     }
 
     private void zipReport(String reportPath, CommonParams commonParams) {
