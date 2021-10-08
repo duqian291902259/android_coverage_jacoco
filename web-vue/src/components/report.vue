@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 style="text-align: center">Android覆盖率报告</h1>
-    <el-form ref="form" :model="form" label-width="100px" label-position="left">
+    <h1 style="text-align: center">CC-Android覆盖率报告</h1>
+    <el-form ref="form" :model="form" label-width="120px" label-position="left">
       <el-form-item label="应用名称">
         <el-radio-group v-model="form.appName">
           <el-radio label="CC-Android"></el-radio>
@@ -10,17 +10,15 @@
       <el-form-item label="Git分支名称">
         <el-select
           v-model="form.branch"
-          placeholder="请选择生成报告的分支"
-          style="width: 400px"
-        >
-          <el-option label="master" value="master"></el-option>
-          <el-option label="dev" value="dev"></el-option>
-          <el-option
-            label="dev_dq_#411671_coverage"
-            value="dev_dq_#411671_coverage"
-          ></el-option>
+          placeholder="请选择当前生成报告的分支"
+          style="width: 380px">
+           <el-option-group label="请选择当前生成报告的分支">
+            <el-option label="master" value="master"></el-option>
+            <el-option label="dev" value="dev"></el-option>
+            <el-option label="dev_dq_#411671_coverage" value="dev_dq_#411671_coverage"></el-option>
+          </el-option-group>
         </el-select>
-        <!-- <span style="width: 50px"> -- </span>
+        <span style="width: 50px"> -- </span>
         <el-select
           v-model="form.base_branch"
           placeholder="请选择对比的分支"
@@ -30,32 +28,41 @@
             <el-option label="master" value="master"></el-option>
             <el-option label="dev" value="dev"></el-option>
           </el-option-group>
-        </el-select> -->
+        </el-select>
       </el-form-item>
 
-      <el-form-item label="Commit Id">
+      <el-form-item label="当前CommitId">
         <el-input
           v-model="form.commitId"
-          style="width: 400px"
-          placeholder="当前分支提交记录的SHA值"
+          style="width: 380px"
+          placeholder="当前apk对应的commit-id"
+        >
+        </el-input>
+      </el-form-item>
+
+      <el-form-item label="对比CommitId">
+        <el-input
+          v-model="form.commitId2"
+          style="width: 380px"
+          placeholder="获取差异的commit-id"
         >
         </el-input>
       </el-form-item>
       <el-form-item label="ec上传时间">
-        <el-col :span="11">
+        <el-col :span="9">
           <el-date-picker
             type="date"
             placeholder="选择日期"
             v-model="form.date1"
-            style="width: 100%"
+            style="width: 250px"
           ></el-date-picker>
         </el-col>
         <el-col class="line" :span="2" style="text-align: center">-</el-col>
-        <el-col :span="11">
+        <el-col :span="6">
           <el-time-picker
             placeholder="选择时间"
             v-model="form.date2"
-            style="width: 100%"
+            style="width: 250px"
           ></el-time-picker>
         </el-col>
       </el-form-item>
@@ -65,7 +72,7 @@
       <el-form-item label="开发环境">
         <el-radio-group v-model="form.env">
           <el-radio label="Debug"></el-radio>
-          <el-radio label="Release"></el-radio>
+          <el-radio label="Release" disabled></el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -97,8 +104,9 @@ export default {
       form: {
         appName: "CC-Android",
         branch: "dev_dq_#411671_coverage",
-        base_branch: "master",
+        base_branch: "dev",
         commitId: "577082371ba3f40f848904baa39083f14b2695b0",
+        commitId2:"855e6c13a7a46b5f63cb6b7d5db3e224d38fb1f8",
         date1: "",
         date2: "",
         incremental: false,

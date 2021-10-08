@@ -3,10 +3,10 @@ package site.duqian.spring.utils;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -17,6 +17,7 @@ import java.util.zip.ZipInputStream;
  * E-mail: duqian2010@gmail.com
  */
 public class FileUtil {
+    private static final long FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
 
     public static String getProjectDir() {
         String rootDir = System.getProperty("user.dir");
@@ -57,6 +58,7 @@ public class FileUtil {
         //System.out.println("getSourceDir=" + rootDir);
         return rootDir;
     }
+
     public static String getGitCloneDir(CommonParams commonParams) {
         String rootDir = getBranchDir(commonParams) + File.separator + Constants.SOURCE_DIR_NAME;
         //System.out.println("getSourceDir=" + rootDir);
@@ -75,11 +77,23 @@ public class FileUtil {
         return rootDir;
     }
 
+    public static String getDiffFilePath(CommonParams commonParams) {
+        return getSaveDir(commonParams) + File.separator + Constants.DIFF_FILES_NAME;
+    }
+
+    //获取diff的源码路径
+    public static String getDiffSrcDirPath(CommonParams commonParams) {
+        return getSaveDir(commonParams) + File.separator + Constants.DIFF_DIR_NAME + File.separator + Constants.SOURCE_DIR_NAME;
+    }
+
+    //获取diff的class路径
+    public static String getDiffClassDirPath(CommonParams commonParams) {
+        return getSaveDir(commonParams) + File.separator + Constants.DIFF_DIR_NAME + File.separator + Constants.CLASS_DIR_NAME;
+    }
+
     public static String getJacocoJarPath() {
         String rootDir = FileUtil.getProjectDir() + File.separator;
-        String jarPath = rootDir + "jacococli.jar";
-        //System.out.println("getJacocoJarPath=" + jarPath);
-        return jarPath;
+        return rootDir + Constants.JACOCO_CLI_FILE_NAME;
     }
 
     public static String getReportRelativePath(CommonParams commonParams) {
@@ -252,10 +266,170 @@ public class FileUtil {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             unzipOk = false;
         }
         return unzipOk;
+    }
+
+    public static List<String> readDiffFilesFromTxt(String txtPath) {
+        List<String> list = new ArrayList<>();
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(txtPath));//构造一个BufferedReader类来读取文件
+            String textLine = null;
+            while ((textLine = br.readLine()) != null) {//使用readLine方法，一次读一行
+                System.out.println(textLine);
+                if (!"".equals(textLine)) {
+                    list.add(textLine);
+                }
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception e) {
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 拷贝文件
+     *
+     * @param originFilePath 源文件
+     * @param targetFilePath 目标文件
+     */
+    public static boolean copyFile(String originFilePath, String targetFilePath) {
+        boolean isSuccess = true;
+        InputStream inStream = null;
+        FileOutputStream fs = null;
+        try {
+            int length;
+            File originFile = new File(originFilePath);
+            if (originFile.isFile() && originFile.exists()) { // 文件存在时
+                new File(targetFilePath).getParentFile().mkdirs();
+                inStream = new FileInputStream(originFilePath); // 读入原文件
+                fs = new FileOutputStream(targetFilePath);
+                byte[] buffer = new byte[1024 * 4];
+                while ((length = inStream.read(buffer)) != -1) {
+                    fs.write(buffer, 0, length);
+                }
+                fs.flush();
+            } else {
+                isSuccess = false;
+            }
+        } catch (Exception e) {
+            isSuccess = false;
+        } finally {
+            if (fs != null) {
+                try {
+                    fs.close();
+                } catch (IOException ignore) {
+                }
+            }
+            if (inStream != null) {
+                try {
+                    inStream.close();
+                } catch (Exception ignore) {
+                }
+            }
+        }
+        return isSuccess;
+    }
+
+    /**
+     * Internal copy file method.
+     *
+     * @param srcFile          the validated source file, must not be {@code null}
+     * @param destFile         the validated destination file, must not be {@code null}
+     * @param preserveFileDate whether to preserve the file date
+     * @throws IOException if an error occurs
+     */
+    public static void copyFile(File srcFile, File destFile, boolean preserveFileDate) throws IOException {
+        if (destFile.exists() && destFile.isDirectory()) {
+            throw new IOException("Destination '" + destFile + "' exists but is a directory");
+        }
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        FileChannel input = null;
+        FileChannel output = null;
+        try {
+            destFile.getParentFile().mkdirs();
+            fis = new FileInputStream(srcFile);
+            fos = new FileOutputStream(destFile);
+            input = fis.getChannel();
+            output = fos.getChannel();
+            long size = input.size();
+            long pos = 0;
+            long count = 0;
+            while (pos < size) {
+                count = Math.min(size - pos, FILE_COPY_BUFFER_SIZE);
+                pos += output.transferFrom(input, pos, count);
+            }
+        } finally {
+            closeQuietly(output);
+            closeQuietly(fos);
+            closeQuietly(input);
+            closeQuietly(fis);
+        }
+
+        if (srcFile.length() != destFile.length()) {
+            throw new IOException("Failed to copy full contents from '" +
+                    srcFile + "' to '" + destFile + "'");
+        }
+        if (preserveFileDate) {
+            destFile.setLastModified(srcFile.lastModified());
+        }
+    }
+
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (Exception ioe) {
+            // ignore
+        }
+    }
+
+    public static void doCopyDirectory(File srcDir, File destDir, FileFilter filter,
+                                       boolean preserveFileDate, List<String> exclusionList) throws IOException {
+        // recurse
+        File[] srcFiles = filter == null ? srcDir.listFiles() : srcDir.listFiles(filter);
+        if (srcFiles == null) {  // null if abstract pathname does not denote a directory, or if an I/O error occurs
+            throw new IOException("Failed to list contents of " + srcDir);
+        }
+        if (destDir.exists()) {
+            if (!destDir.isDirectory()) {
+                throw new IOException("Destination '" + destDir + "' exists but is not a directory");
+            }
+        } else {
+            if (!destDir.mkdirs() && !destDir.isDirectory()) {
+                throw new IOException("Destination '" + destDir + "' directory cannot be created");
+            }
+        }
+        if (!destDir.canWrite()) {
+            throw new IOException("Destination '" + destDir + "' cannot be written to");
+        }
+        for (File srcFile : srcFiles) {
+            File dstFile = new File(destDir, srcFile.getName());
+            if (exclusionList == null || !exclusionList.contains(srcFile.getCanonicalPath())) {
+                if (srcFile.isDirectory()) {
+                    doCopyDirectory(srcFile, dstFile, filter, preserveFileDate, exclusionList);
+                } else {
+                    copyFile(srcFile, dstFile, preserveFileDate);
+                }
+            }
+        }
+        // Do this last, as the above has probably affected directory metadata
+        if (preserveFileDate) {
+            destDir.setLastModified(srcDir.lastModified());
+        }
     }
 }

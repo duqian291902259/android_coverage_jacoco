@@ -17,8 +17,9 @@ data class CommonParams(
 ) : Serializable {
 
     var isIncremental = false //是否增量
+    var commitId2: String? = "10000"
 
     override fun toString(): String {
-        return "CommonParams(appName=$appName, versionCode=$versionCode, branchName=$branchName, commitId=$commitId, type=$type)"
+        return "CommonParams(appName=$appName, versionCode=$versionCode, branchName=$branchName, commitId=$commitId, commitId2=$commitId2, type=$type, isIncremental=$isIncremental)"
     }
 }

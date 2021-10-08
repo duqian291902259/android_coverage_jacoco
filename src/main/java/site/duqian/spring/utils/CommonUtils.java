@@ -26,8 +26,12 @@ public class CommonUtils {
         String versionCode = paramsMap.get(Constants.KEY_VERSION_CODE);
         String branchName = paramsMap.get(Constants.KEY_BRANCH_NAME);
         String commitId = paramsMap.get(Constants.KEY_COMMIT_ID);
+        String commitId2 = paramsMap.get(Constants.KEY_COMMIT_ID2);
         String type = paramsMap.get(Constants.KEY_PARAM_TYPE);
         CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, type);
+        boolean incremental = Boolean.parseBoolean(request.getParameter(Constants.KEY_PARAM_INCREMENTAL));
+        commonParams.setIncremental(incremental);
+        commonParams.setCommitId2(commitId2);
         System.out.println(TAG + " parseRequestParams=" + commonParams);
         return commonParams;
     }

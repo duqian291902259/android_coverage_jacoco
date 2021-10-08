@@ -1,7 +1,13 @@
 package site.duqian.spring.utils
 
-import java.io.*
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
 
+/**
+ * cmd工具类，测试
+ */
 object CmdUtil {
     @JvmStatic
     fun main(args: Array<String>) {
@@ -18,7 +24,7 @@ object CmdUtil {
             val srcPath = "${rootDir}jacoco/tempSrc/main/java/"
             val reportPath = "${rootDir}jacoco/report"
             generateReportByCmd(jarPath, execPath, classesPath, srcPath, reportPath)
-            //win两个命令都能执行，todo-dq mac不行
+            //win两个命令都能执行，todo-dq mac不行？
             //runProcess("java -jar $jarPath report $execPath --classfiles $classesPath --sourcefiles $srcPath --html $reportPath")
 
             if (os.contains("win")) {
@@ -113,6 +119,22 @@ object CmdUtil {
             println("runProcess $e")
         }
         return -1
+    }
+
+    //执行cmd命令，获取返回结果
+    fun execCmd(command: String?): String {
+        val sb = StringBuilder()
+        try {
+            val process = Runtime.getRuntime().exec(command)
+            val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+            var line: String
+            while (bufferedReader.readLine().also { line = it } != null) {
+                sb.append(line).append("\n")
+            }
+        } catch (e: Exception) {
+            return e.toString()
+        }
+        return sb.toString()
     }
 
     @Throws(IOException::class)
