@@ -65,7 +65,8 @@ object CmdUtil {
             "--sourcefiles",
             srcPath,
             "--html",
-            reportPath
+            reportPath,
+            "--encoding=utf8"
         )
         return runProcess(cmds)
     }

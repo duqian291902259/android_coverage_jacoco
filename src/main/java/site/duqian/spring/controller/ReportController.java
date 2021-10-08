@@ -55,13 +55,14 @@ public class ReportController {
         } else {
             //返回报告的预览路径和下载url
             String reportRelativePath = FileUtil.getReportRelativePath(commonParams);
-            String reportUrl = Constants.REPORT_SERVER_HOST_URL + reportRelativePath + File.separator + Constants.REPORT_DIR_NAME;
-            String reportZipUrl = Constants.REPORT_SERVER_HOST_URL + reportRelativePath + File.separator + FileUtil.getReportZipFileName(commonParams);
+            String reportUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtil.getReportDirName(commonParams);
+            String reportZipUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtil.getReportZipFileName(commonParams);
 
             //防止url中出现反斜杠
             //reportUrl = reportUrl.replaceAll(File.separator, "/");
             //reportZipUrl = reportZipUrl.replaceAll(File.separator, "/");
-            ReportResponse reportResponse = new ReportResponse(reportUrl, reportZipUrl);
+            String ts = "?ts=" + System.currentTimeMillis();
+            ReportResponse reportResponse = new ReportResponse(reportUrl + ts, reportZipUrl + ts);
             msg = new Gson().toJson(reportResponse);
         }
         String logMsg = "handle report=" + msg + ",incremental=" + commonParams.isIncremental();
@@ -90,12 +91,11 @@ public class ReportController {
         }
         boolean incremental = commonParams.isIncremental();
         if (incremental) {
-            //diff 报告  copy出指定的class文件到新的目录,todo-dq diff报告的路径需要不同
+            //diff 报告  copy出指定的class文件到新的目录,diff报告的路径需要不同
             String diffFilePath = FileUtil.getDiffFilePath(commonParams);
             List<String> diffFiles = FileUtil.readDiffFilesFromTxt(diffFilePath);
             classesPath = getDiffClasses(commonParams, diffFiles);
             srcPath = getDiffSrc(commonParams, diffFiles);
-            //todo reportPath =
         }
 
         boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,
@@ -107,7 +107,7 @@ public class ReportController {
         Logger.debug("generateReport=" + isGenerated + "," + commonParams);
         if (isGenerated) {
             zipReport(reportPath, commonParams);
-            //删除临时的src和class？或者直接替换
+            //todo-dq 多人同时操作时，如何异步？删除临时的src和class？或者直接替换
         }
         return isGenerated;
     }

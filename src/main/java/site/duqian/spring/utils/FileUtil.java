@@ -83,12 +83,20 @@ public class FileUtil {
 
     //获取diff的源码路径
     public static String getDiffSrcDirPath(CommonParams commonParams) {
-        return getSaveDir(commonParams) + File.separator + Constants.DIFF_DIR_NAME + File.separator + Constants.SOURCE_DIR_NAME;
+        String dirName = Constants.DIFF_DIR_NAME;
+        if (!CommonUtils.isEmpty(commonParams.getDiffFileName())) {
+            dirName = commonParams.getDiffFileName();
+        }
+        return getSaveDir(commonParams) + File.separator + dirName + File.separator + Constants.SOURCE_DIR_NAME;
     }
 
     //获取diff的class路径
     public static String getDiffClassDirPath(CommonParams commonParams) {
-        return getSaveDir(commonParams) + File.separator + Constants.DIFF_DIR_NAME + File.separator + Constants.CLASS_DIR_NAME;
+        String dirName = Constants.DIFF_DIR_NAME;
+        if (!CommonUtils.isEmpty(commonParams.getDiffFileName())) {
+            dirName = commonParams.getDiffFileName();
+        }
+        return getSaveDir(commonParams) + File.separator + dirName + File.separator + Constants.CLASS_DIR_NAME;
     }
 
     public static String getJacocoJarPath() {
@@ -99,27 +107,33 @@ public class FileUtil {
     public static String getReportRelativePath(CommonParams commonParams) {
         //return File.separator + commonParams.getBranchName() + File.separator + commonParams.getCommitId();
         //return File.separator + commonParams.getBranchName().replaceAll("#","") + File.separator + commonParams.getCommitId();
-        return File.separator + commonParams.getCommitId();
+        return commonParams.getCommitId();
     }
 
     /**
      * 报告的根目录
      */
     public static String getJacocoReportPath(CommonParams commonParams) {
-        String rootDir = getReportRootDir() + getReportRelativePath(commonParams) + File.separator + Constants.REPORT_DIR_NAME;
-        File file = new File(rootDir);
-        if (!file.exists()) {
-            file.mkdirs();
+        return getReportRootDir() + File.separator + getReportRelativePath(commonParams) + File.separator + getReportDirName(commonParams);
+    }
+
+    public static String getReportDirName(CommonParams commonParams) {
+        String dirName = Constants.REPORT_DIR_NAME;
+        if (!CommonUtils.isEmpty(commonParams.getDiffFileName())) {
+            dirName = commonParams.getDiffFileName();
         }
-        return rootDir;
+        return dirName;
     }
 
     public static String getReportZipFileName(CommonParams commonParams) {
+        if (!CommonUtils.isEmpty(commonParams.getDiffFileName())) {
+            return commonParams.getDiffFileName() + Constants.TYPE_FILE_ZIP;
+        }
         return commonParams.getCommitId() + Constants.TYPE_FILE_ZIP;
     }
 
     public static String getReportZipPath(CommonParams commonParams) {
-        return getReportRootDir() + getReportRelativePath(commonParams) + File.separator + getReportZipFileName(commonParams);
+        return getReportRootDir() + File.separator + getReportRelativePath(commonParams) + File.separator + getReportZipFileName(commonParams);
     }
 
     public static String getReportRootDir() {

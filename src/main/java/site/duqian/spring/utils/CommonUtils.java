@@ -17,6 +17,10 @@ import java.util.Set;
  */
 public class CommonUtils {
 
+    public static boolean isEmpty(CharSequence str) {
+        return str == null || str.length() == 0;
+    }
+
     /**
      * 获取公共入参
      */
@@ -32,6 +36,10 @@ public class CommonUtils {
         boolean incremental = Boolean.parseBoolean(request.getParameter(Constants.KEY_PARAM_INCREMENTAL));
         commonParams.setIncremental(incremental);
         commonParams.setCommitId2(commitId2);
+        if (incremental) {// TODO: 2021/10/8 优化diff文件夹的名称，以第二个commit命名？
+            String fileName = Constants.DIFF_DIR_NAME + commitId2;//System.currentTimeMillis();
+            commonParams.setDiffFileName(fileName);
+        }
         System.out.println(TAG + " parseRequestParams=" + commonParams);
         return commonParams;
     }

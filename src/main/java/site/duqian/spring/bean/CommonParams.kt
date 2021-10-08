@@ -18,8 +18,9 @@ data class CommonParams(
 
     var isIncremental = false //是否增量
     var commitId2: String? = "10000"
+    var diffFileName: String? = "" //diff文件夹名字
 
     override fun toString(): String {
-        return "CommonParams(appName=$appName, versionCode=$versionCode, branchName=$branchName, commitId=$commitId, commitId2=$commitId2, type=$type, isIncremental=$isIncremental)"
+        return "CommonParams(appName=$appName, versionCode=$versionCode, branchName=$branchName, commitId=$commitId, commitId2=$commitId2, type=$type, isIncremental=$isIncremental, diffFileName=$diffFileName)"
     }
 }
