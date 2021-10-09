@@ -51,7 +51,7 @@ public class ReportController {
         boolean generateReport = generateReport(commonParams);
         String msg = "{\"result\":0,\"data\":\"success\"}";
         if (!generateReport) {
-            msg = "{\"result\":0,\"data\":\"generate report failed.\"}";
+            msg = "{\"result\":0,\"data\":\"报告生成失败.\"}";
         } else {
             //返回报告的预览路径和下载url
             String reportRelativePath = FileUtil.getReportRelativePath(commonParams);
@@ -63,6 +63,7 @@ public class ReportController {
             //reportZipUrl = reportZipUrl.replaceAll(File.separator, "/");
             String ts = "?ts=" + System.currentTimeMillis();
             ReportResponse reportResponse = new ReportResponse(reportUrl + ts, reportZipUrl + ts);
+            reportResponse.setData("覆盖率报告已生成，请点击在线查阅或下载");
             msg = new Gson().toJson(reportResponse);
         }
         String logMsg = "handle report=" + msg + ",incremental=" + commonParams.isIncremental();

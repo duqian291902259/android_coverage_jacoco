@@ -11,7 +11,7 @@ import java.io.Serializable
 open class BaseResponse(
     val result: Int = 0,
     var message: String? = "success",
-    var data: String? = "ok" // TODO-dq: 2021/9/30  兼容旧的返回数据？
+    var data: String? = "ok"
 ) : Serializable {
     override fun toString(): String {
         return "CommonParams(result=$result, message=$message)"

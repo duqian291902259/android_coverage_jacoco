@@ -39,7 +39,7 @@ public class GitRepoUtil {
         }
     }
 
-    public static void cloneSrc(CommonParams commonParams) {
+    public static boolean cloneSrc(CommonParams commonParams) {
         String sourceDir = FileUtil.getSourceDir(commonParams);
         //String sourceDir = FileUtil.getGitCloneDir(commonParams);
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir);
@@ -63,13 +63,18 @@ public class GitRepoUtil {
             System.out.println("runProcess cmd:" + cmd);
             int result = CmdUtil.runProcess(cmd);
             if (!checkGitWorkSpace && result == 128) {
-                CmdUtil.runProcess(cmdPull);
+                result = CmdUtil.runProcess(cmdPull);
                 System.out.println("cmdPull:" + result);
             }
+            if (result == -1 || result == 128) {
+                return false;
+            }
             System.out.println("clone or update end:" + result);
+            return true;
         } catch (Exception e) {
             System.out.println("clone or update error:" + e);
         }
+        return false;
     }
 
     /**

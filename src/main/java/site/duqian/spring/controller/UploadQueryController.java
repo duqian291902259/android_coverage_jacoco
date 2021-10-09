@@ -1,6 +1,8 @@
 package site.duqian.spring.controller;
 
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +26,8 @@ import java.util.concurrent.Executor;
 @Controller
 @RequestMapping("/coverage")
 public class UploadQueryController {
+    private static final Logger logger = LoggerFactory.getLogger(JGitController.class);// slf4j日志记录器
+
     //URL_HOST + "/coverage/upload")
     @RequestMapping(value = "/upload", method = {RequestMethod.POST})
     @ResponseBody
@@ -42,13 +46,22 @@ public class UploadQueryController {
         return handleUpload(request, commonParams);
     }
 
+    private static boolean isCloning = false;
+
     private void updateRepoSource(CommonParams commonParams) {
+        if (isCloning) {
+            return;
+        }
         //上传了ec文件才clone源码
         if (commonParams != null && Constants.TYPE_FILE_EC.equals(commonParams.getType())) {
             Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
             prodExecutor.execute(() -> {
+                isCloning = true;
                 //后台执行clone代码的逻辑
-                GitRepoUtil.cloneSrc(commonParams);
+                boolean cloneSrc = GitRepoUtil.cloneSrc(commonParams);
+                System.out.println("cloneSrc=" + cloneSrc + ",commonParams=" + commonParams);
+                logger.debug("cloneSrc=" + cloneSrc + ",commonParams=" + commonParams);
+                isCloning = false;
                 //GitRepoUtil.checkOut(commonParams);
             });
         }

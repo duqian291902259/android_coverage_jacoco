@@ -127,7 +127,7 @@ export default {
           console.warn(res);
 
           let { result = 0, data = "" } = res;
-          let msg = `覆盖率报告已生成，请点击在线查阅或下载...${data.data}`;
+          let msg = `处理结果：${data.data}`;
           if (result != 0) {
             msg = `覆盖率报告生成失败了，呜呜...${data}`;
           }
