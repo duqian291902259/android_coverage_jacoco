@@ -129,7 +129,7 @@ export default {
           let { result = 0, data = "" } = res;
           let msg = `处理结果：${data.data}`;
           if (result != 0) {
-            msg = `覆盖率报告生成失败了，呜呜...${data}`;
+            msg = `出错了，呜呜...${data}`;
           }
           this.form.desc = msg;
           this.$message.success(msg);
@@ -144,7 +144,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          var errorMsg = `覆盖率报告生成失败... ${error}`;
+          var errorMsg = `出错了... ${error}`;
           this.form.desc = errorMsg;
           this.$message.error(errorMsg);
         });
