@@ -1,4 +1,4 @@
-package site.duqian.spring.git_helper;
+package site.duqian.spring.utils;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
 import site.duqian.spring.exception.CustomException;
-import site.duqian.spring.utils.CmdUtil;
-import site.duqian.spring.utils.FileUtil;
 
 import java.io.File;
 

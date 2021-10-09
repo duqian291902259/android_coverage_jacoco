@@ -1,4 +1,4 @@
-package site.duqian.spring.git_helper;
+package site.duqian.spring.utils;
 
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
