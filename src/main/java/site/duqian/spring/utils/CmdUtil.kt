@@ -1,14 +1,19 @@
 package site.duqian.spring.utils
 
+import org.slf4j.LoggerFactory
+import site.duqian.spring.controller.ReportController
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.util.*
 
 /**
  * cmd工具类，测试
  */
 object CmdUtil {
+    private val Logger = LoggerFactory.getLogger(CmdUtil::class.java)
+
     @JvmStatic
     fun main(args: Array<String>) {
         try {
@@ -74,14 +79,20 @@ object CmdUtil {
     private fun runProcess(command: Array<String>): Boolean {
         try {
             val pro = Runtime.getRuntime().exec(command)
+            val cmdString = command.contentToString()
+            Logger.debug("cmdString=$cmdString")
             val inputStream = pro.inputStream
-            printLines("$command out:", inputStream)
+            printLines("$cmdString out:", inputStream)
             val errorStream = pro.errorStream
-            printLines("$command err:", errorStream)
+            val errorList = printLines("$cmdString err:", errorStream)
             pro.waitFor()
-            println(command + " exitValue=${pro.exitValue()}")
+            val exitValue = pro.exitValue()
+            println(command + " exitValue=$exitValue")
             inputStream.close()
             errorStream.close()
+            if (exitValue > 0 || errorList.isNotEmpty()) {
+                return false
+            }
             return true
         } catch (e: Exception) {
             println("runProcess $e")
@@ -91,15 +102,26 @@ object CmdUtil {
 
     @JvmStatic
     @Throws(Exception::class)
-    private fun printLines(cmd: String, ins: InputStream) {
+    private fun printLines(cmd: String, ins: InputStream): List<String> {
+        val list = mutableListOf<String>()
         var line: String? = ""
         val `in` = BufferedReader(
             InputStreamReader(ins)
         )
+        var shortCmd = cmd
+        if (cmd.length>10){
+            shortCmd = cmd.substring(0,10)
+        }
         while (`in`.readLine().also { line = it } != null) {
-            println("$cmd $line")
+            val message = "$shortCmd -->printLines:>> $line"
+            println(message)
+            Logger.debug(message)
+            if (line != "") {
+                list.add(line!!)
+            }
         }
         `in`.close()
+        return list
     }
 
     @JvmStatic

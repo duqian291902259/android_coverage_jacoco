@@ -116,6 +116,7 @@ public class ReportController {
         String diffSrcDirPath = FileUtil.getDiffSrcDirPath(commonParams);
         if (diffFiles != null && diffFiles.size() > 0) {
             String srcDirPath = FileUtil.getSourceDir(commonParams);
+            Logger.debug("getDiffSrc srcDirPath=" + srcDirPath);
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
@@ -124,9 +125,9 @@ public class ReportController {
                     }
                     String realFilePath = srcDirPath + File.separator + diffFile;
                     String relativePath = diffFile.substring(index);
-                    Logger.debug("getDiffSrc realFilePath=" + realFilePath);
+                    //Logger.debug("getDiffSrc realFilePath=" + realFilePath);
                     File destFile = new File(diffSrcDirPath + relativePath);
-                    Logger.debug("getDiffSrc destFile=" + destFile.getAbsolutePath());
+                    //Logger.debug("getDiffSrc destFile=" + destFile.getAbsolutePath());
                     FileUtil.copyFile(new File(realFilePath), destFile, true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -140,6 +141,7 @@ public class ReportController {
         String diffClassDirPath = FileUtil.getDiffClassDirPath(commonParams);
         if (diffFiles != null && diffFiles.size() > 0) {
             String classDir = FileUtil.getClassDir(commonParams);
+            Logger.debug("getDiffClasses classDir=" + classDir);
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
@@ -157,9 +159,9 @@ public class ReportController {
                         for (File file : rootDir.listFiles()) {
                             String name = file.getName();
                             if (name.contains(realName)) {
-                                Logger.debug("getDiffClasses file=" + file);
+                                //Logger.debug("getDiffClasses file=" + file);
                                 File destFile = new File(diffClassDirPath + relativePath + name);
-                                Logger.debug("getDiffClasses destFile=" + destFile.getAbsolutePath());
+                                //Logger.debug("getDiffClasses destFile=" + destFile.getAbsolutePath());
                                 FileUtil.copyFile(file, destFile, true);
                             }
                         }
@@ -177,6 +179,7 @@ public class ReportController {
         prodExecutor.execute(() -> {
             String reportZipPath = FileUtil.getReportZipPath(commonParams);
             try {
+                Logger.debug("zipReport reportPath " + reportPath + ",reportZipPath=" + reportZipPath);
                 //存在也要处理，因为可能有更新
                 FileUtil.deleteFile(reportZipPath);
                 FileUtil.zipFolder(reportPath, reportZipPath);

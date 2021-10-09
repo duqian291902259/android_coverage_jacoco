@@ -52,3 +52,4 @@ log/
 jacoco_web.log
 *.log
 .gradle
+cc-jacoco-download/

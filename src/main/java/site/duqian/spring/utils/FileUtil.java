@@ -20,9 +20,7 @@ public class FileUtil {
     private static final long FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
 
     public static String getProjectDir() {
-        String rootDir = System.getProperty("user.dir");
-        //System.out.println("getProjectDir=" + rootDir);
-        return rootDir;
+        return "";//System.getProperty("user.dir");
     }
 
     public static String getRootDir() {
@@ -31,7 +29,6 @@ public class FileUtil {
         if (parentFile != null) {
             rootDir = parentFile.getAbsolutePath();
         }
-        //System.out.println("getRootDir=" + rootDir);
         return rootDir;
     }
 
@@ -101,7 +98,7 @@ public class FileUtil {
 
     public static String getJacocoJarPath() {
         String rootDir = FileUtil.getProjectDir() + File.separator;
-        return rootDir + Constants.JACOCO_CLI_FILE_NAME;
+        return Constants.JACOCO_CLI_FILE_NAME;
     }
 
     public static String getReportRelativePath(CommonParams commonParams) {
