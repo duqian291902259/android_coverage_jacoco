@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd
+http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.0.RELEASE</version>
+        <!--<version>2.5.5</version>-->
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>site.duqian.spring</groupId>
     <artifactId>jacoco.web</artifactId>
     <version>1.0.0</version>
     <name>JacocoServer</name>
-    <description>Java WebServer for Jacoco</description>
+    <description>WebServer for Jacoco-coverage</description>
 
     <properties>
         <kotlin.version>1.4.32</kotlin.version>
@@ -159,14 +161,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <groupId>org.apache.maven.plugins</groupId>
-                <configuration>
-                    <source>10</source>
-                    <target>10</target>
-                </configuration>
-            </plugin>-->
         </plugins>
     </build>
 
