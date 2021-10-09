@@ -36,6 +36,7 @@ public class Constants {
     public static final String DIFF_DIR_NAME = "diff";
     public static final String DIFF_FILES_NAME = "diffFiles.txt";
     public static final String JACOCO_CLI_FILE_NAME = "jacococli.jar";
+    public static final String JACOCO_CLASS_ZIP_FILE_NAME = "classes.zip";
 
     //扩展名
     public static final String TYPE_FILE_ALL = "";//ALL

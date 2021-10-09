@@ -20,15 +20,15 @@ public class FileUtil {
     private static final long FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
 
     public static String getProjectDir() {
-        return "";//System.getProperty("user.dir");
+        return System.getProperty("user.dir");
     }
 
     public static String getRootDir() {
         String rootDir = getProjectDir();
-        File parentFile = new File(rootDir).getParentFile();
+        /*File parentFile = new File(rootDir).getParentFile();
         if (parentFile != null) {
             rootDir = parentFile.getAbsolutePath();
-        }
+        }*/
         return rootDir;
     }
 

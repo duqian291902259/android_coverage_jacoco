@@ -78,7 +78,6 @@ public class ReportController {
      */
     private boolean generateReport(CommonParams commonParams) {
         String reportPath = FileUtil.getJacocoReportPath(commonParams);
-
         String jarPath = FileUtil.getJacocoJarPath();
         String execPath = FileUtil.getEcFilesDir(commonParams) + File.separator + "**.ec";
         String classesPath = FileUtil.getClassDir(commonParams);
@@ -86,7 +85,7 @@ public class ReportController {
         File classFile = new File(classesPath);
         if (!classFile.exists()) {
             String saveDir = FileUtil.getSaveDir(commonParams);
-            String zipFile = FileUtil.getReportZipFileName(commonParams);
+            String zipFile = saveDir + File.separator + Constants.JACOCO_CLASS_ZIP_FILE_NAME;
             FileUtil.unzip(saveDir, zipFile);
         }
         boolean incremental = commonParams.isIncremental();
