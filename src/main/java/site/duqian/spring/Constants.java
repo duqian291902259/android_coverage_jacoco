@@ -4,6 +4,7 @@ import java.io.File;
 
 /**
  * Description:项目常量
+ *
  * @author n20241 Created by 杜小菜 on 2021/10/8 - 15:17 .
  * E-mail: duqian2010@gmail.com
  */
@@ -29,7 +30,7 @@ public class Constants {
     public static final String APP_PACKAGE_NAME = "/com/";//包名
 
     //文件夹名称
-    public static final String REPORT_DOWNLOAD_ROOT_DIR ="cc-jacoco-download" + File.separator;// File.separator +
+    public static final String REPORT_DOWNLOAD_ROOT_DIR = "cc-jacoco-download" + File.separator;// File.separator +
     public static final String REPORT_DIR_NAME = "report";
     public static final String CLASS_DIR_NAME = "classes";
     public static final String SOURCE_DIR_NAME = "src";
@@ -53,5 +54,15 @@ public class Constants {
     //git diff c8447a2fe972c7925bd1c52e905f91071ee8d5a2 84f1ad08fafcd71a8cdca2faceabd0e920c6cc61 --name-only > ../diffCommits.txt
     //public static final String GIT_DIFF_COMMIT_FILES_ZIP = "git diff %1$s %2$s --name-only | xargs tar -zcvf diffCommitFile.zip";
     public static final String GIT_DIFF_COMMIT_FILES_ZIP = "git diff %1$s %2$s --name-only > diffCommits.txt";
+    public static final String CMD_HTTP_SERVER_REPORT = "http-server cc-jacoco-download/ -p 8086";
+
+
+    //状态码
+    public static final int CODE_SUCCESS = 0;
+    public static final int CODE_FAILED = -1;
+    public static final int ERROR_CODE_NO_FILES = 1000;
+    public static final int ERROR_CODE_NO_CLASSES = 1001;
+    public static final int ERROR_CODE_NO_SRC = 1002;
+    public static final int ERROR_CODE_NO_EC_FILE = 1003;
 
 }

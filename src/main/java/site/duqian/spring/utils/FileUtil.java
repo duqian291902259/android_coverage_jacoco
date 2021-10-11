@@ -29,10 +29,6 @@ public class FileUtil {
 
     public static String getRootDir() {
         String rootDir = getProjectDir();
-        /*File parentFile = new File(rootDir).getParentFile();
-        if (parentFile != null) {
-            rootDir = parentFile.getAbsolutePath();
-        }*/
         if ("/".equals(rootDir)) {
             rootDir = "";
         }
@@ -41,13 +37,17 @@ public class FileUtil {
 
     public static String getSaveDir(CommonParams commonParams) {
         String rootDir = getBranchDir(commonParams) + File.separator + commonParams.getCommitId();
-        System.out.println("getSaveDir=" + rootDir);
+        //System.out.println("getSaveDir=" + rootDir);
         return rootDir;
     }
 
     public static String getJacocoDownloadDir() {
         String rootDir = getRootDir() + File.separator + Constants.REPORT_DOWNLOAD_ROOT_DIR;
-        //System.out.println("getBranchDir=" + rootDir);
+        //System.out.println("getJacocoDownloadDir=" + rootDir);
+        File file = new File(rootDir);//.getParentFile();
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         return rootDir;
     }
 
@@ -449,5 +449,9 @@ public class FileUtil {
         if (preserveFileDate) {
             destDir.setLastModified(srcDir.lastModified());
         }
+    }
+
+    public static String getClassZipFile(CommonParams commonParams) {
+        return getSaveDir(commonParams) + File.separator + Constants.JACOCO_CLASS_ZIP_FILE_NAME;
     }
 }

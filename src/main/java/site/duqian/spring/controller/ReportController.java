@@ -43,16 +43,10 @@ public class ReportController {
         File downloadFile = new File(jacocoDownloadDir);
         boolean exists = downloadFile.exists();
         logger.debug("root dir:" + FileUtil.getRootDir() + ",download dir=" + jacocoDownloadDir + ",exists=" + exists);
-        File file = new File("/cc-jacoco-download/CC-Android/dev_dq_#411671_coverage/c8447a2fe972c7925bd1c52e905f91071ee8d5a2/");
-        //File file = new File("/");
-        logger.debug("root /,exists=" + file.exists());
-        File[] files = file.listFiles();
-        if (files != null && files.length > 0) {
-            for (File dockerFile : files) {
-                logger.debug("root docker dir=" + dockerFile + ",exists=" + dockerFile.exists());
-            }
-            logger.debug("root / files=" + files.length);
-        }
+        File file = new File("/cc-jacoco-download/CC-Android/dev_dq_#411671_coverage/");
+        logger.debug("test file exists=" + file.exists());
+
+        printRootDir(file);//new File("/")
 
         if (commonParams.getCommitId() == null) {
             String commitId = GitRepoUtil.getCurrentCommitId();// "577082371ba3f40f848904baa39083f14b2695b0";
@@ -60,19 +54,20 @@ public class ReportController {
             logger.debug("getCurrentCommitId=" + commitId);
         }
         //生成报告，失败的原因可能是找不到class,src,ec
-        boolean generateReport = generateReport(commonParams);
+        int generateReportCode = generateReport(commonParams);
         String msg = "{\"result\":0,\"data\":\"success\"}";
-        if (!generateReport) {
-            msg = "{\"result\":0,\"data\":\"报告生成失败.\"}";
+        if (generateReportCode != Constants.CODE_SUCCESS) {
+            //msg = "{\"result\":0,\"data\":\"报告生成失败.\"}";
+            ReportResponse reportResponse = new ReportResponse("", "");
+            reportResponse.setData("报告生成失败:" + generateReportCode);
+            msg = new Gson().toJson(reportResponse);
         } else {
+            //String executeHttpServer = CmdUtil.execute(Constants.CMD_HTTP_SERVER_REPORT);
+            //logger.debug("executeHttpServer:" + executeHttpServer);
             //返回报告的预览路径和下载url
             String reportRelativePath = FileUtil.getReportRelativePath(commonParams);
             String reportUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtil.getReportDirName(commonParams);
             String reportZipUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtil.getReportZipFileName(commonParams);
-
-            //防止url中出现反斜杠
-            //reportUrl = reportUrl.replaceAll(File.separator, "/");
-            //reportZipUrl = reportZipUrl.replaceAll(File.separator, "/");
             String ts = "?ts=" + System.currentTimeMillis();
             ReportResponse reportResponse = new ReportResponse(reportUrl + ts, reportZipUrl + ts);
             reportResponse.setData("覆盖率报告已生成，请点击在线查阅或下载");
@@ -84,12 +79,25 @@ public class ReportController {
         return msg;
     }
 
+    private void printRootDir(File file) {
+        if (file == null || !file.exists() || file.isFile()) {
+            return;
+        }
+        File[] files = file.listFiles();
+        if (files != null && files.length > 0) {
+            for (File dockerFile : files) {
+                logger.debug("root docker dir=" + dockerFile + ",exists=" + dockerFile.exists());
+            }
+            logger.debug("root / files=" + files.length);
+        }
+    }
+
     /**
      * 生成报告，合并ec文件
      *
      * @param commonParams 路径动态配置
      */
-    private boolean generateReport(CommonParams commonParams) {
+    private int generateReport(CommonParams commonParams) {
         String reportPath = FileUtil.getJacocoReportPath(commonParams);
         String jarPath = FileUtil.getJacocoJarPath();
         //String execPath = FileUtil.getEcFilesDir(commonParams) + File.separator + "f5f66fb9a08b1d457edbec4d6a08cbc8.ec";
@@ -99,9 +107,32 @@ public class ReportController {
         File classFile = new File(classesPath);
         if (!classFile.exists()) {
             String saveDir = FileUtil.getSaveDir(commonParams);
-            String zipFile = saveDir + File.separator + Constants.JACOCO_CLASS_ZIP_FILE_NAME;
+            String zipFile = FileUtil.getClassZipFile(commonParams);
             FileUtil.unzip(saveDir, zipFile);
         }
+        if (!classFile.exists() || classFile.listFiles() == null || classFile.listFiles().length == 0) {
+            return Constants.ERROR_CODE_NO_CLASSES;
+        }
+        File srcFile = new File(srcPath);
+        if (!srcFile.exists() || srcFile.listFiles() == null || srcFile.listFiles().length == 0) {
+            updateRepoSource(commonParams);
+            return Constants.ERROR_CODE_NO_SRC;
+        }
+        File rootEcDir = new File(FileUtil.getEcFilesDir(commonParams));
+        if (!rootEcDir.exists() || rootEcDir.listFiles() == null) {
+            return Constants.ERROR_CODE_NO_FILES;
+        }
+        boolean hasEcFile = false;
+        for (File file : rootEcDir.listFiles()) {
+            if (file.getName().endsWith(Constants.TYPE_FILE_EC)) {
+                hasEcFile = true;
+                break;
+            }
+        }
+        if (!hasEcFile) {
+            return Constants.ERROR_CODE_NO_EC_FILE;
+        }
+
         boolean incremental = commonParams.isIncremental();
         if (incremental) {
             //diff 报告  copy出指定的class文件到新的目录,diff报告的路径需要不同
@@ -110,7 +141,6 @@ public class ReportController {
             classesPath = getDiffClasses(commonParams, diffFiles);
             srcPath = getDiffSrc(commonParams, diffFiles);
         }
-
         boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,
                 execPath,
                 classesPath,
@@ -121,8 +151,9 @@ public class ReportController {
         if (isGenerated) {
             zipReport(reportPath, commonParams);
             //todo-dq 多人同时操作时，如何异步？删除临时的src和class？或者直接替换
+            return Constants.CODE_SUCCESS;
         }
-        return isGenerated;
+        return Constants.CODE_FAILED;
     }
 
     private String getDiffSrc(CommonParams commonParams, List<String> diffFiles) {
@@ -201,4 +232,26 @@ public class ReportController {
             }
         });
     }
+
+    private static boolean isCloning = false;
+
+    private void updateRepoSource(CommonParams commonParams) {
+        if (isCloning) {
+            return;
+        }
+        //上传了ec文件才clone源码
+        if (commonParams != null) {
+            Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
+            prodExecutor.execute(() -> {
+                isCloning = true;
+                //后台执行clone代码的逻辑
+                boolean cloneSrc = GitRepoUtil.cloneSrc(commonParams);
+                System.out.println("cloneSrc=" + cloneSrc + ",commonParams=" + commonParams);
+                logger.debug("cloneSrc=" + cloneSrc + ",commonParams=" + commonParams);
+                isCloning = false;
+                //GitRepoUtil.checkOut(commonParams);
+            });
+        }
+    }
+
 }

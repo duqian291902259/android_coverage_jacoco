@@ -4,7 +4,7 @@
     <el-form ref="form" :model="form" label-width="120px" label-position="left">
       <el-form-item label="应用名称">
         <el-radio-group v-model="form.appName">
-          <el-radio label="CC-Android"></el-radio>
+          <el-radio label="cc-android"></el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="Git分支名称">
@@ -106,7 +106,7 @@ export default {
   data: function () {
     return {
       form: {
-        appName: "CC-Android",
+        appName: "cc-android",
         branch: "dev_dq_#411671_coverage",
         base_branch: "dev",
         commitId:"c8447a2fe972c7925bd1c52e905f91071ee8d5a2",
