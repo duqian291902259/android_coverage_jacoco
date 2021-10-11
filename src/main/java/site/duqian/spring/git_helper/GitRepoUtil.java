@@ -17,6 +17,7 @@ import site.duqian.spring.utils.CmdUtil;
 import site.duqian.spring.utils.FileUtil;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Description:git工具类
@@ -41,16 +42,8 @@ public class GitRepoUtil {
 
     public static boolean cloneSrc(CommonParams commonParams) {
         String sourceDir = FileUtil.getSourceDir(commonParams);
-        //String sourceDir = FileUtil.getGitCloneDir(commonParams);
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir);
         //todo 源码重复下载的问题
-        /*File indexLockFile = new File(sourceDir + File.separator + ".git" + File.separator + "index.lock");
-        if (indexLockFile.exists()) {
-            indexLockFile.delete();
-        }
-        if (checkGitWorkSpace) {
-            FileUtil.deleteDirectory(sourceDir);
-        }*/
         System.out.println("cloneSrc " + checkGitWorkSpace);
         try {
             String cmd = "";
@@ -75,6 +68,26 @@ public class GitRepoUtil {
             System.out.println("clone or update error:" + e);
         }
         return false;
+    }
+
+    /**
+     * 获取当前分支最新的commit id
+     */
+    public static String getCurrentCommitId() {
+        try {
+            int len = "c02f0bbe4a102ffbc85bc91e8fb421bccfefdb39".length();
+            String cmd = Constants.GIT_GET_CURRENT_COMMIT_SHA;
+            String result = CmdUtil.execute(cmd);
+            Logger.debug(len + ",cmd:" + cmd + ",result=" + result);
+            String tag = "commit ";
+            int index = result.indexOf(tag);
+            if (index >= 0) {
+                return result.substring(index + tag.length(), len+tag.length());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     /**
@@ -139,10 +152,6 @@ public class GitRepoUtil {
         boolean isExist = false;
         File gitRootFile = new File(codePath);
         try {
-            /*File repoGitDir = new File(codePath + "/.git");
-            if (!repoGitDir.exists()) {
-                return false;
-            }*/
             Git git = Git.open(gitRootFile);
             Repository repository = git.getRepository();
             //解析本地代码，获取远程uri,是否是我们需要的git远程仓库

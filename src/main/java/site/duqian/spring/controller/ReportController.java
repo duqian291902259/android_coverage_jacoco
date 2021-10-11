@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
 import site.duqian.spring.bean.ReportResponse;
+import site.duqian.spring.git_helper.GitRepoUtil;
 import site.duqian.spring.utils.CmdUtil;
 import site.duqian.spring.utils.CommonUtils;
 import site.duqian.spring.utils.FileUtil;
@@ -23,16 +24,10 @@ import java.util.concurrent.Executor;
 @Controller
 @RequestMapping("/coverage")
 public class ReportController {
-
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(ReportController.class);
 
     /**
      * 生成报告
-     * http://127.0.0.1:8090/temp/cc-start-coverage/index.html
-     * http://127.0.0.1:8090/temp/cc-all-coverage/index.html
-     * <p>
-     * http://127.0.0.1:8090/temp/cc-start-coverage.rar
-     * http://127.0.0.1:8090/temp/cc-all-coverage.rar
      */
     @RequestMapping(value = "/report", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
@@ -45,7 +40,9 @@ public class ReportController {
         CommonParams commonParams = CommonUtils.getCommonParams(request, "report");
 
         if (commonParams.getCommitId() == null) {
-            commonParams.setCommitId("577082371ba3f40f848904baa39083f14b2695b0"); // TODO-dq: 2021/9/30 表单提交为空，获取最新的？
+            String commitId = GitRepoUtil.getCurrentCommitId();// "577082371ba3f40f848904baa39083f14b2695b0";
+            commonParams.setCommitId(commitId); // TODO-dq: 2021/9/30 表单提交为空，获取最新的？
+            Logger.debug("getCurrentCommitId=" + commitId);
         }
         //生成报告，失败的原因可能是找不到class,src,ec
         boolean generateReport = generateReport(commonParams);

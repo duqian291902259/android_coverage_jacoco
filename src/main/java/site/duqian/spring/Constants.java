@@ -46,4 +46,10 @@ public class Constants {
     public static final String TYPE_FILE_ZIP = ".zip";
     public static final String TYPE_FILE_TXT = ".txt";
     public static final String TYPE_FILE_RAR = ".rar";
+
+    //git 命令
+    public static final String GIT_GET_CURRENT_COMMIT_SHA = "git log --name-only";
+    public static final String GIT_DIFF_COMMIT_FILES = "git diff %1$s %2$s --name-only";
+    public static final String GIT_DIFF_COMMIT_FILES_ZIP = "git diff %1$s %2$s --name-only | xargs tar -zcvf diffCommitFile.zip";
+
 }

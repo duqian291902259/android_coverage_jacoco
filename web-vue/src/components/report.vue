@@ -11,11 +11,15 @@
         <el-select
           v-model="form.branch"
           placeholder="请选择当前生成报告的分支"
-          style="width: 380px">
-           <el-option-group label="请选择当前生成报告的分支">
+          style="width: 380px"
+        >
+          <el-option-group label="请选择当前生成报告的分支">
             <el-option label="master" value="master"></el-option>
             <el-option label="dev" value="dev"></el-option>
-            <el-option label="dev_dq_#411671_coverage" value="dev_dq_#411671_coverage"></el-option>
+            <el-option
+              label="dev_dq_#411671_coverage"
+              value="dev_dq_#411671_coverage"
+            ></el-option>
           </el-option-group>
         </el-select>
         <span style="width: 50px"> -- </span>
@@ -106,7 +110,7 @@ export default {
         branch: "dev_dq_#411671_coverage",
         base_branch: "dev",
         commitId: "577082371ba3f40f848904baa39083f14b2695b0",
-        commitId2:"855e6c13a7a46b5f63cb6b7d5db3e224d38fb1f8",
+        commitId2: "855e6c13a7a46b5f63cb6b7d5db3e224d38fb1f8",
         date1: "",
         date2: "",
         incremental: false,
@@ -120,6 +124,16 @@ export default {
   },
   methods: {
     onSubmit() {
+      if (this.form.branch === "" || this.form.branch === undefined) {
+        this.$message.error("分支名不能为空");
+        return;
+      }
+
+      if (this.form.commitId === "" || this.form.commitId === undefined) {
+        this.$message.error("Commit Id不能为空");
+        return;
+      }
+
       this.$message.success("正在处理，请稍后查阅...");
       console.warn(this.form);
       requestGet("http://127.0.0.1:8090/coverage/report", this.form)
@@ -138,7 +152,7 @@ export default {
 
           let logMsg = `reportUrl...${this.form.reportUrl}`;
           console.warn(logMsg);
-            console.warn(data.reportZipUrl);
+          console.warn(data.reportZipUrl);
           //this.response = JSON.parse(res.data);
           //console.warn("response =" +this.response);
         })
@@ -160,19 +174,20 @@ export default {
     },
 
     openReport() {
-      var url = this.form.reportUrl; //"http://127.0.0.1:8090/temp/cc-start-coverage/index.html";
-      // if (this.form.incremental == false) {
-      //   url = "http://127.0.0.1:8090/temp/cc-all-coverage/index.html";
-      // }
-
+      var url = this.form.reportUrl;
+      if (url === "" || url === undefined) {
+        this.$message.error("报告未生成");
+        return;
+      }
       window.open(url);
       console.warn(`open url ${url}`);
     },
     downloadReport() {
-      var url = this.form.reportZipUrl; // "http://127.0.0.1:8090/temp/cc-start-coverage.rar";
-      // if (this.form.incremental == false) {
-      //   url = "http://127.0.0.1:8090/temp/cc-all-coverage.rar";
-      // }
+      var url = this.form.reportZipUrl;
+      if (url === "" || url === undefined) {
+        this.$message.error("报告未生成");
+        return;
+      }
       window.open(url);
       console.warn(`download url ${url}`);
     },
