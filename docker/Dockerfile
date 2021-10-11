@@ -14,7 +14,7 @@ RUN npm install http-server -g
 
 ADD jacococli.jar jacococli.jar
 RUN chmod 775 jacococli.jar
-RUn chmod +x jacococli.jar
+RUN chmod +x jacococli.jar
 
 # 运行jar包
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/jacoco-web.jar"]

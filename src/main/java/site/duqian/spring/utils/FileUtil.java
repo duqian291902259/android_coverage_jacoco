@@ -1,7 +1,10 @@
 package site.duqian.spring.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
+import site.duqian.spring.controller.JGitController;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -18,6 +21,7 @@ import java.util.zip.ZipInputStream;
  */
 public class FileUtil {
     private static final long FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);// slf4j日志记录器
 
     public static String getProjectDir() {
         return System.getProperty("user.dir");
@@ -29,6 +33,9 @@ public class FileUtil {
         if (parentFile != null) {
             rootDir = parentFile.getAbsolutePath();
         }*/
+        if ("/".equals(rootDir)) {
+            rootDir = "";
+        }
         return rootDir;
     }
 
@@ -39,7 +46,7 @@ public class FileUtil {
     }
 
     public static String getJacocoDownloadDir() {
-        String rootDir = getRootDir() + Constants.REPORT_DOWNLOAD_ROOT_DIR;
+        String rootDir = getRootDir() + File.separator + Constants.REPORT_DOWNLOAD_ROOT_DIR;
         //System.out.println("getBranchDir=" + rootDir);
         return rootDir;
     }

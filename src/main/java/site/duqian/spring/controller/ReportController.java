@@ -24,7 +24,7 @@ import java.util.concurrent.Executor;
 @Controller
 @RequestMapping("/coverage")
 public class ReportController {
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(ReportController.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ReportController.class);
 
     /**
      * 生成报告
@@ -39,10 +39,25 @@ public class ReportController {
 
         CommonParams commonParams = CommonUtils.getCommonParams(request, "report");
 
+        String jacocoDownloadDir = FileUtil.getJacocoDownloadDir();
+        File downloadFile = new File(jacocoDownloadDir);
+        boolean exists = downloadFile.exists();
+        logger.debug("root dir:" + FileUtil.getRootDir() + ",download dir=" + jacocoDownloadDir + ",exists=" + exists);
+        File file = new File("/cc-jacoco-download/CC-Android/dev_dq_#411671_coverage/c8447a2fe972c7925bd1c52e905f91071ee8d5a2/");
+        //File file = new File("/");
+        logger.debug("root /,exists=" + file.exists());
+        File[] files = file.listFiles();
+        if (files != null && files.length > 0) {
+            for (File dockerFile : files) {
+                logger.debug("root docker dir=" + dockerFile + ",exists=" + dockerFile.exists());
+            }
+            logger.debug("root / files=" + files.length);
+        }
+
         if (commonParams.getCommitId() == null) {
             String commitId = GitRepoUtil.getCurrentCommitId();// "577082371ba3f40f848904baa39083f14b2695b0";
             commonParams.setCommitId(commitId); // TODO-dq: 2021/9/30 表单提交为空，获取最新的？
-            Logger.debug("getCurrentCommitId=" + commitId);
+            logger.debug("getCurrentCommitId=" + commitId);
         }
         //生成报告，失败的原因可能是找不到class,src,ec
         boolean generateReport = generateReport(commonParams);
@@ -65,7 +80,7 @@ public class ReportController {
         }
         String logMsg = "handle report=" + msg + ",incremental=" + commonParams.isIncremental();
         System.out.println(logMsg);
-        Logger.debug(logMsg);
+        logger.debug(logMsg);
         return msg;
     }
 
@@ -77,6 +92,7 @@ public class ReportController {
     private boolean generateReport(CommonParams commonParams) {
         String reportPath = FileUtil.getJacocoReportPath(commonParams);
         String jarPath = FileUtil.getJacocoJarPath();
+        //String execPath = FileUtil.getEcFilesDir(commonParams) + File.separator + "f5f66fb9a08b1d457edbec4d6a08cbc8.ec";
         String execPath = FileUtil.getEcFilesDir(commonParams) + File.separator + "**.ec";
         String classesPath = FileUtil.getClassDir(commonParams);
         String srcPath = FileUtil.getSourceDir(commonParams);
@@ -101,7 +117,7 @@ public class ReportController {
                 srcPath,
                 reportPath);
         System.out.println("generateReport=" + isGenerated);
-        Logger.debug("generateReport=" + isGenerated + "," + commonParams);
+        logger.debug("generateReport=" + isGenerated + "," + commonParams);
         if (isGenerated) {
             zipReport(reportPath, commonParams);
             //todo-dq 多人同时操作时，如何异步？删除临时的src和class？或者直接替换
@@ -113,7 +129,7 @@ public class ReportController {
         String diffSrcDirPath = FileUtil.getDiffSrcDirPath(commonParams);
         if (diffFiles != null && diffFiles.size() > 0) {
             String srcDirPath = FileUtil.getSourceDir(commonParams);
-            Logger.debug("getDiffSrc srcDirPath=" + srcDirPath);
+            logger.debug("getDiffSrc srcDirPath=" + srcDirPath);
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
@@ -138,7 +154,7 @@ public class ReportController {
         String diffClassDirPath = FileUtil.getDiffClassDirPath(commonParams);
         if (diffFiles != null && diffFiles.size() > 0) {
             String classDir = FileUtil.getClassDir(commonParams);
-            Logger.debug("getDiffClasses classDir=" + classDir);
+            logger.debug("getDiffClasses classDir=" + classDir);
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
@@ -176,12 +192,12 @@ public class ReportController {
         prodExecutor.execute(() -> {
             String reportZipPath = FileUtil.getReportZipPath(commonParams);
             try {
-                Logger.debug("zipReport reportPath " + reportPath + ",reportZipPath=" + reportZipPath);
+                logger.debug("zipReport reportPath " + reportPath + ",reportZipPath=" + reportZipPath);
                 //存在也要处理，因为可能有更新
                 FileUtil.deleteFile(reportZipPath);
                 FileUtil.zipFolder(reportPath, reportZipPath);
             } catch (Exception e) {
-                Logger.error(commonParams + ",zipReport error " + e);
+                logger.error(commonParams + ",zipReport error " + e);
             }
         });
     }
