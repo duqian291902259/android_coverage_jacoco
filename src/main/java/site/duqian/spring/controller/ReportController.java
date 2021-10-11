@@ -113,9 +113,11 @@ public class ReportController {
         if (!classFile.exists() || classFile.listFiles() == null || classFile.listFiles().length == 0) {
             return Constants.ERROR_CODE_NO_CLASSES;
         }
+        //无论如何都更新下源码
+        updateRepoSource(commonParams);
+
         File srcFile = new File(srcPath);
         if (!srcFile.exists() || srcFile.listFiles() == null || srcFile.listFiles().length == 0) {
-            updateRepoSource(commonParams);
             return Constants.ERROR_CODE_NO_SRC;
         }
         File rootEcDir = new File(FileUtil.getEcFilesDir(commonParams));
