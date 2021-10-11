@@ -43,8 +43,9 @@ public class ReportController {
         File downloadFile = new File(jacocoDownloadDir);
         boolean exists = downloadFile.exists();
         logger.debug("root dir:" + FileUtil.getRootDir() + ",download dir=" + jacocoDownloadDir + ",exists=" + exists);
-        File file = new File("/cc-jacoco-download/CC-Android/dev_dq_#411671_coverage/");
-        logger.debug("test file exists=" + file.exists());
+        //路径区分大小写
+        File file = new File("/cc-jacoco-download/cc-android/dev_dq_#411671_coverage/src");
+        logger.debug(file+" exists=" + file.exists());
 
         printRootDir(file);//new File("/")
 
