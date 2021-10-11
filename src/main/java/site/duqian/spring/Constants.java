@@ -50,6 +50,8 @@ public class Constants {
     //git 命令
     public static final String GIT_GET_CURRENT_COMMIT_SHA = "git log --name-only";
     public static final String GIT_DIFF_COMMIT_FILES = "git diff %1$s %2$s --name-only";
-    public static final String GIT_DIFF_COMMIT_FILES_ZIP = "git diff %1$s %2$s --name-only | xargs tar -zcvf diffCommitFile.zip";
+    //git diff c8447a2fe972c7925bd1c52e905f91071ee8d5a2 84f1ad08fafcd71a8cdca2faceabd0e920c6cc61 --name-only > ../diffCommits.txt
+    //public static final String GIT_DIFF_COMMIT_FILES_ZIP = "git diff %1$s %2$s --name-only | xargs tar -zcvf diffCommitFile.zip";
+    public static final String GIT_DIFF_COMMIT_FILES_ZIP = "git diff %1$s %2$s --name-only > diffCommits.txt";
 
 }

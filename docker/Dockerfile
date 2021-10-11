@@ -11,10 +11,9 @@ RUN apk update && \
     apk add --no-cache bash git node
 
 
-#ADD cc-jacoco-helper.jar jacoco-web.jar
-#ADD jacococli.jar jacococli.jar
+ADD jacococli.jar jacococli.jar
+RUN chmod 775 jacococli.jar
 # 运行jar包
-#RUN bash -c 'touch /jacoco-web.jar'
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/jacoco-web.jar"]
 
 #维护者

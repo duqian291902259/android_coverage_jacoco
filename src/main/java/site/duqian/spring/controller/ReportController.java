@@ -117,7 +117,7 @@ public class ReportController {
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
-                    if (index < 0) {
+                    if (index < 0 || diffFile.endsWith(".java") || diffFile.endsWith(".kt")) {
                         continue;
                     }
                     String realFilePath = srcDirPath + File.separator + diffFile;
@@ -142,7 +142,7 @@ public class ReportController {
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
-                    if (index < 0) {
+                    if (index < 0 || diffFile.endsWith(".java") || diffFile.endsWith(".kt")) {
                         continue;
                     }
                     String fileName = new File(diffFile).getName();
