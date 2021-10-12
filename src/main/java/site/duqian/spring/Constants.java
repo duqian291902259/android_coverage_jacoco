@@ -11,7 +11,7 @@ import java.io.File;
 public class Constants {
 
     public static final String THREAD_EXECUTOR_NAME = "dq-executor";
-    public static final String REPORT_SERVER_HOST_URL = "http://10.255.209.49:8080";//todo-dq 修改server
+    public static final String REPORT_SERVER_HOST_URL = "http://10.255.209.49:8082";//todo-dq 修改server
     public static final String REPOSITORY_URL = "https://git-cc.nie.netease.com/android/cc.git";
 
     //请求入参

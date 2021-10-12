@@ -180,14 +180,14 @@ public class ReportController {
                     if (index < 0) {
                         index = diffFile.indexOf(Constants.APP_PACKAGE_NAME2);
                     }
-                    if (index < 0 || diffFile.endsWith(".java") || diffFile.endsWith(".kt")) {
+                    if (index < 0 || (!diffFile.endsWith(".java") && !diffFile.endsWith(".kt"))) {
                         continue;
                     }
                     String relativePath = diffFile.substring(index);
-                    String realFilePath = srcDirPath + File.separator + relativePath;
+                    String realFilePath = srcDirPath + relativePath;
                     logger.debug("getDiffSrc realFilePath=" + realFilePath);
                     File destFile = new File(diffSrcDirPath + relativePath);
-                    logger.debug("getDiffSrc destFile=" + destFile.getAbsolutePath());
+                    //System.out.println("getDiffSrc destFile=" + destFile.getAbsolutePath());
                     boolean hasCopied = FileUtil.copyFile(new File(realFilePath), destFile, true);
                     if (hasCopied) {
                         hasDiffSrc = true;
@@ -229,9 +229,9 @@ public class ReportController {
                         for (File file : rootDir.listFiles()) {
                             String name = file.getName();
                             if (name.contains(realName)) {
-                                //Logger.debug("getDiffClasses file=" + file);
+                                logger.debug("getDiffClasses file=" + file);
                                 File destFile = new File(diffClassDirPath + relativePath + name);
-                                //Logger.debug("getDiffClasses destFile=" + destFile.getAbsolutePath());
+                                //System.out.println("getDiffClasses destFile=" + destFile.getAbsolutePath());
                                 boolean hasCopied = FileUtil.copyFile(file, destFile, true);
                                 if (hasCopied) {
                                     hasDiffClass = true;

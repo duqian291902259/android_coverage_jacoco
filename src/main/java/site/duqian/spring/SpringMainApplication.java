@@ -19,12 +19,8 @@ public class SpringMainApplication {
             @Override
             public void run() {
                 String path = FileUtil.getReportRootDir() + File.separator;
+                System.out.println("path=" + path);
                 CmdUtil.executeShellCmd("cmdShell.sh", path);
-                 /*try {
-                    CmdUtil.execute("http-server " + path + " -p 8085");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
             }
         });
     }
