@@ -1,7 +1,6 @@
 package site.duqian.spring.controller;
 
 import com.google.gson.Gson;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,10 +9,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
 import site.duqian.spring.bean.ReportResponse;
-import site.duqian.spring.git_helper.GitRepoUtil;
+import site.duqian.spring.utils.GitRepoUtil;
 import site.duqian.spring.utils.CmdUtil;
 import site.duqian.spring.utils.CommonUtils;
-import site.duqian.spring.utils.FileUtil;
+import site.duqian.spring.utils.FileUtils;
 import site.duqian.spring.utils.SpringContextUtil;
 import site.duqian.spring.utils.TextUtils;
 
@@ -41,12 +40,12 @@ public class ReportController {
 
         CommonParams commonParams = CommonUtils.getCommonParams(request, "report");
 
-        String jacocoDownloadDir = FileUtil.getJacocoDownloadDir();
+        String jacocoDownloadDir = FileUtils.getJacocoDownloadDir();
         File downloadFile = new File(jacocoDownloadDir);
         boolean exists = downloadFile.exists();
-        logger.debug("root dir:" + FileUtil.getRootDir() + ",download dir=" + jacocoDownloadDir + ",exists=" + exists);
+        logger.debug("root dir:" + FileUtils.getRootDir() + ",download dir=" + jacocoDownloadDir + ",exists=" + exists);
         //路径区分大小写
-        File file = new File(FileUtil.getSourceDir(commonParams));
+        File file = new File(FileUtils.getSourceDir(commonParams));
         logger.debug(file + " exists=" + file.exists());
 
         printRootDir(file);//new File("/")
@@ -68,9 +67,9 @@ public class ReportController {
             //String executeHttpServer = CmdUtil.execute(Constants.CMD_HTTP_SERVER_REPORT);
             //logger.debug("executeHttpServer:" + executeHttpServer);
             //返回报告的预览路径和下载url
-            String reportRelativePath = FileUtil.getReportRelativePath(commonParams);
-            String reportUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtil.getReportDirName(commonParams);
-            String reportZipUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtil.getReportZipFileName(commonParams);
+            String reportRelativePath = FileUtils.getReportRelativePath(commonParams);
+            String reportUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtils.getReportDirName(commonParams);
+            String reportZipUrl = Constants.REPORT_SERVER_HOST_URL + "/" + reportRelativePath + "/" + FileUtils.getReportZipFileName(commonParams);
             String ts = "?ts=" + System.currentTimeMillis();
             ReportResponse reportResponse = new ReportResponse(reportUrl + ts, reportZipUrl + ts);
             reportResponse.setData("覆盖率报告已生成，请点击在线查阅或下载");
@@ -101,17 +100,17 @@ public class ReportController {
      * @param commonParams 路径动态配置
      */
     private int generateReport(CommonParams commonParams) {
-        String reportPath = FileUtil.getJacocoReportPath(commonParams);
-        String jarPath = FileUtil.getJacocoJarPath();
-        //String execPath = FileUtil.getEcFilesDir(commonParams) + File.separator + "f5f66fb9a08b1d457edbec4d6a08cbc8.ec";
-        String execPath = FileUtil.getEcFilesDir(commonParams) + File.separator + "**.ec";
-        String classesPath = FileUtil.getClassDir(commonParams);
-        String srcPath = FileUtil.getSourceDir(commonParams);
+        String reportPath = FileUtils.getJacocoReportPath(commonParams);
+        String jarPath = FileUtils.getJacocoJarPath();
+        String execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "63fda2c017ae88dfa4e2edbf97e04c12.ec";
+        //String execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "**.ec";
+        String classesPath = FileUtils.getClassDir(commonParams);
+        String srcPath = FileUtils.getSourceDir(commonParams);
         File classFile = new File(classesPath);
         if (!classFile.exists()) {
-            String saveDir = FileUtil.getSaveDir(commonParams);
-            String zipFile = FileUtil.getClassZipFile(commonParams);
-            FileUtil.unzip(saveDir, zipFile);
+            String saveDir = FileUtils.getSaveDir(commonParams);
+            String zipFile = FileUtils.getClassZipFile(commonParams);
+            FileUtils.unzip(saveDir, zipFile);
         }
         if (!classFile.exists() || classFile.listFiles() == null || classFile.listFiles().length == 0) {
             return Constants.ERROR_CODE_NO_CLASSES;
@@ -123,7 +122,7 @@ public class ReportController {
         if (!srcFile.exists() || srcFile.listFiles() == null || srcFile.listFiles().length == 0) {
             return Constants.ERROR_CODE_NO_SRC;
         }
-        File rootEcDir = new File(FileUtil.getEcFilesDir(commonParams));
+        File rootEcDir = new File(FileUtils.getEcFilesDir(commonParams));
         if (!rootEcDir.exists() || rootEcDir.listFiles() == null) {
             return Constants.ERROR_CODE_NO_FILES;
         }
@@ -141,8 +140,8 @@ public class ReportController {
         boolean incremental = commonParams.isIncremental();
         if (incremental) {
             //diff 报告  copy出指定的class文件到新的目录,diff报告的路径需要不同
-            String diffFilePath = FileUtil.getDiffFilePath(commonParams);
-            List<String> diffFiles = FileUtil.readDiffFilesFromTxt(diffFilePath);
+            String diffFilePath = FileUtils.getDiffFilePath(commonParams);
+            List<String> diffFiles = FileUtils.readDiffFilesFromTxt(diffFilePath);
             String diffClassesPath = getDiffClasses(commonParams, diffFiles);
             String diffSrcPath = getDiffSrc(commonParams, diffFiles);
             logger.debug("generateReport diffClassesPath=" + diffClassesPath + ",diffSrcPath=" + diffSrcPath);
@@ -169,10 +168,10 @@ public class ReportController {
     }
 
     private String getDiffSrc(CommonParams commonParams, List<String> diffFiles) {
-        String diffSrcDirPath = FileUtil.getDiffSrcDirPath(commonParams);
+        String diffSrcDirPath = FileUtils.getDiffSrcDirPath(commonParams);
         boolean hasDiffSrc = false;
         if (diffFiles != null && diffFiles.size() > 0) {
-            String srcDirPath = FileUtil.getSourceDir(commonParams);
+            String srcDirPath = FileUtils.getSourceDir(commonParams);
             logger.debug("getDiffSrc srcDirPath=" + srcDirPath);
             for (String diffFile : diffFiles) {
                 try {
@@ -188,7 +187,7 @@ public class ReportController {
                     logger.debug("getDiffSrc realFilePath=" + realFilePath);
                     File destFile = new File(diffSrcDirPath + relativePath);
                     //System.out.println("getDiffSrc destFile=" + destFile.getAbsolutePath());
-                    boolean hasCopied = FileUtil.copyFile(new File(realFilePath), destFile, true);
+                    boolean hasCopied = FileUtils.copyFile(new File(realFilePath), destFile, true);
                     if (hasCopied) {
                         hasDiffSrc = true;
                     }
@@ -204,10 +203,10 @@ public class ReportController {
     }
 
     private String getDiffClasses(CommonParams commonParams, List<String> diffFiles) {
-        String diffClassDirPath = FileUtil.getDiffClassDirPath(commonParams);
+        String diffClassDirPath = FileUtils.getDiffClassDirPath(commonParams);
         boolean hasDiffClass = false;
         if (diffFiles != null && diffFiles.size() > 0) {
-            String classDir = FileUtil.getClassDir(commonParams);
+            String classDir = FileUtils.getClassDir(commonParams);
             logger.debug("getDiffClasses classDir=" + classDir);
             for (String diffFile : diffFiles) {
                 try {
@@ -232,7 +231,7 @@ public class ReportController {
                                 logger.debug("getDiffClasses file=" + file);
                                 File destFile = new File(diffClassDirPath + relativePath + name);
                                 //System.out.println("getDiffClasses destFile=" + destFile.getAbsolutePath());
-                                boolean hasCopied = FileUtil.copyFile(file, destFile, true);
+                                boolean hasCopied = FileUtils.copyFile(file, destFile, true);
                                 if (hasCopied) {
                                     hasDiffClass = true;
                                 }
@@ -253,12 +252,12 @@ public class ReportController {
     private void zipReport(String reportPath, CommonParams commonParams) {
         Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
         prodExecutor.execute(() -> {
-            String reportZipPath = FileUtil.getReportZipPath(commonParams);
+            String reportZipPath = FileUtils.getReportZipPath(commonParams);
             try {
                 logger.debug("zipReport reportPath " + reportPath + ",reportZipPath=" + reportZipPath);
                 //存在也要处理，因为可能有更新
-                FileUtil.deleteFile(reportZipPath);
-                FileUtil.zipFolder(reportPath, reportZipPath);
+                FileUtils.deleteFile(reportZipPath);
+                FileUtils.zipFolder(reportPath, reportZipPath);
             } catch (Exception e) {
                 logger.error(commonParams + ",zipReport error " + e);
             }

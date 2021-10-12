@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
-import site.duqian.spring.controller.JGitController;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -19,9 +18,9 @@ import java.util.zip.ZipInputStream;
  * @author n20241 Created by 杜小菜 on 2021/9/30 - 10:02 .
  * E-mail: duqian2010@gmail.com
  */
-public class FileUtil {
+public class FileUtils {
     private static final long FILE_COPY_BUFFER_SIZE = 1024 * 1024 * 30;
-    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);// slf4j日志记录器
+    private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);// slf4j日志记录器
 
     public static String getProjectDir() {
         return System.getProperty("user.dir");
@@ -104,7 +103,7 @@ public class FileUtil {
     }
 
     public static String getJacocoJarPath() {
-        //String rootDir = FileUtil.getProjectDir() + File.separator;
+        //String rootDir = FileUtils.getProjectDir() + File.separator;
         return Constants.JACOCO_CLI_FILE_NAME;
     }
 
@@ -141,7 +140,7 @@ public class FileUtil {
     }
 
     public static String getReportRootDir() {
-        return FileUtil.getJacocoDownloadDir() + Constants.REPORT_DIR_NAME;
+        return FileUtils.getJacocoDownloadDir() + Constants.REPORT_DIR_NAME;
     }
 
     public static boolean isEmpty(Object[] arr) {

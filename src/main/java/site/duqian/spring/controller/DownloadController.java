@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import site.duqian.spring.utils.CommonUtils;
-import site.duqian.spring.utils.FileUtil;
+import site.duqian.spring.utils.FileUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -43,7 +43,7 @@ public class DownloadController {
         filename = new String(filename.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
 
         //得到保存文件的位置
-        String fileRealPath = FileUtil.getJacocoDownloadDir() + path + filename;
+        String fileRealPath = FileUtils.getJacocoDownloadDir() + path + filename;
         System.out.println("handleDownloadFile fileRealPath=" + fileRealPath);
 
         //判断文件是否存在

@@ -1,4 +1,4 @@
-package site.duqian.spring.git_helper;
+package site.duqian.spring.utils;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -13,11 +13,8 @@ import org.slf4j.LoggerFactory;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
 import site.duqian.spring.exception.CustomException;
-import site.duqian.spring.utils.CmdUtil;
-import site.duqian.spring.utils.FileUtil;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Description:git工具类
@@ -41,7 +38,7 @@ public class GitRepoUtil {
     }
 
     public static boolean cloneSrc(CommonParams commonParams) {
-        String sourceDir = FileUtil.getGitCloneDir(commonParams);
+        String sourceDir = FileUtils.getGitCloneDir(commonParams);
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir);
         //todo 源码重复下载的问题
         System.out.println("cloneSrc " + checkGitWorkSpace);
@@ -160,7 +157,7 @@ public class GitRepoUtil {
                 isExist = true;
             } else {
                 Logger.info("本地存在其他仓的代码，先删除");
-                FileUtil.deleteDirectory(codePath);
+                FileUtils.deleteDirectory(codePath);
             }
         } catch (Exception e) {
             e.printStackTrace();

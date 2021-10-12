@@ -11,9 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
-import site.duqian.spring.git_helper.GitRepoUtil;
+import site.duqian.spring.utils.GitRepoUtil;
 import site.duqian.spring.utils.CommonUtils;
-import site.duqian.spring.utils.FileUtil;
+import site.duqian.spring.utils.FileUtils;
 import site.duqian.spring.utils.Md5Util;
 import site.duqian.spring.utils.SpringContextUtil;
 
@@ -84,7 +84,7 @@ public class UploadQueryController {
         request.setCharacterEncoding("UTF-8");
         String responseMsg = "ok";
         try {
-            String dirPath = FileUtil.getSaveDir(commonParams);
+            String dirPath = FileUtils.getSaveDir(commonParams);
 
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setRepository(new File(dirPath));
@@ -154,7 +154,7 @@ public class UploadQueryController {
             //解压zip-》class
             if (suffix.contains(".zip") || suffix.contains(".rar")) {
                 if (parentFile != null && savedFile.length() > 0) {
-                    FileUtil.unzip(parentFile.getAbsolutePath(), savedFile.getAbsolutePath());
+                    FileUtils.unzip(parentFile.getAbsolutePath(), savedFile.getAbsolutePath());
                 }
             }
         });
@@ -171,15 +171,15 @@ public class UploadQueryController {
         PrintWriter out = resp.getWriter();
         CommonParams commonParams = CommonUtils.getCommonParams(request, "realQueryFile");
         System.out.println("realQueryFile=" + commonParams);
-        String dirPath = FileUtil.getSaveDir(commonParams);
+        String dirPath = FileUtils.getSaveDir(commonParams);
         File rootFile = new File(dirPath);
         System.out.println("realQueryFile getSaveDir=" + rootFile.getAbsolutePath() + ",exists=" + rootFile.exists());
         File[] files = rootFile.listFiles();
-        if (FileUtil.isEmpty(files)) {
+        if (FileUtils.isEmpty(files)) {
             out.println("{\"files\":[]}");
         } else {
             StringBuilder sb = new StringBuilder();
-            //String suffix = FileUtil.getFileSuffixByType(typeString);
+            //String suffix = FileUtils.getFileSuffixByType(typeString);
             for (File file : files) {
                 String fileName = file.getName();
                 if (!fileName.startsWith(".") && fileName.contains(commonParams.getType() + "")) {

@@ -5,6 +5,7 @@ FROM java:8-jdk-alpine
 VOLUME /cc-jacoco-download
 ADD target/jacoco.web-1.0.0.jar jacoco-web.jar
 ADD jacococli.jar jacococli.jar
+ADD cc-jacoco cc-jacoco
 RUN chmod 775 jacococli.jar
 RUN chmod +x jacococli.jar
 
@@ -21,8 +22,8 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/jacoco-web
 #维护者
 MAINTAINER duqian2010@gmail.com
 
-#CMD ["http-server","cc-jacoco-download/","-p","8086"]
-#CMD ["cd","/cc-jacoco-download/"]
+#CMD ["http-server","cc-jacoco/","-p","8086"]
+#CMD ["cd","/cc-jacoco/"]
 #CMD ["http-server"]
 # docker build -t jacoco-web .
-# docker run -d -p 8090:8090 -p 8086:8086 jacoco-web:latest jacoco-web:latest
+# docker run -d -p 8090:8090 -p 8083:8082 jacoco-web:latest

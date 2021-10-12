@@ -18,7 +18,7 @@ object CmdUtil {
 
             println("********** start")
             //runProcess("git log")
-            val rootDir = FileUtil.getProjectDir()
+            val rootDir = FileUtils.getProjectDir()
             val jarPath = "${rootDir}jacococli.jar"
             val execPath = "${rootDir}download/cc-android/dev_dq_#411671_coverage/**.ec"
             val classesPath = "${rootDir}jacoco/classes/"
