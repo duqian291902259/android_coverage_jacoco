@@ -4,10 +4,11 @@ import site.duqian.spring.Constants;
 import site.duqian.spring.bean.CommonParams;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 /**
  * Description:通用工具类
@@ -69,5 +70,49 @@ public class CommonUtils {
             }
         }
         return map;
+    }
+
+    public static boolean isWindowsOS() {
+        return System.getProperties().getProperty("os.name").toLowerCase().contains("windows");
+    }
+
+    public static int executeShellCmd(String shell, String msg) {
+        System.out.println("执行shell命令:" + shell);
+        String[] cmds = new String[5];
+        if (CommonUtils.isWindowsOS()) {
+            cmds[0] = getGitBashPath();
+            cmds[1] = shell;
+            cmds[2] = msg;
+        } else {
+            cmds[0] = shell;
+            cmds[1] = msg;
+        }
+        String command = Arrays.toString(cmds);
+        System.out.println("executeShellCmd command=" + command);
+        return CmdUtil.runProcess(command);
+    }
+
+    //git-bash的路径，如果找不到，自行配置
+    private static String gitBashPath;
+    public static String getGitBashPath() {
+        if (gitBashPath == null || gitBashPath.isEmpty()) {
+            try {
+                String result = CmdUtil.execute("where git");
+                String[] paths = result.split("\n");
+                for (String path : paths) {
+                    File file = new File(path);
+                    File parentFile = file.getParentFile();
+                    if (parentFile != null) {
+                        File gitBash = new File(parentFile.getParent() + File.separator + "git-bash.exe");
+                        if (gitBash.exists()) {
+                            gitBashPath = gitBash.getAbsolutePath();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return gitBashPath;
     }
 }

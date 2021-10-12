@@ -5,6 +5,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import site.duqian.spring.Constants;
+
+import java.util.concurrent.Executor;
 
 /**
  * 用来帮助非Spring的环境拿到Spring中的Bean
@@ -33,6 +36,10 @@ public class SpringContextUtil implements ApplicationContextAware {
      */
     public static Object getBean(String name) {
         return getApplicationContext().getBean(name);
+    }
+
+    public static Executor get() {
+        return (Executor) (getApplicationContext().getBean(Constants.THREAD_EXECUTOR_NAME));
     }
 
     /**

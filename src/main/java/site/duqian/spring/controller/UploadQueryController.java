@@ -40,8 +40,8 @@ public class UploadQueryController {
         }
         CommonParams commonParams = CommonUtils.getCommonParams(request, "upload");
 
-        //上传了文件后，clone代码
-        updateRepoSource(commonParams);
+        //上传了文件后，clone代码,todo-dq 全量才clone
+        //updateRepoSource(commonParams);
 
         return handleUpload(request, commonParams);
     }

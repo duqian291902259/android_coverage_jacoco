@@ -109,7 +109,7 @@ export default {
         appName: "cc-android",
         branch: "dev_dq_#411671_coverage",
         base_branch: "dev",
-        commitId:"c8447a2fe972c7925bd1c52e905f91071ee8d5a2",
+        commitId:"d406432d54530af70b50043db7d77377ee8b3453",
         //commitId: "577082371ba3f40f848904baa39083f14b2695b0",
         commitId2: "855e6c13a7a46b5f63cb6b7d5db3e224d38fb1f8",
         date1: "",

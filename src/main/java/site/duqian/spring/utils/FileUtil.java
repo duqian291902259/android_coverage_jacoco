@@ -52,7 +52,7 @@ public class FileUtil {
     }
 
     public static String getBranchDir(CommonParams commonParams) {
-        String rootDir = getJacocoDownloadDir() + commonParams.getAppName() + File.separator + commonParams.getBranchName();
+        String rootDir = getJacocoDownloadDir() + commonParams.getBranchName();// + commonParams.getAppName() + File.separator
         //System.out.println("getBranchDir=" + rootDir);
         return rootDir;
     }
@@ -64,7 +64,7 @@ public class FileUtil {
     }
 
     public static String getGitCloneDir(CommonParams commonParams) {
-        String rootDir = getBranchDir(commonParams) + File.separator + Constants.SOURCE_DIR_NAME;
+        String rootDir = getBranchDir(commonParams) + File.separator + Constants.GIT_SOURCE_DIR_NAME;
         //System.out.println("getSourceDir=" + rootDir);
         return rootDir;
     }
@@ -104,7 +104,7 @@ public class FileUtil {
     }
 
     public static String getJacocoJarPath() {
-        String rootDir = FileUtil.getProjectDir() + File.separator;
+        //String rootDir = FileUtil.getProjectDir() + File.separator;
         return Constants.JACOCO_CLI_FILE_NAME;
     }
 
@@ -298,7 +298,7 @@ public class FileUtil {
             br = new BufferedReader(new FileReader(txtPath));//构造一个BufferedReader类来读取文件
             String textLine = null;
             while ((textLine = br.readLine()) != null) {//使用readLine方法，一次读一行
-                System.out.println(textLine);
+                logger.debug("readDiffFilesFromTxt=" + textLine);
                 if (!"".equals(textLine)) {
                     list.add(textLine);
                 }
@@ -369,9 +369,10 @@ public class FileUtil {
      * @param preserveFileDate whether to preserve the file date
      * @throws IOException if an error occurs
      */
-    public static void copyFile(File srcFile, File destFile, boolean preserveFileDate) throws IOException {
+    public static boolean copyFile(File srcFile, File destFile, boolean preserveFileDate) {
         if (destFile.exists() && destFile.isDirectory()) {
-            throw new IOException("Destination '" + destFile + "' exists but is a directory");
+            logger.debug("Destination '" + destFile + "' exists but is a directory");
+            return false;
         }
         FileInputStream fis = null;
         FileOutputStream fos = null;
@@ -390,6 +391,9 @@ public class FileUtil {
                 count = Math.min(size - pos, FILE_COPY_BUFFER_SIZE);
                 pos += output.transferFrom(input, pos, count);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         } finally {
             closeQuietly(output);
             closeQuietly(fos);
@@ -398,12 +402,13 @@ public class FileUtil {
         }
 
         if (srcFile.length() != destFile.length()) {
-            throw new IOException("Failed to copy full contents from '" +
-                    srcFile + "' to '" + destFile + "'");
+            logger.debug("Failed to copy full contents from '" + srcFile + "' to '" + destFile + "'");
+            return false;
         }
         if (preserveFileDate) {
             destFile.setLastModified(srcFile.lastModified());
         }
+        return true;
     }
 
     public static void closeQuietly(Closeable closeable) {
@@ -452,6 +457,6 @@ public class FileUtil {
     }
 
     public static String getClassZipFile(CommonParams commonParams) {
-        return getSaveDir(commonParams) + File.separator + Constants.JACOCO_CLASS_ZIP_FILE_NAME;
+        return getSaveDir(commonParams) + File.separator + Constants.CLASS_ZIP_FILE_NAME;
     }
 }

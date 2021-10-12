@@ -44,12 +44,11 @@ git/
 classes/
 report/
 jacoco/
-jacoco/tempSrc/
-jacoco/classes/
-jacoco/report/
 cc/
 log/
 jacoco_web.log
 *.log
 .gradle
 cc-jacoco-download/
+cc-jacoco/
+**jacoco**/

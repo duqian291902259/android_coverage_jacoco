@@ -41,7 +41,7 @@ public class GitRepoUtil {
     }
 
     public static boolean cloneSrc(CommonParams commonParams) {
-        String sourceDir = FileUtil.getSourceDir(commonParams);
+        String sourceDir = FileUtil.getGitCloneDir(commonParams);
         boolean checkGitWorkSpace = GitRepoUtil.checkGitWorkSpace(Constants.REPOSITORY_URL, sourceDir);
         //todo 源码重复下载的问题
         System.out.println("cloneSrc " + checkGitWorkSpace);

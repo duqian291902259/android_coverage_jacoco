@@ -1,6 +1,7 @@
 package site.duqian.spring.controller;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import site.duqian.spring.utils.CmdUtil;
 import site.duqian.spring.utils.CommonUtils;
 import site.duqian.spring.utils.FileUtil;
 import site.duqian.spring.utils.SpringContextUtil;
+import site.duqian.spring.utils.TextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,16 +46,16 @@ public class ReportController {
         boolean exists = downloadFile.exists();
         logger.debug("root dir:" + FileUtil.getRootDir() + ",download dir=" + jacocoDownloadDir + ",exists=" + exists);
         //路径区分大小写
-        File file = new File("/cc-jacoco-download/cc-android/dev_dq_#411671_coverage/src");
-        logger.debug(file+" exists=" + file.exists());
+        File file = new File(FileUtil.getSourceDir(commonParams));
+        logger.debug(file + " exists=" + file.exists());
 
         printRootDir(file);//new File("/")
 
-        if (commonParams.getCommitId() == null) {
+        /*if (commonParams.getCommitId() == null) {
             String commitId = GitRepoUtil.getCurrentCommitId();// "577082371ba3f40f848904baa39083f14b2695b0";
             commonParams.setCommitId(commitId); // TODO-dq: 2021/9/30 表单提交为空，获取最新的？
             logger.debug("getCurrentCommitId=" + commitId);
-        }
+        }*/
         //生成报告，失败的原因可能是找不到class,src,ec
         int generateReportCode = generateReport(commonParams);
         String msg = "{\"result\":0,\"data\":\"success\"}";
@@ -115,7 +117,7 @@ public class ReportController {
             return Constants.ERROR_CODE_NO_CLASSES;
         }
         //无论如何都更新下源码
-        updateRepoSource(commonParams);
+        //updateRepoSource(commonParams);
 
         File srcFile = new File(srcPath);
         if (!srcFile.exists() || srcFile.listFiles() == null || srcFile.listFiles().length == 0) {
@@ -141,8 +143,15 @@ public class ReportController {
             //diff 报告  copy出指定的class文件到新的目录,diff报告的路径需要不同
             String diffFilePath = FileUtil.getDiffFilePath(commonParams);
             List<String> diffFiles = FileUtil.readDiffFilesFromTxt(diffFilePath);
-            classesPath = getDiffClasses(commonParams, diffFiles);
-            srcPath = getDiffSrc(commonParams, diffFiles);
+            String diffClassesPath = getDiffClasses(commonParams, diffFiles);
+            String diffSrcPath = getDiffSrc(commonParams, diffFiles);
+            logger.debug("generateReport diffClassesPath=" + diffClassesPath + ",diffSrcPath=" + diffSrcPath);
+            if (!TextUtils.isEmpty(diffClassesPath)) {
+                classesPath = diffClassesPath;
+            }
+            if (!TextUtils.isEmpty(diffSrcPath)) {
+                srcPath = diffSrcPath;
+            }
         }
         boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,
                 execPath,
@@ -161,38 +170,52 @@ public class ReportController {
 
     private String getDiffSrc(CommonParams commonParams, List<String> diffFiles) {
         String diffSrcDirPath = FileUtil.getDiffSrcDirPath(commonParams);
+        boolean hasDiffSrc = false;
         if (diffFiles != null && diffFiles.size() > 0) {
             String srcDirPath = FileUtil.getSourceDir(commonParams);
             logger.debug("getDiffSrc srcDirPath=" + srcDirPath);
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
+                    if (index < 0) {
+                        index = diffFile.indexOf(Constants.APP_PACKAGE_NAME2);
+                    }
                     if (index < 0 || diffFile.endsWith(".java") || diffFile.endsWith(".kt")) {
                         continue;
                     }
-                    String realFilePath = srcDirPath + File.separator + diffFile;
                     String relativePath = diffFile.substring(index);
-                    //Logger.debug("getDiffSrc realFilePath=" + realFilePath);
+                    String realFilePath = srcDirPath + File.separator + relativePath;
+                    logger.debug("getDiffSrc realFilePath=" + realFilePath);
                     File destFile = new File(diffSrcDirPath + relativePath);
-                    //Logger.debug("getDiffSrc destFile=" + destFile.getAbsolutePath());
-                    FileUtil.copyFile(new File(realFilePath), destFile, true);
+                    logger.debug("getDiffSrc destFile=" + destFile.getAbsolutePath());
+                    boolean hasCopied = FileUtil.copyFile(new File(realFilePath), destFile, true);
+                    if (hasCopied) {
+                        hasDiffSrc = true;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+        }
+        if (!hasDiffSrc) {
+            return "";
         }
         return diffSrcDirPath;
     }
 
     private String getDiffClasses(CommonParams commonParams, List<String> diffFiles) {
         String diffClassDirPath = FileUtil.getDiffClassDirPath(commonParams);
+        boolean hasDiffClass = false;
         if (diffFiles != null && diffFiles.size() > 0) {
             String classDir = FileUtil.getClassDir(commonParams);
             logger.debug("getDiffClasses classDir=" + classDir);
             for (String diffFile : diffFiles) {
                 try {
                     int index = diffFile.indexOf(Constants.APP_PACKAGE_NAME);
-                    if (index < 0 || diffFile.endsWith(".java") || diffFile.endsWith(".kt")) {
+                    if (index < 0) {
+                        index = diffFile.indexOf(Constants.APP_PACKAGE_NAME2);
+                    }
+                    if (index < 0) {
                         continue;
                     }
                     String fileName = new File(diffFile).getName();
@@ -209,7 +232,10 @@ public class ReportController {
                                 //Logger.debug("getDiffClasses file=" + file);
                                 File destFile = new File(diffClassDirPath + relativePath + name);
                                 //Logger.debug("getDiffClasses destFile=" + destFile.getAbsolutePath());
-                                FileUtil.copyFile(file, destFile, true);
+                                boolean hasCopied = FileUtil.copyFile(file, destFile, true);
+                                if (hasCopied) {
+                                    hasDiffClass = true;
+                                }
                             }
                         }
                     }
@@ -217,6 +243,9 @@ public class ReportController {
                     e.printStackTrace();
                 }
             }
+        }
+        if (!hasDiffClass) {
+            return "";
         }
         return diffClassDirPath;
     }
@@ -252,7 +281,6 @@ public class ReportController {
                 System.out.println("cloneSrc=" + cloneSrc + ",commonParams=" + commonParams);
                 logger.debug("cloneSrc=" + cloneSrc + ",commonParams=" + commonParams);
                 isCloning = false;
-                //GitRepoUtil.checkOut(commonParams);
             });
         }
     }

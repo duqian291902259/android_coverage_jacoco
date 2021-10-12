@@ -27,17 +27,21 @@ public class Constants {
     public static final String KEY_COMMIT_ID2 = "commitId2";//对比增量的commit
     public static final String KEY_PARAM_TYPE = "type";//type 1=ec,
     public static final String KEY_PARAM_INCREMENTAL = "incremental";//是否增量
-    public static final String APP_PACKAGE_NAME = "/com/";//包名
+    //public static final String APP_PACKAGE_NAME = File.separator + "com" + File.separator + "netease" + File.separator + "cc";//包名
+    public static final String APP_PACKAGE_NAME ="/com/netease/cc";//包名
+    public static final String APP_PACKAGE_NAME2 ="\\com\\netease\\cc";//包名
 
     //文件夹名称
-    public static final String REPORT_DOWNLOAD_ROOT_DIR = "cc-jacoco-download" + File.separator;// File.separator +
+    public static final String REPORT_DOWNLOAD_ROOT_DIR = "cc-jacoco" + File.separator;// File.separator +
     public static final String REPORT_DIR_NAME = "report";
     public static final String CLASS_DIR_NAME = "classes";
     public static final String SOURCE_DIR_NAME = "src";
+    public static final String GIT_SOURCE_DIR_NAME = "git";
     public static final String DIFF_DIR_NAME = "diff";
     public static final String DIFF_FILES_NAME = "diffFiles.txt";
     public static final String JACOCO_CLI_FILE_NAME = "jacococli.jar";
-    public static final String JACOCO_CLASS_ZIP_FILE_NAME = "classes.zip";
+    public static final String CLASS_ZIP_FILE_NAME = "classes.zip";
+    public static final String SRC_ZIP_FILE_NAME = "src.zip";
 
     //扩展名
     public static final String TYPE_FILE_ALL = "";//ALL

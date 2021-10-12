@@ -1,11 +1,7 @@
 package site.duqian.spring.utils
 
 import org.slf4j.LoggerFactory
-import site.duqian.spring.controller.ReportController
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
+import java.io.*
 import java.util.*
 
 /**
@@ -109,8 +105,8 @@ object CmdUtil {
             InputStreamReader(ins)
         )
         var shortCmd = cmd
-        if (cmd.length>10){
-            shortCmd = cmd.substring(0,10)
+        if (cmd.length > 10) {
+            shortCmd = cmd.substring(0, 10)
         }
         while (`in`.readLine().also { line = it } != null) {
             val message = "$shortCmd -->printLines:>> $line"
@@ -222,5 +218,47 @@ object CmdUtil {
             self.outputStream.close()
         } catch (ignore: IOException) {
         }
+    }
+
+    fun isWindowsOS(): Boolean {
+        return System.getProperties().getProperty("os.name").toLowerCase().contains("windows")
+    }
+
+    @JvmStatic
+    fun executeShellCmd(shell: String, msg: String): Boolean {
+        println("执行shell命令:$shell")
+        var cmds: Array<String>
+        if (CommonUtils.isWindowsOS()) {
+            cmds = arrayOf(getGitBashPath(), shell, msg)
+        } else {
+            cmds = arrayOf(shell, "", msg)
+        }
+        return runProcess(cmds)
+    }
+
+    //git-bash的路径，如果找不到，自行配置
+    private var gitBashPath: String = ""
+    private fun getGitBashPath(): String {
+        if (!TextUtils.isEmpty(gitBashPath)) {
+            return gitBashPath
+        }
+        try {
+            val result = execute("where git")
+            val paths = result.split("\n").toTypedArray()
+            for (path in paths) {
+                val file = File(path)
+                val parentFile = file.parentFile
+                if (parentFile != null) {
+                    val gitBash = File(parentFile.parent + File.separator + "git-bash.exe")
+                    if (gitBash.exists()) {
+                        //给路径加上双引号，解决有空格的路径导致无法执行cmd的问题
+                        gitBashPath = "\"" + gitBash.absolutePath + "\""
+                    }
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return gitBashPath
     }
 }
