@@ -102,8 +102,28 @@ public class ReportController {
     private int generateReport(CommonParams commonParams) {
         String reportPath = FileUtils.getJacocoReportPath(commonParams);
         String jarPath = FileUtils.getJacocoJarPath();
-        String execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "63fda2c017ae88dfa4e2edbf97e04c12.ec";
-        //String execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "**.ec";
+        String execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "**.ec";
+        //todo-dq 在docker部署，发现不支持正则表达式，file not found ，所以要拼接所有的，而且要在bash环境下执行
+        //execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "63fda2c017ae88dfa4e2edbf97e04c12.ec";
+        File rootEcDir = new File(FileUtils.getEcFilesDir(commonParams));
+        if (!rootEcDir.exists() || rootEcDir.listFiles() == null) {
+            return Constants.ERROR_CODE_NO_FILES;
+        }
+        boolean hasEcFile = false;
+        StringBuilder sb = new StringBuilder();
+        for (File file : rootEcDir.listFiles()) {
+            if (file.getName().endsWith(Constants.TYPE_FILE_EC)) {
+                hasEcFile = true;
+                sb.append(file.getAbsoluteFile());//.append(" ");
+                break;// TODO: 2021/10/12 合并ec文件 
+            }
+        }
+        if (!hasEcFile) {
+            return Constants.ERROR_CODE_NO_EC_FILE;
+        } else {
+            execPath = sb.toString();
+        }
+        logger.debug("generateReport execPath=" + execPath);
         String classesPath = FileUtils.getClassDir(commonParams);
         String srcPath = FileUtils.getSourceDir(commonParams);
         File classFile = new File(classesPath);
@@ -122,21 +142,6 @@ public class ReportController {
         if (!srcFile.exists() || srcFile.listFiles() == null || srcFile.listFiles().length == 0) {
             return Constants.ERROR_CODE_NO_SRC;
         }
-        File rootEcDir = new File(FileUtils.getEcFilesDir(commonParams));
-        if (!rootEcDir.exists() || rootEcDir.listFiles() == null) {
-            return Constants.ERROR_CODE_NO_FILES;
-        }
-        boolean hasEcFile = false;
-        for (File file : rootEcDir.listFiles()) {
-            if (file.getName().endsWith(Constants.TYPE_FILE_EC)) {
-                hasEcFile = true;
-                break;
-            }
-        }
-        if (!hasEcFile) {
-            return Constants.ERROR_CODE_NO_EC_FILE;
-        }
-
         boolean incremental = commonParams.isIncremental();
         if (incremental) {
             //diff 报告  copy出指定的class文件到新的目录,diff报告的路径需要不同
@@ -192,7 +197,7 @@ public class ReportController {
                         hasDiffSrc = true;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.debug("getDiffSrc error=" + e);
                 }
             }
         }
@@ -239,7 +244,8 @@ public class ReportController {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
+                    logger.debug("getDiffClasses error=" + e);
                 }
             }
         }

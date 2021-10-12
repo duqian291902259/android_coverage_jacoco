@@ -5,9 +5,10 @@ FROM java:8-jdk-alpine
 VOLUME /cc-jacoco-download
 ADD target/jacoco.web-1.0.0.jar jacoco-web.jar
 ADD jacococli.jar jacococli.jar
+ADD cmdShell.sh cmdShell.sh
 ADD cc-jacoco cc-jacoco
 RUN chmod 775 jacococli.jar
-RUN chmod +x jacococli.jar
+RUN chmod +x cmdShell.sh
 
 # install git - apt-get replace with apk
 RUN apk update && \
@@ -26,4 +27,4 @@ MAINTAINER duqian2010@gmail.com
 #CMD ["cd","/cc-jacoco/"]
 #CMD ["http-server"]
 # docker build -t jacoco-web .
-# docker run -d -p 8090:8090 -p 8083:8082 jacoco-web:latest
+# docker run -d -p 8090:8090 -p 8082:8082 jacoco-web:latest

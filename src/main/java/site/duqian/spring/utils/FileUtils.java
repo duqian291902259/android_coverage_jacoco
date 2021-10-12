@@ -391,7 +391,7 @@ public class FileUtils {
                 pos += output.transferFrom(input, pos, count);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           logger.debug("copyFile error "+e);
             return false;
         } finally {
             closeQuietly(output);

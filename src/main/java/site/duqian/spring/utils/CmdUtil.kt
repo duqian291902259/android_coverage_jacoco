@@ -2,7 +2,6 @@ package site.duqian.spring.utils
 
 import org.slf4j.LoggerFactory
 import java.io.*
-import java.util.*
 
 /**
  * cmd工具类，测试
@@ -227,13 +226,13 @@ object CmdUtil {
     @JvmStatic
     fun executeShellCmd(shell: String, msg: String): Boolean {
         println("执行shell命令:$shell")
-        var cmds: Array<String>
+        val cmdArray: Array<String>
         if (CommonUtils.isWindowsOS()) {
-            cmds = arrayOf(getGitBashPath(), shell, msg)
+            cmdArray = arrayOf(getGitBashPath(), shell, msg)
         } else {
-            cmds = arrayOf(shell, "", msg)
+            cmdArray = arrayOf("sh", shell, msg)
         }
-        return runProcess(cmds)
+        return runProcess(cmdArray)
     }
 
     //git-bash的路径，如果找不到，自行配置
