@@ -26,7 +26,7 @@ import java.util.concurrent.Executor;
 @Controller
 @RequestMapping("/coverage")
 public class UploadQueryController {
-    private static final Logger logger = LoggerFactory.getLogger(JGitController.class);// slf4j日志记录器
+    private static final Logger logger = LoggerFactory.getLogger(UploadQueryController.class);// slf4j日志记录器
 
     //URL_HOST + "/coverage/upload")
     @RequestMapping(value = "/upload", method = {RequestMethod.POST})
@@ -179,16 +179,18 @@ public class UploadQueryController {
             out.println("{\"files\":[]}");
         } else {
             StringBuilder sb = new StringBuilder();
-            //String suffix = FileUtils.getFileSuffixByType(typeString);
             for (File file : files) {
                 String fileName = file.getName();
                 if (!fileName.startsWith(".") && fileName.contains(commonParams.getType() + "")) {
-                    //忽略隐藏文件? ,/rootDir/appName/branchName/commitId/&fileName=xxx
-                    //sb.append(Constants.KEY_PARAM_DOWNLOAD_DIR)
+                    //ec文件下载,/rootDir/appName/branchName/commitId/xxx.ec
+                    /*String absolutePath = file.getAbsolutePath().replace(FileUtils.getJacocoDownloadDir(), "");
+                    logger.debug("ec absolutePath="+absolutePath);
+                    sb.append(absolutePath).append("\",");*/
                     sb.append(commonParams.getAppName()).append(File.separator)
                             .append(commonParams.getBranchName()).append(File.separator)
                             .append(commonParams.getCommitId()).append(File.separator)
                             .append("&").append(Constants.KEY_PARAM_FILENAME).append("=").append(fileName)
+                            //.append(fileName)
                             .append("\",");
                 }
             }
