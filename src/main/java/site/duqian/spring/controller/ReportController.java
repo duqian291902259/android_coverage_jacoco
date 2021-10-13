@@ -130,7 +130,10 @@ public class ReportController {
         }
         boolean incremental = commonParams.isIncremental();
         if (incremental) {//diff 报告  copy出指定的class文件到新的目录,diff报告的路径不同
-            classesPath = DiffUtils.INSTANCE.handleDiffClasses(commonParams, classesPath);
+            String diffClassPath = DiffUtils.INSTANCE.handleDiffClasses(commonParams);
+            if (!TextUtils.isEmpty(classesPath)) {
+                classesPath = diffClassPath;
+            }
         }
         boolean isGenerated = generateReport(reportPath, jarPath, ecFileList, classesPath, srcPath);
         logger.debug("generateReport=" + isGenerated + "," + commonParams);

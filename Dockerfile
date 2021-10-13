@@ -2,7 +2,7 @@
 #FROM java:8
 #FROM hub.c.163.com/library/java:latest
 FROM java:8-jdk-alpine
-VOLUME /cc-jacoco-download
+VOLUME /cc-jacoco
 ADD target/jacoco.web-1.0.0.jar jacoco-web.jar
 ADD jacococli.jar jacococli.jar
 ADD cmdShell.sh cmdShell.sh

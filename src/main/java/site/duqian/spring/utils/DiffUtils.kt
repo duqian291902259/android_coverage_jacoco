@@ -16,19 +16,17 @@ object DiffUtils {
     /**
      * 获取diff class的路径
      */
-    fun handleDiffClasses(commonParams: CommonParams?, classesPath: String): String {
-        var classesPath = classesPath
+    fun handleDiffClasses(commonParams: CommonParams?): String {
         val diffFilePath = FileUtils.getDiffFilePath(commonParams)
         val diffFiles = FileUtils.readDiffFilesFromTxt(diffFilePath)
         val diffClassesPath = getDiffClasses(commonParams, diffFiles)
-        //String diffSrcPath = getDiffSrc(commonParams, diffFiles);
         logger.debug("generateReport diffClassesPath=$diffClassesPath")
-        if (!TextUtils.isEmpty(diffClassesPath)) {
-            classesPath = diffClassesPath
-        }
-        /*if (!TextUtils.isEmpty(diffSrcPath)) {
+        /*
+        String diffSrcPath = getDiffSrc(commonParams, diffFiles);
+        if (!TextUtils.isEmpty(diffSrcPath)) {
             srcPath = diffSrcPath;
-        }*/return classesPath
+        }*/
+        return diffClassesPath
     }
 
     fun getDiffSrc(commonParams: CommonParams?, diffFiles: List<String>?): String? {
