@@ -22,7 +22,7 @@
             ></el-option>
           </el-option-group>
         </el-select>
-        <span style="width: 50px"> -- </span>
+        <!-- <span style="width: 50px"> -- </span>
         <el-select
           v-model="form.base_branch"
           placeholder="请选择对比的分支"
@@ -32,7 +32,7 @@
             <el-option label="master" value="master"></el-option>
             <el-option label="dev" value="dev"></el-option>
           </el-option-group>
-        </el-select>
+        </el-select> -->
       </el-form-item>
 
       <el-form-item label="当前CommitId">
@@ -52,7 +52,7 @@
         >
         </el-input>
       </el-form-item>
-      <el-form-item label="ec上传时间">
+      <!-- <el-form-item label="ec上传时间">
         <el-col :span="9">
           <el-date-picker
             type="date"
@@ -69,7 +69,7 @@
             style="width: 250px"
           ></el-time-picker>
         </el-col>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="增量覆盖率">
         <el-switch v-model="form.incremental"></el-switch>
       </el-form-item>
@@ -109,9 +109,9 @@ export default {
         appName: "cc-android",
         branch: "dev_dq_#411671_coverage",
         base_branch: "dev",
-        commitId:"d406432d54530af70b50043db7d77377ee8b3453",
+        commitId:"440f81e5",
         //commitId: "577082371ba3f40f848904baa39083f14b2695b0",
-        commitId2: "855e6c13a7a46b5f63cb6b7d5db3e224d38fb1f8",
+        commitId2: "84f1ad08",
         date1: "",
         date2: "",
         incremental: false,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 style="text-align: center">上传覆盖率文件、APK等</h1>
+    <h1 style="text-align: center">上传ec文件、diff文件等</h1>
     <el-upload
       class="upload-demo"
       action="http://127.0.0.1:8090/coverage/upload"
@@ -16,7 +16,7 @@
       :file-list="fileList"
     >
       <el-button size="small" type="primary"
-        >点击上传APP生成的覆盖率文件</el-button
+        >点击上传文件</el-button
       >
       <div slot="tip" class="el-upload__tip">
         如：/Sdcard/Android/packagename/Cache/jacoco/xxx.ec

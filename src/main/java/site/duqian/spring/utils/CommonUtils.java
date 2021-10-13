@@ -33,12 +33,18 @@ public class CommonUtils {
         String commitId = paramsMap.get(Constants.KEY_COMMIT_ID);
         String commitId2 = paramsMap.get(Constants.KEY_COMMIT_ID2);
         String type = paramsMap.get(Constants.KEY_PARAM_TYPE);
+        if (commitId != null && commitId.length() >= 8) {
+            commitId = commitId.substring(0, 8);
+        }
+        if (commitId2 != null && commitId2.length() >= 8) {
+            commitId2 = commitId2.substring(0, 8);
+        }
         CommonParams commonParams = new CommonParams(appName, versionCode, branchName, commitId, type);
         boolean incremental = Boolean.parseBoolean(request.getParameter(Constants.KEY_PARAM_INCREMENTAL));
         commonParams.setIncremental(incremental);
         commonParams.setCommitId2(commitId2);
-        if (incremental) {// TODO: 2021/10/8 优化diff文件夹的名称，以第二个commit命名？
-            String fileName = Constants.DIFF_DIR_NAME + commitId2;//System.currentTimeMillis();
+        if (incremental) {//优化diff文件夹的名称，以第二个commit命名
+            String fileName = Constants.DIFF_DIR_NAME + commitId2;
             commonParams.setDiffFileName(fileName);
         }
         System.out.println(TAG + " parseRequestParams=" + commonParams);

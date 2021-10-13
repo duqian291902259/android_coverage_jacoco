@@ -71,7 +71,7 @@ object CmdUtil {
         return runProcess(cmds)
     }
 
-    private fun runProcess(command: Array<String>): Boolean {
+    fun runProcess(command: Array<String>): Boolean {
         try {
             val pro = Runtime.getRuntime().exec(command)
             val cmdString = command.contentToString()

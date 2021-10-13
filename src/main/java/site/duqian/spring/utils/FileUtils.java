@@ -51,7 +51,7 @@ public class FileUtils {
     }
 
     public static String getBranchDir(CommonParams commonParams) {
-        String rootDir = getJacocoDownloadDir() + commonParams.getBranchName();// + commonParams.getAppName() + File.separator
+        String rootDir = getJacocoDownloadDir() + commonParams.getAppName() + File.separator+ commonParams.getBranchName();//
         //System.out.println("getBranchDir=" + rootDir);
         return rootDir;
     }

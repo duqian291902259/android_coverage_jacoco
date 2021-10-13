@@ -15,7 +15,6 @@ data class CommonParams(
     var commitId: String? = "10000",
     val type: String? = Constants.TYPE_FILE_EC
 ) : Serializable {
-
     var isIncremental = false //是否增量
     var commitId2: String? = "10000"
     var diffFileName: String? = "" //diff文件夹名字
