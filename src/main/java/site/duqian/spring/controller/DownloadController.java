@@ -44,7 +44,7 @@ public class DownloadController {
     //http://172.18.69.161:8090/download?path=/download/cc-android/&fileName=coverage.ec
     private void handleDownloadFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String path = request.getParameter(KEY_PARAM_PATH);
-        path = URLDecoder.decode(path, StandardCharsets.UTF_8);
+        path = URLDecoder.decode(path, StandardCharsets.UTF_8.toString());
         //String filename = request.getParameter(KEY_PARAM_FILENAME);
         logger.debug("download path=" + path);
         //如果是中文数据，需要转码。
