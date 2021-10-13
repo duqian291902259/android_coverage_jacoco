@@ -13,12 +13,16 @@
           placeholder="请选择当前生成报告的分支"
           style="width: 380px"
         >
-          <el-option-group label="请选择当前生成报告的分支">
-            <el-option label="master" value="master"></el-option>
-            <el-option label="dev" value="dev"></el-option>
+          <el-option-group
+            :label="group.label"
+            v-for="group in groups"
+            :key="group.label"
+          >
             <el-option
-              label="dev_dq_#411671_coverage"
-              value="dev_dq_#411671_coverage"
+              v-for="item in group.options"
+              :label="item.label"
+              :value="item.value"
+              :key="item.value"
             ></el-option>
           </el-option-group>
         </el-select>
@@ -82,15 +86,13 @@
 
       <div style="text-align: center; margin: 10px">
         <el-button type="primary" @click="onSubmit">生成覆盖率报告</el-button>
-        <el-button @click="openReport" v-model="form.reportUrl"
-          >在线查看覆盖率报告</el-button
-        >
-        <el-button
-          @click="downloadReport"
-          style="margin-top: 10px"
-          v-model="form.reportZipUrl"
+        <el-button @click="openReport">在线查看覆盖率报告</el-button>
+        <el-button @click="downloadReport" style="margin-top: 10px"
           >下载覆盖率报告</el-button
         >
+        <!-- <el-button @click="updateSelectList" style="margin-top: 10px"
+          >更新下拉数据</el-button
+        > -->
       </div>
 
       <el-form-item label="提示信息" v-if="form.desc">
@@ -109,7 +111,7 @@ export default {
         appName: "cc-android",
         branch: "dev_dq_#411671_coverage",
         base_branch: "dev",
-        commitId:"440f81e5",
+        commitId: "440f81e5",
         //commitId: "577082371ba3f40f848904baa39083f14b2695b0",
         commitId2: "84f1ad08",
         date1: "",
@@ -120,8 +122,30 @@ export default {
         reportUrl: "",
         reportZipUrl: "",
       },
+      groups: [
+        {
+          label: "请选择当前生成报告的分支",
+          options: [
+            {
+              value: "master",
+              label: "master",
+            },
+            {
+              value: "dev",
+              label: "dev",
+            },
+            {
+              value: "dev_dq_#411671_coverage",
+              label: "dev_dq_#411671_coverage",
+            },
+          ],
+        },
+      ],
       response: {},
     };
+  },
+  created(){
+    this.updateSelectList()
   },
   methods: {
     onSubmit() {
@@ -191,6 +215,30 @@ export default {
       }
       window.open(url);
       console.warn(`download url ${url}`);
+    },
+    updateSelectList() {
+      requestGet("http://127.0.0.1:8090/user/test", this.form).then(
+        (res) => {
+          let {data = []} = res || {}
+          this.updateOptions(data);
+        }
+      );
+      // let data = JSON.stringify([
+      //   {
+      //     label: "duqian",
+      //     value: "duqian",
+      //   },
+      //   {
+      //     label: "lxm",
+      //     value: "lxm",
+      //   },
+      // ]);
+      // console.warn(data);
+      // this.updateOptions(JSON.parse(data));
+    },
+    updateOptions(date) {
+      this.$set(this.groups[0], "options", date);
+      this.form.branch = date[0].value;
     },
   },
 };

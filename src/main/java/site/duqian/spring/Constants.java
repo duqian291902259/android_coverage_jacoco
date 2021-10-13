@@ -36,7 +36,7 @@ public class Constants {
     public static final String REPORT_DIR_NAME = "report";
     public static final String CLASS_DIR_NAME = "classes";
     public static final String SOURCE_DIR_NAME = "src";
-    public static final String GIT_SOURCE_DIR_NAME = "git";
+    public static final String GIT_SOURCE_DIR_NAME = "repository";
     public static final String DIFF_DIR_NAME = "diff";
     public static final String DIFF_FILES_NAME = "diffFiles.txt";
     public static final String JACOCO_CLI_FILE_NAME = "jacococli.jar";

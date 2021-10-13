@@ -37,6 +37,8 @@ public class UserController {
         String appName = request.getParameter(KEY_APP_NAME);
         log.debug("appName="+appName);
 
-        return "{\"result\":0,\"data\":\"duqian\"}";
+        //return "{\"result\":0,\"data\":\"duqian\"}";
+
+        return "[{\"label\":\"dev_dq_#411671_coverage\",\"value\":\"dev_dq_#411671_coverage\"},{\"label\":\"dev\",\"value\":\"dev\"}]";
     }
 }

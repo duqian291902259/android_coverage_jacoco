@@ -51,7 +51,7 @@ public class FileUtils {
     }
 
     public static String getBranchDir(CommonParams commonParams) {
-        String rootDir = getJacocoDownloadDir() + commonParams.getAppName() + File.separator+ commonParams.getBranchName();//
+        String rootDir = getJacocoDownloadDir() + commonParams.getAppName() + File.separator + commonParams.getBranchName();//
         //System.out.println("getBranchDir=" + rootDir);
         return rootDir;
     }
@@ -63,7 +63,7 @@ public class FileUtils {
     }
 
     public static String getGitCloneDir(CommonParams commonParams) {
-        String rootDir = getBranchDir(commonParams) + File.separator + Constants.GIT_SOURCE_DIR_NAME;
+        String rootDir = getJacocoDownloadDir() + commonParams.getAppName() + File.separator + Constants.GIT_SOURCE_DIR_NAME;
         //System.out.println("getSourceDir=" + rootDir);
         return rootDir;
     }
@@ -139,7 +139,7 @@ public class FileUtils {
         return getReportRootDir() + File.separator + getReportRelativePath(commonParams) + File.separator + getReportZipFileName(commonParams);
     }
 
-    public static String getReportRootDir() {
+    public static String getReportRootDir() {//todo-dq 增加appName
         return FileUtils.getJacocoDownloadDir() + Constants.REPORT_DIR_NAME;
     }
 
@@ -391,7 +391,7 @@ public class FileUtils {
                 pos += output.transferFrom(input, pos, count);
             }
         } catch (Exception e) {
-           logger.debug("copyFile error "+e);
+            logger.debug("copyFile error " + e);
             return false;
         } finally {
             closeQuietly(output);

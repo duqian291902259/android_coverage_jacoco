@@ -79,7 +79,7 @@ public class GitRepoUtil {
             String tag = "commit ";
             int index = result.indexOf(tag);
             if (index >= 0) {
-                return result.substring(index + tag.length(), len+tag.length());
+                return result.substring(index + tag.length(), len + tag.length());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,10 +109,10 @@ public class GitRepoUtil {
                 git = Git.open(new File(codePath));
                 git.getRepository().getFullBranch();
                 //判断是分支还是commitId，分支做更新，commitId无法改变用原有的
-                //todo-dq if (git.getRepository().exactRef(Constants.HEAD).isSymbolic()) {
-                //更新代码
-                git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
-                // }
+                //if (git.getRepository().exactRef("HEAD").isSymbolic()) {
+                    //更新代码
+                    git.pull().setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUserName, gitPassWord)).call();
+                //}
             }
         } catch (Exception e) {
             e.printStackTrace();
