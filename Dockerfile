@@ -1,5 +1,4 @@
 #基础镜像
-#FROM java:8
 #FROM hub.c.163.com/library/java:latest
 FROM java:8-jdk-alpine
 VOLUME /cc-jacoco
@@ -21,10 +20,9 @@ RUN npm install http-server -g
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/jacoco-web.jar"]
 
 #维护者
-MAINTAINER duqian2010@gmail.com
+MAINTAINER 杜小菜,duqian2010@gmail.com
 
 #CMD ["http-server","cc-jacoco/","-p","8086"]
-#CMD ["cd","/cc-jacoco/"]
-#CMD ["http-server"]
 # docker build -t jacoco-web .
 # docker run -d -p 8090:8090 -p 8082:8082 jacoco-web:latest
+# docker stop xx

@@ -1,0 +1,13 @@
+version: "1.0.0"
+services:
+  app:
+    image: ncr-dev.nie.netease.com/duqian02/cc-android/jacoco-web:latest
+    ports:
+      - 18090:8090
+      - 18082:8082
+    volumes:
+      - data:/jacoco-web/data/
+    environment:
+      PROFILE_NAME: product
+volumes:
+  data:
