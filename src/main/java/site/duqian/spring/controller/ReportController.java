@@ -93,10 +93,8 @@ public class ReportController {
         String reportPath = FileUtils.getJacocoReportPath(commonParams);
         String jarPath = FileUtils.getJacocoJarPath();
         List<String> ecFileList = new ArrayList<>();
-        String execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "**.ec";
-        //todo-dq 在docker部署，发现不支持正则表达式，file not found ，所以要拼接所有的，而且要在bash环境下执行
+        //String execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "**.ec";
         //execPath = FileUtils.getEcFilesDir(commonParams) + File.separator + "63fda2c017ae88dfa4e2edbf97e04c12.ec";
-        ecFileList.add(execPath);
         File rootEcDir = new File(FileUtils.getEcFilesDir(commonParams));
         if (!rootEcDir.exists() || rootEcDir.listFiles() == null) {
             return Constants.ERROR_CODE_NO_FILES;
@@ -111,7 +109,6 @@ public class ReportController {
         if (!hasEcFile) {
             return Constants.ERROR_CODE_NO_EC_FILE;
         }
-        logger.debug("generateReport execPath=" + execPath);
         String classesPath = FileUtils.getClassDir(commonParams);
         String srcPath = FileUtils.getSourceDir(commonParams);
         File classFile = new File(classesPath);
@@ -128,6 +125,9 @@ public class ReportController {
         if (!srcFile.exists() || srcFile.listFiles() == null || srcFile.listFiles().length == 0) {
             return Constants.ERROR_CODE_NO_SRC;
         }
+        logger.debug("generateReport classesPath=" + classesPath);
+        logger.debug("generateReport srcPath=" + srcPath);
+
         boolean incremental = commonParams.isIncremental();
         if (incremental) {//diff 报告  copy出指定的class文件到新的目录,diff报告的路径不同
             String diffClassPath = DiffUtils.INSTANCE.handleDiffClasses(commonParams);
@@ -144,6 +144,9 @@ public class ReportController {
         return Constants.CODE_FAILED;
     }
 
+    /**
+     * 在docker部署，发现不支持正则表达式，file not found ，所以要拼接所有的，而且要在bash环境下执行
+     */
     private boolean generateReport(String reportPath, String jarPath, List<String> execPaths, String classesPath, String srcPath) {
         /*boolean isGenerated = CmdUtil.generateReportByCmd(jarPath,
                 execPaths.get(0),
@@ -172,7 +175,6 @@ public class ReportController {
         }
         return CmdUtil.INSTANCE.runProcess(commandArray);
     }
-
 
     private void zipReport(String reportPath, CommonParams commonParams) {
         Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
