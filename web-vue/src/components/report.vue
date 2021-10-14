@@ -10,8 +10,8 @@
       <el-form-item label="Git分支名称">
         <el-select
           v-model="form.branch"
-          placeholder="请选择当前生成报告的分支"
-          style="width: 380px"
+          placeholder="请选择生成报告的分支"
+          style="width: 350px"
         >
           <el-option-group
             :label="group.label"
@@ -26,24 +26,24 @@
             ></el-option>
           </el-option-group>
         </el-select>
-        <!-- <span style="width: 50px"> -- </span>
+        <span style="width: 50px"> -- </span>
         <el-select
           v-model="form.base_branch"
-          placeholder="请选择对比的分支"
+          placeholder="可选择对比的分支"
           clearable
         >
-          <el-option-group label="请选择对比的分支">
+          <el-option-group label="可选择对比的分支">
             <el-option label="master" value="master"></el-option>
             <el-option label="dev" value="dev"></el-option>
           </el-option-group>
-        </el-select> -->
+        </el-select>
       </el-form-item>
 
-      <el-form-item label="当前CommitId">
+      <el-form-item label="起始CommitId">
         <el-input
           v-model="form.commitId"
-          style="width: 380px"
-          placeholder="当前apk对应的commit-id"
+          style="width: 350px"
+          placeholder="安装apk对应的commit-id"
         >
         </el-input>
       </el-form-item>
@@ -51,7 +51,7 @@
       <el-form-item label="对比CommitId">
         <el-input
           v-model="form.commitId2"
-          style="width: 380px"
+          style="width: 350px"
           placeholder="获取差异的commit-id"
         >
         </el-input>
@@ -90,12 +90,10 @@
         <el-button @click="downloadReport" style="margin-top: 10px"
           >下载覆盖率报告</el-button
         >
-        <!-- <el-button @click="updateSelectList" style="margin-top: 10px"
-          >更新下拉数据</el-button
-        > -->
+    
       </div>
 
-      <el-form-item label="提示信息" v-if="form.desc">
+      <el-form-item label="提示信息" v-if="form.desc"  style="margin-top: 10px">
         <el-input type="textarea" v-model="form.desc"></el-input>
       </el-form-item>
     </el-form>
@@ -103,16 +101,16 @@
 </template>
 
 <script>
-import { requestGet, requestPost } from "../utils/fetch";
+import { requestGet,requestPost } from "../utils/fetch";
+import { jacocoHost,localHost } from "../utils";
 export default {
   data: function () {
     return {
       form: {
         appName: "cc-android",
         branch: "dev_dq_#411671_coverage",
-        base_branch: "dev",
-        commitId: "440f81e5",
-        //commitId: "577082371ba3f40f848904baa39083f14b2695b0",
+        base_branch: "",
+        commitId: "21acf983",
         commitId2: "84f1ad08",
         date1: "",
         date2: "",
@@ -126,10 +124,6 @@ export default {
         {
           label: "请选择当前生成报告的分支",
           options: [
-            {
-              value: "master",
-              label: "master",
-            },
             {
               value: "dev",
               label: "dev",
@@ -145,7 +139,8 @@ export default {
     };
   },
   created(){
-    this.updateSelectList()
+     console.warn(`host=${jacocoHost}`);
+     this.updateSelectList()
   },
   methods: {
     onSubmit() {
@@ -161,7 +156,7 @@ export default {
 
       this.$message.success("正在处理，请稍后查阅...");
       console.warn(this.form);
-      requestGet("http://127.0.0.1:8090/coverage/report", this.form)
+      requestGet(`${jacocoHost}/coverage/report`, this.form)
         .then((res) => {
           console.warn(res);
 
@@ -188,7 +183,7 @@ export default {
           this.$message.error(errorMsg);
         });
 
-      // requestPost('http://127.0.0.1:8090/coverage/upload', Object.assign({}, this.form, {
+      // requestPost(`${jacocoHost}/coverage/upload`, Object.assign({}, this.form, {
       //   appName:"dq-test",
       //   versionCode:"3.8.1"
       // })).then((res)=>{
@@ -217,24 +212,12 @@ export default {
       console.warn(`download url ${url}`);
     },
     updateSelectList() {
-      requestGet("http://127.0.0.1:8090/api/init", this.form).then(
+      requestGet(`${jacocoHost}/api/init`, this.form).then(
         (res) => {
           let {data = []} = res || {}
           this.updateOptions(data);
         }
       );
-      // let data = JSON.stringify([
-      //   {
-      //     label: "duqian",
-      //     value: "duqian",
-      //   },
-      //   {
-      //     label: "lxm",
-      //     value: "lxm",
-      //   },
-      // ]);
-      // console.warn(data);
-      // this.updateOptions(JSON.parse(data));
     },
     updateOptions(date) {
       this.$set(this.groups[0], "options", date);

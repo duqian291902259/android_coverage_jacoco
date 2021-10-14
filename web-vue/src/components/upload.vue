@@ -3,7 +3,7 @@
     <h1 style="text-align: center">上传ec文件、diff文件等</h1>
     <el-upload
       class="upload-demo"
-      action="http://127.0.0.1:8090/coverage/upload"
+      :action="uploadUrl"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :before-remove="beforeRemove"
@@ -25,9 +25,12 @@
   </div>
 </template>
 <script>
+
+import { jacocoHost,localHost } from "../utils";
 export default {
   data() {
     return {
+      uploadUrl:`${jacocoHost}/coverage/upload`,
       otherData: {
         appName: "android",
         versionCode: "3.8.1",

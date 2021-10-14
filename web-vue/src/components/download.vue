@@ -1,26 +1,26 @@
 <template>
   <div>
-    <h1 style="text-align: center">覆盖率报告文件列表</h1>
+    <h1 style="text-align: center">覆盖率报告文件列表(待开发)</h1>
 
-    <el-button style="text-align: center" @click="download" >下载覆盖率报告文件</el-button>
+    <el-button style="text-align: center" @click="download" >测试下载</el-button>
 
-    <button @click="downFile">coverage</button>
+   <!--  <button @click="downFile">coverage</button> -->
   </div>
 </template>
 
 <script>
-import { getUrlParam } from "../utils";
+import { getUrlParam,jacocoHost,localHost } from "../utils";
 export default {
   data() {
     return {};
   },
   methods: {
     download() {
-      window.open("http://127.0.0.1:8090/temp/cc-start-coverage.rar");
+      window.open(`${jacocoHost}/temp/cc-start-coverage.rar`);
     },
     
     downFile() {
-      let url = "http://127.0.0.1:8090/download?path=download/cc-android/3.8.1/&fileName=coverage.ec",
+      let url = `${jacocoHost}/download?path=download/cc-android/3.8.1/&fileName=coverage.ec`,
         fileName = getUrlParam(url, "fileName"),
         _this = this,
         url2 = url.replace(/\\/g, "/"),
