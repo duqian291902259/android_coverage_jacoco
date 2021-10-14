@@ -4,7 +4,7 @@ services:
     image: ncr-dev.nie.netease.com/duqian02/cc-android/jacoco-web:latest
     ports:
       - 18090:8090
-      - 18082:8082
+      - 18080:8080
     volumes:
       - data:/jacoco-web/data/
     environment:

@@ -87,9 +87,9 @@ public class JGitHelper {
     }
 
     public static void main(String[] args) {
-        /*setUpRepo();
+        setUpRepo();
         pullBranchToLocal();
-        commitFiles();*/
-        GitRepoUtil.cloneRepository(REMOTE_REPOSITORY_URL, LOCAL_PATH, GIT_COMMIT_ID, GIT_USER_NAME, GIT_PASSWORD);
+        commitFiles();
+        //GitRepoUtil.cloneRepository(REMOTE_REPOSITORY_URL, LOCAL_PATH, GIT_COMMIT_ID, GIT_USER_NAME, GIT_PASSWORD);
     }
 }

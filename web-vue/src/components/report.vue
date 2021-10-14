@@ -217,7 +217,7 @@ export default {
       console.warn(`download url ${url}`);
     },
     updateSelectList() {
-      requestGet("http://127.0.0.1:8090/user/test", this.form).then(
+      requestGet("http://127.0.0.1:8090/api/init", this.form).then(
         (res) => {
           let {data = []} = res || {}
           this.updateOptions(data);

@@ -108,9 +108,7 @@ public class FileUtils {
     }
 
     public static String getReportRelativePath(CommonParams commonParams) {
-        //return File.separator + commonParams.getBranchName() + File.separator + commonParams.getCommitId();
-        //return File.separator + commonParams.getBranchName().replaceAll("#","") + File.separator + commonParams.getCommitId();
-        return commonParams.getCommitId();
+        return commonParams.getAppName() + File.separator + commonParams.getCommitId();
     }
 
     /**
