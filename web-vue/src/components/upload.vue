@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <h1 style="text-align: center">上传ec文件、diff文件等</h1>
@@ -25,7 +26,6 @@
   </div>
 </template>
 <script>
-
 import { jacocoHost,localHost } from "../utils";
 export default {
   data() {

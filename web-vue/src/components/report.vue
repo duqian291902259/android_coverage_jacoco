@@ -84,16 +84,15 @@
         </el-radio-group>
       </el-form-item>
 
-      <div style="text-align: center; margin: 10px">
-        <el-button type="primary" @click="onSubmit">生成覆盖率报告</el-button>
-        <el-button @click="openReport">在线查看覆盖率报告</el-button>
-        <el-button @click="downloadReport" style="margin-top: 10px"
+      <div style="text-align: center; margin: 0px">
+        <el-button :loading="isLoading" type="primary" @click="onSubmit">生成覆盖率报告</el-button>
+        <el-button ref="btn_report_online" @click="openReport">在线查看覆盖率报告</el-button>
+        <el-button ref="btn_report_download" @click="downloadReport" style="margin-top: 10px"
           >下载覆盖率报告</el-button
         >
-    
       </div>
 
-      <el-form-item label="提示信息" v-if="form.desc"  style="margin-top: 10px">
+      <el-form-item label="提示信息" v-if="form.desc"  style="margin-top: 20px">
         <el-input type="textarea" v-model="form.desc"></el-input>
       </el-form-item>
     </el-form>
@@ -114,12 +113,13 @@ export default {
         commitId2: "84f1ad08",
         date1: "",
         date2: "",
-        incremental: false,
+        incremental: true,
         env: "Debug",
         desc: "",
-        reportUrl: "",
-        reportZipUrl: "",
       },
+      reportUrl: "",
+      reportZipUrl: "",
+      isLoading: false,
       groups: [
         {
           label: "请选择当前生成报告的分支",
@@ -154,8 +154,14 @@ export default {
         return;
       }
 
+      if (this.form.incremental === true && this.form.base_branch===""&& (this.form.commitId2===""||this.form.commitId2 === undefined)) {
+        this.$message.error("增量报告，请填写要对比的CommitId");
+        return;
+      }
+
       this.$message.success("正在处理，请稍后查阅...");
       console.warn(this.form);
+      this.isLoading = true
       requestGet(`${jacocoHost}/coverage/report`, this.form)
         .then((res) => {
           console.warn(res);
@@ -167,20 +173,22 @@ export default {
           }
           this.form.desc = msg;
           this.$message.success(msg);
-          this.form.reportUrl = data.reportUrl;
-          this.form.reportZipUrl = data.reportZipUrl;
+          this.reportUrl = data.reportUrl;
+          this.reportZipUrl = data.reportZipUrl;
 
-          let logMsg = `reportUrl...${this.form.reportUrl}`;
+          let logMsg = `reportUrl...${this.reportUrl}`;
           console.warn(logMsg);
           console.warn(data.reportZipUrl);
           //this.response = JSON.parse(res.data);
           //console.warn("response =" +this.response);
+          this.isLoading = false;
         })
         .catch((error) => {
           console.error(error);
           var errorMsg = `出错了... ${error}`;
           this.form.desc = errorMsg;
           this.$message.error(errorMsg);
+          this.isLoading = false;
         });
 
       // requestPost(`${jacocoHost}/coverage/upload`, Object.assign({}, this.form, {
@@ -194,7 +202,7 @@ export default {
     },
 
     openReport() {
-      var url = this.form.reportUrl;
+      var url = this.reportUrl;
       if (url === "" || url === undefined) {
         this.$message.error("报告未生成");
         return;
@@ -203,7 +211,7 @@ export default {
       console.warn(`open url ${url}`);
     },
     downloadReport() {
-      var url = this.form.reportZipUrl;
+      var url = this.reportZipUrl;
       if (url === "" || url === undefined) {
         this.$message.error("报告未生成");
         return;

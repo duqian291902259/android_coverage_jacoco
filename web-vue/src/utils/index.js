@@ -20,4 +20,4 @@ export function getUrlParam(url, paramName) {
 }
 
 export const localHost = "http://127.0.0.1:8090"
-export const jacocoHost = "localHost"
+export const jacocoHost = "http://jacoco.dev.cc-mobile.cn"
