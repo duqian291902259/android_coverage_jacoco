@@ -20,6 +20,7 @@
       </el-form-item>
       <el-form-item label="CommitId" prop='commitId'>
         <el-input
+          type="primery"
           clearable
           v-model="form.commitId"
           style="width: 220px"
@@ -28,13 +29,14 @@
         </el-input>
       </el-form-item>
     </el-form>
-    <!-- :disabled="disableUpload" -->
+    <el-button type="warning" v-if="disableUpload" @click="validateForm">请完善表单再点击上传文件</el-button>
     <el-upload
+      :drag='false'
+      v-else
       class="upload-demo"
       :action="uploadUrl"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
-      :before-remove="beforeRemove"
       :data="form"
       multiple
       :limit="limit"
@@ -88,16 +90,8 @@ export default {
     }
   },
   methods: {
-    async validateForm(){
-      return new Promise((resove) => {
-        this.$refs['ruleForm'].validate((valid, obj) => {
-          if (!valid ) {
-            let keys = Object.keys(obj)
-            this.$message.error(obj[keys[0]][0].message || '请输入必填信息')
-          }
-          resove(valid)
-        })
-      })
+    validateForm(){
+      this.$refs['ruleForm'].validate()
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
