@@ -114,7 +114,8 @@ public class UploadQueryController {
     private String saveFile(String dirPath, String fileName, InputStream ins) throws IOException {
         //设置服务器端存放文件的位置
         File savedFile = new File(dirPath, fileName);
-        String suffix = fileName.substring(fileName.lastIndexOf("."));
+        int index = fileName.lastIndexOf(".");
+        String suffix = index>0?fileName.substring(index):"";
         File parentFile = savedFile.getParentFile();
         if (parentFile != null) {
             parentFile.mkdirs();//用于确保文件目录存在,如果为单级目录可以去掉
@@ -142,16 +143,16 @@ public class UploadQueryController {
             System.out.println("saved to:" + savedFile.getAbsolutePath());
         }
 
-        //解压classes文件夹，todo-dq 差异src文件夹
-        unZipClasses(savedFile, suffix, parentFile);
+        //解压classes/src文件夹
+        unZipFile(savedFile, suffix, parentFile);
 
         return lastFileName;
     }
 
-    private void unZipClasses(File savedFile, String suffix, File parentFile) {
+    private void unZipFile(File savedFile, String suffix, File parentFile) {
         Executor prodExecutor = (Executor) SpringContextUtil.getBean(Constants.THREAD_EXECUTOR_NAME);
         prodExecutor.execute(() -> {
-            //解压zip-》class
+            //解压classes.zip-》classes  src.zip->src
             if (suffix.contains(".zip") || suffix.contains(".rar")) {
                 if (parentFile != null && savedFile.length() > 0) {
                     FileUtils.unzip(parentFile.getAbsolutePath(), savedFile.getAbsolutePath());
