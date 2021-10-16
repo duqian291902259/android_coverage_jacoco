@@ -25,6 +25,16 @@ export default {
       activeName: 'first'
     }
   },
+  watch:{
+    activeName: {
+      handler(val){
+        sessionStorage.setItem('activeName', val || '')
+      }
+    }
+  },
+  created(){
+    this.activeName = sessionStorage.getItem('activeName')
+  },
   methods: {
     
   }
