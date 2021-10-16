@@ -1,24 +1,49 @@
 
 <template>
-  <div>
+  <div v-loading='pageLoading'>
     <h1 style="text-align: center">上传ec文件、diff文件等</h1>
+
+    <el-form ref="ruleForm" :model="form" label-position="left" inline :rules="formRules">
+      <el-form-item label="应用名称" style="width: 600px" >
+        <el-radio-group v-model="form.appName">
+          <el-radio label="cc-android"></el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="APK包的分支名称" prop='branch'>
+        <el-input
+          clearable
+          v-model="form.branch"
+          style="width: 220px"
+          placeholder="APK包对应的分支名称"
+        >
+        </el-input>
+      </el-form-item>
+      <el-form-item label="CommitId" prop='commitId'>
+        <el-input
+          clearable
+          v-model="form.commitId"
+          style="width: 220px"
+          placeholder="安装apk对应的commit-id"
+        >
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <!-- :disabled="disableUpload" -->
     <el-upload
       class="upload-demo"
       :action="uploadUrl"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :before-remove="beforeRemove"
-      :data="otherData"
+      :data="form"
       multiple
-      :limit="3"
+      :limit="limit"
       :on-exceed="handleExceed"
       :on-success="handleSucceed"
       :on-error="handleError"
       :file-list="fileList"
     >
-      <el-button size="small" type="primary"
-        >点击上传文件</el-button
-      >
+      <el-button size="small" type="primary">点击上传文件</el-button>
       <div slot="tip" class="el-upload__tip">
         如：/Sdcard/Android/packagename/Cache/jacoco/xxx.ec
       </div>
@@ -30,20 +55,50 @@ import { jacocoHost,localHost } from "../utils";
 export default {
   data() {
     return {
-      uploadUrl:`${jacocoHost}/coverage/upload`,
-      otherData: {
-        appName: "android",
-        versionCode: "3.8.1",
+      pageLoading: false,
+      form: {
+        appName: "cc-android",
+        branch: "dev_dq_#411671_coverage",
+        commitId: "21acf983",
       },
+      limit: 10,
+      uploadUrl: `${jacocoHost}/coverage/upload`,
       fileList: [
         // {
         //   name: "food.jpeg",
         //   url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
         // },
       ],
+      formRules: {
+        branch: [
+            { required: true, message: '请填写APK包的分支名称', trigger: 'blur' }
+          ],
+        commitId: [
+            { required: true, message: '请填写起始CommitId', trigger: 'blur' },
+            { min: 8, max: 8, message: 'CommitId长度为8，请重新填写', trigger: 'blur' }
+          ],
+      }
     };
   },
+  computed:{
+    disableUpload(){
+      let {branch = '', commitId=''} = this.form || {}
+      console.warn(!(branch && commitId))
+      return !(branch && commitId)
+    }
+  },
   methods: {
+    async validateForm(){
+      return new Promise((resove) => {
+        this.$refs['ruleForm'].validate((valid, obj) => {
+          if (!valid ) {
+            let keys = Object.keys(obj)
+            this.$message.error(obj[keys[0]][0].message || '请输入必填信息')
+          }
+          resove(valid)
+        })
+      })
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
@@ -52,9 +107,9 @@ export default {
     },
     handleExceed(files, fileList) {
       this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
+        `当前限制选择 ${this.limit} 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
     },
     handleSucceed() {
@@ -69,6 +124,6 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
-  },
+  }
 };
 </script>
