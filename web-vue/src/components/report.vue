@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 style="text-align: center">CC-Android覆盖率报告</h1>
-    <el-form ref="form" :model="form" label-width="120px" label-position="left">
+    <el-form ref="form" :model="form" label-width="120px" label-position="right">
       <el-form-item label="应用名称">
         <el-radio-group v-model="form.appName">
           <el-radio label="cc-android"></el-radio>
@@ -11,7 +11,8 @@
         <el-select
           v-model="form.branch"
           placeholder="请选择生成报告的分支"
-          style="width: 350px"
+          style="width: 300px"
+          clearable
         >
           <el-option-group
             :label="group.label"
@@ -42,7 +43,8 @@
       <el-form-item label="起始CommitId">
         <el-input
           v-model="form.commitId"
-          style="width: 350px"
+          style="width: 300px"
+          clearable
           placeholder="安装apk对应的commit-id"
         >
         </el-input>
@@ -51,7 +53,8 @@
       <el-form-item label="对比CommitId">
         <el-input
           v-model="form.commitId2"
-          style="width: 350px"
+          style="width: 300px"
+          clearable
           placeholder="获取差异的commit-id"
         >
         </el-input>
@@ -101,7 +104,7 @@
 
 <script>
 import { requestGet,requestPost } from "../utils/fetch";
-import { jacocoHost,localHost } from "../utils";
+import { jacocoHost } from "../utils";
 export default {
   data: function () {
     return {
@@ -111,8 +114,8 @@ export default {
         base_branch: "",
         commitId: "21acf983",
         commitId2: "84f1ad08",
-        date1: "",
-        date2: "",
+        //date1: "",
+        //date2: "",
         incremental: true,
         env: "Debug",
         desc: "",
@@ -162,7 +165,10 @@ export default {
       this.$message.success("正在处理，请稍后查阅...");
       console.warn(this.form);
       this.isLoading = true
-      requestGet(`${jacocoHost}/coverage/report`, this.form)
+      requestPost(`${jacocoHost}/coverage/report`, Object.assign({}, this.form, {
+         versionCode:"3.8.3"//额外的参数
+        }))
+      //requestGet(`${jacocoHost}/coverage/report`, this.form)
         .then((res) => {
           console.warn(res);
 
@@ -189,22 +195,13 @@ export default {
           this.form.desc = errorMsg;
           this.$message.error(errorMsg);
           this.isLoading = false;
-        });
-
-      // requestPost(`${jacocoHost}/coverage/upload`, Object.assign({}, this.form, {
-      //   appName:"dq-test",
-      //   versionCode:"3.8.1"
-      // })).then((res)=>{
-      //   console.warn(res)
-      // }).catch(error=>{
-      //   console.error(error)
-      // })
+        })
     },
 
     openReport() {
       var url = this.reportUrl;
       if (url === "" || url === undefined) {
-        this.$message.error("报告未生成");
+        this.$message.error("报告未生成，请点击生成按钮");
         return;
       }
       window.open(url);
@@ -213,7 +210,7 @@ export default {
     downloadReport() {
       var url = this.reportZipUrl;
       if (url === "" || url === undefined) {
-        this.$message.error("报告未生成");
+        this.$message.error("报告未生成，请点击生成按钮");
         return;
       }
       window.open(url);
