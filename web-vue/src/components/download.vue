@@ -3,8 +3,6 @@
     <h1 style="text-align: center">覆盖率报告文件列表(待开发)</h1>
 
     <el-button style="text-align: center" @click="download" >测试下载</el-button>
-
-   <!--  <button @click="downFile">coverage</button> -->
   </div>
 </template>
 
@@ -18,7 +16,6 @@ export default {
     download() {
       window.open(`${jacocoHost}/temp/cc-start-coverage.rar`);
     },
-    
     downFile() {
       let url = `${jacocoHost}/download?path=download/cc-android/3.8.1/&fileName=coverage.ec`,
         fileName = getUrlParam(url, "fileName"),
