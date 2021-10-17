@@ -17,7 +17,7 @@ public class SpringMainApplication {
         SpringContextUtil.get().execute(new Runnable() {
             @Override
             public void run() {
-                String path = FileUtils.getReportRootDir() + File.separator;
+                String path = FileUtils.getJacocoDownloadDir() + File.separator;
                 System.out.println("path=" + path);
                 CmdUtil.executeShellCmd("cmdShell.sh", path);
             }

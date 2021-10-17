@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 style="text-align: center">CC-Android覆盖率报告</h1>
+    <h2 style="text-align: center">CC-Android覆盖率报告</h2>
     <el-form ref="form" :model="form" label-width="120px" label-position="right">
       <el-form-item label="应用名称">
         <el-radio-group v-model="form.appName">

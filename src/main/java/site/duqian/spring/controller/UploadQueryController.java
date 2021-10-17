@@ -166,9 +166,6 @@ public class UploadQueryController {
      */
     private void realQueryFile(HttpServletRequest request, HttpServletResponse resp) throws IOException {
         //设置状态码
-        request.setCharacterEncoding("UTF-8");
-        //todo-dq resp.setContentType("application/json;charset=utf-8");
-        resp.setStatus(200);
         PrintWriter out = resp.getWriter();
         CommonParams commonParams = CommonUtils.getCommonParams(request, "realQueryFile");
         System.out.println("realQueryFile=" + commonParams);

@@ -33,23 +33,19 @@ public class DownloadController {
     //http://192.168.56.1:8090/download?path=path
     @RequestMapping(value = "/download", method = {RequestMethod.GET})
     protected void queryEcFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
-        //CommonUtils.printParams(request);
-        //request.setCharacterEncoding("UTF-8");
-        //resp.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json;charset=utf-8");
         resp.setStatus(200);
         handleDownloadFile(request, resp);
     }
 
-    //http://172.18.69.161:8090/download?path=/download/cc-android/&fileName=coverage.ec
+    //http://172.18.69.161:8090/download?path=download/cc-android/&fileName=coverage.ec
     private void handleDownloadFile(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String path = request.getParameter(KEY_PARAM_PATH);
         path = URLDecoder.decode(path, StandardCharsets.UTF_8.toString());
-        //String filename = request.getParameter(KEY_PARAM_FILENAME);
         logger.debug("download path=" + path);
         //如果是中文数据，需要转码。
         path = new String(path.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
-        //filename = new String(filename.getBytes("ISO8859-1"), StandardCharsets.UTF_8);
 
         //得到保存文件的位置
         String fileRealPath = FileUtils.getJacocoDownloadDir() + path.replaceAll("&" + Constants.KEY_PARAM_FILENAME + "=", "");

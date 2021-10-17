@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 style="text-align: center">覆盖率报告文件列表(待开发)</h1>
+    <h2 style="text-align: center">覆盖率报告文件列表(待开发)</h2>
 
     <el-button style="text-align: center" @click="download" >测试下载</el-button>
   </div>

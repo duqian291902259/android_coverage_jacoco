@@ -137,7 +137,7 @@ public class FileUtils {
         return getReportRootDir() + File.separator + getReportRelativePath(commonParams) + File.separator + getReportZipFileName(commonParams);
     }
 
-    public static String getReportRootDir() {//todo-dq 增加appName
+    public static String getReportRootDir() {
         return FileUtils.getJacocoDownloadDir() + Constants.REPORT_DIR_NAME;
     }
 

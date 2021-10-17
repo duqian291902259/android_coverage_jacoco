@@ -1,7 +1,7 @@
 
 <template>
   <div v-loading='pageLoading'>
-    <h1 style="text-align: center">上传ec文件、diff文件等</h1>
+    <h2 style="text-align: center">上传ec文件、diff文件等</h2>
 
     <el-form ref="ruleForm" :model="form" label-position="left" inline :rules="formRules">
       <el-form-item label="应用名称" style="width: 600px" >
