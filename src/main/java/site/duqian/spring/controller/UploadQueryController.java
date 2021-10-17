@@ -180,7 +180,7 @@ public class UploadQueryController {
             for (File file : files) {
                 String fileName = file.getName();
                 if (!fileName.startsWith(".") && fileName.contains(commonParams.getType() + "")) {
-                    //ec文件下载,/rootDir/appName/branchName/commitId/xxx.ec
+                    //ec文件下载,/rootDir/appName/branchName/commitId/&fileName=xxx.ec
                     /*String absolutePath = file.getAbsolutePath().replace(FileUtils.getJacocoDownloadDir(), "");
                     logger.debug("ec absolutePath="+absolutePath);
                     sb.append(absolutePath).append("\",");*/

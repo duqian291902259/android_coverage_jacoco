@@ -11,7 +11,7 @@ import java.io.File;
 public class Constants {
 
     public static final String THREAD_EXECUTOR_NAME = "dq-executor";
-    public static final String REPORT_SERVER_HOST_URL = "http://127.0.0.1:8080";
+    public static final String REPORT_SERVER_HOST_URL = "http://127.0.0.1:8081";
     public static final String REPOSITORY_URL = "https://github.com/duqian291902259/AndroidUI.git";
 
     //请求入参
