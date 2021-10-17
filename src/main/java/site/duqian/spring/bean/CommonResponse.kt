@@ -10,8 +10,8 @@ import java.io.Serializable
 
 open class BaseResponse(
     val result: Int = 0,
-    var message: String? = "success",
-    var data: String? = "ok"
+    var message: String? = "",
+    var data: String? = ""
 ) : Serializable {
     override fun toString(): String {
         return "CommonParams(result=$result, message=$message)"

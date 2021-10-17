@@ -24,7 +24,7 @@
           clearable
           v-model="form.commitId"
           style="width: 220px"
-          placeholder="安装apk对应的commit-id"
+          placeholder="APK对应的commit-id"
         >
         </el-input>
       </el-form-item>
@@ -53,7 +53,7 @@
   </div>
 </template>
 <script>
-import { jacocoHost,localHost } from "../utils";
+import { jacocoHost } from "../utils";
 export default {
   data() {
     return {
@@ -73,10 +73,10 @@ export default {
       ],
       formRules: {
         branch: [
-            { required: true, message: '请填写APK包的分支名称', trigger: 'blur' }
+            { required: true, message: '请填写APK对应的分支名称', trigger: 'blur' }
           ],
         commitId: [
-            { required: true, message: '请填写起始CommitId', trigger: 'blur' },
+            { required: true, message: '请填写APK对应的commitId"', trigger: 'blur' },
             { min: 8, max: 8, message: 'CommitId长度为8，请重新填写', trigger: 'blur' }
           ],
       }
