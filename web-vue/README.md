@@ -28,3 +28,11 @@ npm run dev
 # build for production with minification
 npm run build
 ```
+
+## install xxx库
+
+``` bash
+# 比如qs库，自动更新package.json
+npm install qs -save-dev
+```
+

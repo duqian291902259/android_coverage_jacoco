@@ -165,6 +165,7 @@ export default {
       this.$message.success("正在处理，请稍后查阅...");
       console.warn(this.form);
       this.isLoading = true
+    
       requestPost(`${jacocoHost}/coverage/report`, Object.assign({}, this.form, {
          versionCode:"3.8.3"//额外的参数
         }))
