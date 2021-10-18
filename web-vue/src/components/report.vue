@@ -11,8 +11,8 @@
         <el-select
           v-model="form.branch"
           placeholder="请选择生成报告的分支"
-          style="width: 300px"
-          clearable
+          style="width: 300px"        
+          @change="onSelectedBranch"
         >
           <el-option-group
             :label="group.label"
@@ -20,10 +20,11 @@
             :key="group.label"
           >
             <el-option
-              v-for="item in group.options"
-              :label="item.label"
-              :value="item.value"
+              v-for="(item,index) in group.options"
+              :label="item.branchName"
+              :value="item.branchLabel"
               :key="item.value"
+              @click="onOptionSelect(index)"
             ></el-option>
           </el-option-group>
         </el-select>
@@ -32,6 +33,7 @@
           v-model="form.base_branch"
           placeholder="可选择对比的分支"
           clearable
+           @change="onVsBranch"
         >
           <el-option-group label="可选择对比的分支">
             <el-option label="master" value="master"></el-option>
@@ -59,24 +61,6 @@
         >
         </el-input>
       </el-form-item>
-      <!-- <el-form-item label="ec上传时间">
-        <el-col :span="9">
-          <el-date-picker
-            type="date"
-            placeholder="选择日期"
-            v-model="form.date1"
-            style="width: 250px"
-          ></el-date-picker>
-        </el-col>
-        <el-col class="line" :span="2" style="text-align: center">-</el-col>
-        <el-col :span="6">
-          <el-time-picker
-            placeholder="选择时间"
-            v-model="form.date2"
-            style="width: 250px"
-          ></el-time-picker>
-        </el-col>
-      </el-form-item> -->
       <el-form-item label="增量覆盖率">
         <el-switch v-model="form.incremental"></el-switch>
       </el-form-item>
@@ -113,15 +97,14 @@ export default {
         branch: "dev_dq_#411671_coverage",
         base_branch: "",
         commitId: "21acf983",
-        commitId2: "84f1ad08",
-        //date1: "",
-        //date2: "",
+        commitId2: "ea7deb7e",
         incremental: true,
         env: "Debug",
         desc: "",
       },
       reportUrl: "",
       reportZipUrl: "",
+      branchList:[],
       isLoading: false,
       groups: [
         {
@@ -147,6 +130,7 @@ export default {
   },
   methods: {
     onSubmit() {
+      this.form.desc = ""
       if (this.form.branch === "" || this.form.branch === undefined) {
         this.$message.error("分支名不能为空");
         return;
@@ -174,7 +158,7 @@ export default {
           console.warn(res);
 
           let { result = 0, data = "" } = res;
-          let msg = `处理结果：${data.data}`;
+          let msg = `${data.data}`;
           if (result != 0) {
             msg = `出错了，呜呜...${data}`;
           }
@@ -198,7 +182,6 @@ export default {
           this.isLoading = false;
         })
     },
-
     openReport() {
       var url = this.reportUrl;
       if (url === "" || url === undefined) {
@@ -215,19 +198,45 @@ export default {
         return;
       }
       window.open(url);
-      console.warn(`download url ${url}`);
+      console.warn(url);
+    },
+    onSelectedBranch(branchName){
+       console.warn(branchName);
+       console.warn(this.branchList);
+       this.branchList.forEach((item, index) => {
+          console.warn(item);
+          if(item.branchName==branchName){
+             this.form.commitId = item.latestCommit
+             this.form.commitId2 = item.oldCommit
+          }
+       })
+    },
+    onVsBranch(branchName){
+       this.form.commitId2 =""
+    },
+    onOptionSelect(index){
+       console.warn(index);
+       this.form.commitId = this.branchList[index].latestCommit
     },
     updateSelectList() {
       requestGet(`${jacocoHost}/api/init`, this.form).then(
         (res) => {
-          let {data = []} = res || {}
-          this.updateOptions(data);
+          let {data = {}} = res || {}
+          this.updateOptions(data.branchList);
+          this.branchList = data.branchList;
+          console.warn(this.branchList);
         }
       );
     },
-    updateOptions(date) {
-      this.$set(this.groups[0], "options", date);
-      this.form.branch = date[0].value;
+    updateOptions(data) {
+      console.warn(data);
+      this.$set(this.groups[0], "options", data);
+      let firstBranch = data[0]
+      if(firstBranch){
+        this.form.branch = firstBranch.branchName;
+        this.form.commitId = firstBranch.latestCommit;
+        this.form.commitId2 = firstBranch.oldCommit
+      }
     },
   },
 };

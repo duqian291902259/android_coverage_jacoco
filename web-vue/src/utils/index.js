@@ -1,6 +1,6 @@
 export const localHost = "http://127.0.0.1:8090"
 export const remoteHost = "http://jacoco.dev.cc-mobile.cn"
-export const jacocoHost = localHost
+export const jacocoHost = remoteHost
 export const reportHost = "http://report.dev.cc-mobile.cn"
 // 获取url中的参数值
 export function getUrlParam(url, paramName) {

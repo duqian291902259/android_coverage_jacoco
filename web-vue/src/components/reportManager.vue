@@ -8,8 +8,8 @@
         </el-radio-group>
       </el-form-item>
       </el-form>
-    <el-table :data="tableData" border fit style="width: 90%;margin:0px auto">
-      <el-table-column fixed prop="date" label="日期" width="160">
+    <el-table :data="tableData" border fit style="width: 100%;margin:0px auto">
+      <el-table-column fixed prop="date" label="日期" width="220">
       </el-table-column>
 
       <el-table-column prop="fileName" label="报告名称">
