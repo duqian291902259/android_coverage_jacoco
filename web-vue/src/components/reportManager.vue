@@ -26,15 +26,15 @@
 </template>
 
 <script>
-import { requestGet,requestPost } from "../utils/fetch";
-import { jacocoHost,reportHost} from "../utils";
+import { requestGet } from "../utils/fetch";
+import { jacocoHost} from "../utils";
 export default {
   data() {
     return {
       form: {
         appName: "cc-android"
       },
-      reportHostUrl:reportHost,
+      reportHostUrl:"",
       tableData: [
         // {
         //   date: "2016-05-02",

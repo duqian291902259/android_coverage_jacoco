@@ -1,7 +1,17 @@
 export const localHost = "http://127.0.0.1:8090"
 export const remoteHost = "http://jacoco.dev.cc-mobile.cn"
-export const jacocoHost = remoteHost
-export const reportHost = "http://report.dev.cc-mobile.cn"
+export const jacocoHost = getHostUrl()//remoteHost
+
+function getHostUrl() {
+    let origin = window.location.origin
+    console.log(origin)
+    if (origin.indexOf("dev.cc-mobile.cn")>-1) {
+        console.log("origin remoteHost")
+        return remoteHost;
+    }
+    return localHost
+}
+
 // 获取url中的参数值
 export function getUrlParam(url, paramName) {
     let arrObj = url.split("?");

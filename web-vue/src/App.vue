@@ -33,7 +33,7 @@ export default {
   },
   created(){
     let activeName =  sessionStorage.getItem('activeName') 
-    console.error(activeName)
+    console.log(activeName)
     this.activeName = activeName || 'first'
   },
   methods: {
