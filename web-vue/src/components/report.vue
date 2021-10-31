@@ -4,7 +4,11 @@
     <el-form ref="form" :model="form" label-width="120px" label-position="right">
       <el-form-item label="应用名称">
         <el-radio-group v-model="form.appName">
-          <el-radio label="cc-android"></el-radio>
+          <!-- <el-radio label="cc-android"></el-radio> -->
+          <el-radio 
+            v-for="(item) in appList"
+            :label="item"
+            :key="item.value"/>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="Git分支名称">
@@ -105,6 +109,7 @@ export default {
       reportUrl: "",
       reportZipUrl: "",
       branchList:[],
+      appList:[],
       isLoading: false,
       groups: [
         {
@@ -224,7 +229,10 @@ export default {
           let {data = {}} = res || {}
           this.updateOptions(data.branchList);
           this.branchList = data.branchList;
+          this.appList = data.appList;
           console.warn(this.branchList);
+          console.warn("/api/init");
+          console.warn(this.appList);
         }
       );
     },
