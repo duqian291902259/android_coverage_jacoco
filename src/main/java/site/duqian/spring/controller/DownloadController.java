@@ -5,9 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import site.duqian.spring.Constants;
-import site.duqian.spring.utils.CommonUtils;
 import site.duqian.spring.utils.FileUtils;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -15,12 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
-import static site.duqian.spring.Constants.KEY_PARAM_FILENAME;
 import static site.duqian.spring.Constants.KEY_PARAM_PATH;
 
 /**
