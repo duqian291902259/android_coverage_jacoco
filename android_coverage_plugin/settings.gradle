@@ -1,5 +1,0 @@
-include ':coverage-library'
-include ':coverage-no-op'
-include ':app'
-include ':coverage-plugin'
-rootProject.name = "android_coverage_plugin"
