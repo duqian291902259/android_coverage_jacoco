@@ -1,0 +1,63 @@
+FROM ubuntu:bionic
+
+# Install packages
+RUN apt-get -qqy update && \
+    apt-get -qqy --no-install-recommends install software-properties-common && \
+    add-apt-repository ppa:openjdk-r/ppa && \
+    apt-get -qqy --no-install-recommends install \
+    openjdk-11-jdk \
+    curl \
+    zip \
+    unzip \
+    git \
+    locales \
+  && rm -rf /var/lib/apt/lists/*
+
+# Use unicode
+ENV LANG C.UTF-8
+
+RUN mkdir "/opt/openjdk-11"
+#RUN export JAVA_HOME=/opt/openjdk-11
+#RUN export PATH=$JAVA_HOME/bin:$PATH
+
+#ENV JAVA_HOME="/opt/openjdk-11" \
+#PATH=$PATH:$JAVA_HOME/bin
+
+ENV ANDROID_SDK_ROOT="/usr/local/android-sdk"
+ENV PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+
+ENV CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip"
+
+# Download Android SDK
+RUN mkdir "$ANDROID_SDK_ROOT" .android \
+    && mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools" \
+    && curl -o commandlinetools.zip $CMDLINE_TOOLS_URL \
+    && unzip commandlinetools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools" \
+    && mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest" \
+    && rm commandlinetools.zip
+
+# Accept all licenses
+RUN yes | sdkmanager --licenses
+
+# Install Android build tools and platform tools
+ENV ANDROID_BUILD_TOOLS_VERSION=34.0.0
+
+RUN touch ~/.android/repositories.cfg
+RUN sdkmanager --install "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+    "platform-tools"
+
+
+#FROM reactivecircus/android-sdk-base:latest
+
+# Install Android platform
+ENV API_LEVEL=34
+
+RUN sdkmanager --install "platforms;android-${API_LEVEL}"
+
+
+EXPOSE 8090
+
+# 运行jar包
+ENTRYPOINT ["java","-version"]
+
+# 杜小菜,duqian2010@gmail.com
