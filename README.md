@@ -1,14 +1,16 @@
-# Coverage_JacocoWebServer
+# Android-Coverage-Jacoco
 Code coverage platform for Android project.
 Base on jacoco,SpringBoot,Vue,java,kotlin....
 
 项目地址：[https://github.com/duqian291902259/android_coverage_jacoco](https://github.com/duqian291902259/android_coverage_jacoco)
 
 
-1. web-vue 前端工程
-1. src后端逻辑
-1. docker：mvn插件自动生成镜像的目录
-1. 根目录的Dockerfile是使用cmd命令操作build、run镜像
+1. android_coverage_plugin,客户端gradle插件，收集工程src和class文件，上传ec文件。
+2. android_coverage_server，前端web页面和服务器工程
+3. web-vue 前端工程，http-server是生产后的产物，用于部署。
+1. android_coverage_server/src:后端逻辑，
+1. docker：mvn插件自动生成镜像的目录，后端服务部署。
+1. 根目录的Dockerfile是使用cmd命令操作build、run镜像。	
 
 
 ### 概述
