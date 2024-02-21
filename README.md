@@ -2,7 +2,7 @@
 Code coverage platform for Android project.
 Base on jacoco,SpringBoot,Vue,java,kotlin....
 
-项目地址：[https://github.com/duqian291902259/Coverage_JacocoWebServer](https://github.com/duqian291902259/Coverage_JacocoWebServer)
+项目地址：[https://github.com/duqian291902259/android_coverage_jacoco](https://github.com/duqian291902259/android_coverage_jacoco)
 
 
 1. web-vue 前端工程
