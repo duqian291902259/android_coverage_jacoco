@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KotlinExtUtils.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.duqian.coverage.utils</a> &gt; <span class="el_source">KotlinExtUtils.kt</span></div><h1>KotlinExtUtils.kt</h1><pre class="source lang-java linenums">package com.duqian.coverage.utils
+
+import android.content.res.Resources
+import android.view.View
+
+/**
+ * description:Kotlin扩展系统函数
+ * @author 杜小菜 Created on 6/20/21 - 10:02 AM.
+ * E-mail:duqian2010@gmail.com
+ */
+// View Extensions
+var View.isVisible
+<span class="nc bnc" id="L13" title="All 2 branches missed.">    get() = visibility == View.VISIBLE</span>
+    set(value) {
+<span class="nc bnc" id="L15" title="All 2 branches missed.">        visibility = if (value) View.VISIBLE else View.GONE</span>
+<span class="nc" id="L16">    }</span>
+
+fun View.setViewVisible(isVisible: Boolean) {
+<span class="nc bnc" id="L19" title="All 2 branches missed.">    visibility = if (isVisible) View.VISIBLE else View.GONE</span>
+<span class="nc" id="L20">}</span>
+
+fun Float.dp2px(): Float {
+<span class="nc" id="L23">    return (0.5f + this * Resources.getSystem().displayMetrics.density)</span>
+}
+
+fun Int.dp2px(): Float {
+<span class="nc" id="L27">    return this * 1.0f.dp2px()</span>
+}
+
+val Float.dp: Float
+<span class="fc" id="L31">    get() = android.util.TypedValue.applyDimension(</span>
+<span class="fc" id="L32">        android.util.TypedValue.COMPLEX_UNIT_DIP, this, Resources.getSystem().displayMetrics</span>
+<span class="fc" id="L33">    )</span>
+
+val Int.dp: Float
+<span class="fc" id="L36">    get() = this * 1.0f.dp</span>
+
+
+val Float.sp: Float
+<span class="nc" id="L40">    get() = android.util.TypedValue.applyDimension(</span>
+<span class="nc" id="L41">        android.util.TypedValue.COMPLEX_UNIT_SP, this, Resources.getSystem().displayMetrics</span>
+<span class="nc" id="L42">    )</span>
+
+val Int.sp: Float
+<span class="nc" id="L45">    get() = this * 1.0f.sp</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

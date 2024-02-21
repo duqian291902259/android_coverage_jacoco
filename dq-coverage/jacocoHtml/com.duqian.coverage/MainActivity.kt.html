@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainActivity.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.duqian.coverage</a> &gt; <span class="el_source">MainActivity.kt</span></div><h1>MainActivity.kt</h1><pre class="source lang-java linenums">package com.duqian.coverage
+
+import android.os.Bundle
+import android.util.Log
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.duqian.coverage.utils.TestJava
+import com.duqian.coverage.utils.UIUtils
+import com.duqian.coverage.utils.dp
+import com.duqian.coverage_library.JacocoHelper
+import kotlin.concurrent.thread
+
+<span class="fc" id="L17">class MainActivity : AppCompatActivity() {</span>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+<span class="fc" id="L20">        super.onCreate(savedInstanceState)</span>
+<span class="fc" id="L21">        setContentView(R.layout.activity_main)</span>
+<span class="fc" id="L22">        val navView: BottomNavigationView = findViewById(R.id.nav_view)</span>
+
+<span class="fc" id="L24">        val navController = findNavController(R.id.nav_host_fragment)</span>
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+<span class="fc" id="L27">        val appBarConfiguration = AppBarConfiguration(</span>
+<span class="fc" id="L28">            setOf(</span>
+<span class="fc" id="L29">                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications</span>
+            )
+        )
+<span class="fc" id="L32">        setupActionBarWithNavController(navController, appBarConfiguration)</span>
+<span class="fc" id="L33">        navView.setupWithNavController(navController)</span>
+
+
+<span class="fc" id="L36">        UIUtils.dp2px(this, 20f)</span>
+
+<span class="fc" id="L38">        Log.d(&quot;dq-jacoco&quot;, &quot;ext test66667888,20dp=  ${20.dp}&quot;)</span>
+
+<span class="fc" id="L40">        TestJava.test()</span>
+<span class="fc" id="L41">    }</span>
+
+    override fun finish() {
+<span class="nc" id="L44">        super.finish()</span>
+<span class="nc" id="L45">        thread {</span>
+<span class="nc" id="L46">            JacocoHelper.generateEcFileAndUpload(this, &quot;88888&quot;, null)</span>
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">    }</span>
+
+    override fun onDestroy() {
+<span class="nc" id="L51">        super.onDestroy()</span>
+<span class="nc" id="L52">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

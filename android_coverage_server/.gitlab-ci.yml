@@ -1,0 +1,120 @@
+image: docker:latest
+stages:
+  #- web_vue
+  - jacococ_server
+  - docker-build
+  - docker-deploy
+
+variables:
+  DOCKER_REGISTRY: site.duqian.www           # 推送到内网ncr
+  CI_DEBUG_TRACE: "false" #调试开关，为 true 会输出很多信息
+  DOCKER_HUB_NAME: site.duqian.www
+  DOCKER_NAMESPACE: android
+  DOCKER_PROJECT_NAME: 'jacoco-web'
+  IMAGE_NAME_PREFIX: "$DOCKER_HUB_NAME/$DOCKER_NAMESPACE/$DOCKER_PROJECT_NAME"
+
+  DOCKER_HTTP_SERVER: 'http-server'
+  IMAGE_HTTP_SERVER_PREFIX: "$DOCKER_HUB_NAME/$DOCKER_NAMESPACE/$DOCKER_HTTP_SERVER"
+
+  ##AUTH_TOKEN获取,后续优化获取方式：https://console-auth.nie.duqian.cn/mymessage/mymessage
+  NCR_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDkyOTg2MjQsImhvc3RpZCI6MzksImlzdCI6MTY0ODY5MzgyNCwicHJvamVjdCI6ImF1dGgiLCJ1c2VyIjoiZHVxaWFuMDIifQ.KF25vjI9MDABIwshl6BkwuSlx-gApJn0nclzAuxYSO4"
+  ##jacoco-server
+  JACOCO_SERVER_WEBHOOK_URL: 'http://portainer.duqian.cn/api/webhooks/aa0e1265-8dad-4da8-b1e1-081da7497983?tag=latest'
+
+  ##http-server
+  HTTP_SERVER_WEBHOOK_URL: 'http://portainer.duqian.cn/api/webhooks/c83078fa-3552-4208-a470-140b1bd0edc8?tag=latest'
+
+before_script:
+  # 输出当前所有环境变量
+  #- env
+  # chmod: build_push.sh: Operation not permitted
+  #- chmod a+x build_push.sh
+  #- ./build_push.sh
+
+#web:
+#  stage: web_vue
+#  image: node:10
+#  cache:
+#    key: ${CI_PROJECT_ID}
+#    paths:
+#      - web-vue/node_modules/
+#  tags:
+#    - docker
+#  only:
+#    - master
+#    - tags
+#  script:
+#    - echo "=============== 开始web前端编译构建任务 ==============="
+#    - cd web-vue
+#    - npm install
+#    - npm run build
+
+server:
+  stage: jacococ_server
+  image: maven:3.6.3-jdk-8
+  tags:
+    - docker
+  only:
+    - master
+    #- dev
+    - tags
+  cache:
+    key: ${CI_PROJECT_ID}
+    paths:
+      - target/
+      - .m2/repository/
+  artifacts:
+    name: ${CI_PROJECT_NAME}-${CI_COMMIT_SHORT_SHA}-artifacts
+    expire_in: 4 week # x周后过期
+    paths:
+      #- build
+      - target
+  script:
+    - echo "=============== 开始spring构建任务 ==============="
+    - mvn clean kotlin:compile package -Dmaven.test.skip=true
+    - echo "=============== spring构建任务结束==============="
+
+docker:
+  stage: docker-build
+  tags:
+    - docker                                           # 使用tag为docker的runner触发构建
+  only:
+    - master
+    #- dev
+    - tags                                             # 只有推送tag时才触发该job
+  script:
+    - echo "=============== docker部署开始 ==============="
+    # login to dockerhub
+    - docker login -u duqian02 -p $NCR_TOKEN $DOCKER_HUB_NAME
+
+    # build docker image
+    #- TAG=${CI_BUILD_TAG}                              # 默认使用当前推送的tag名作为镜像tag，可修改为下面的commit hash的前六位等
+    #- TAG=${CI_BUILD_REF:0:8}
+    - TAG=latest
+    - image=${IMAGE_NAME_PREFIX}:$TAG
+
+    - echo "$ docker build -t $image"
+    - docker build -t $image .
+
+    - echo "$ docker push $image"
+    - docker push $image
+    - echo "=============== docker jacoco-web部署结束==============="
+
+    # 前端很少变化，这个基本上不用自动更新镜像，需要时手动更新下
+    #- cd http-server && ./build_node.sh
+#    - image2=${IMAGE_HTTP_SERVER_PREFIX}:$TAG
+#    - docker build -t $image2 .
+#    - echo "$ docker push $image2"
+#    - docker push $image2
+
+    #退出登录
+    - docker logout $DOCKER_HUB_NAME
+    - echo "=============== docker http-server部署结束==============="
+
+deploy:
+  stage: docker-deploy
+  tags:
+    - docker
+  image: curlimages/curl:7.68.0
+  script:
+    - curl --location --request POST http://portainer.duqian.cn/api/webhooks/aa0e1265-8dad-4da8-b1e1-081da7497983?tag=latest
