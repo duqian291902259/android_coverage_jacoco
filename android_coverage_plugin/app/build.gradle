@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+//子模块引用
+apply from: '../scripts/jacoco_build.gradle'
+println("coverageEnabled2=${gradle.rootProject.ext.coverageEnabled == "true"}")
+
+apply plugin: 'com.duqian.coverage'
+
+//一定要字符串判断
+if (gradle.rootProject.ext.coverageEnabled == "true") {
+    apply plugin: 'jacoco'
+    println("coverageEnabled jacoco-plugin")
+    jacocoReportConfig {
+        destination "$buildDir/jacoco/dq-report/"
+        branchName 'dev'//差异覆盖率,默认：dev
+        packageName = "com.duqian.coverage" //用于过滤class,不能通过applicationId来获取，因为千差万别，还是要看源码实际的包名
+        includes = [packageName] //后续支持多个，只处理这个包名的类
+    }
+}
+
+android {
+    compileSdkVersion 31
+    //buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.duqian.coverage"
+        minSdkVersion 19
+        targetSdkVersion 31
+        compileSdkVersion 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            //覆盖率开关
+            println("app coverageEnabled=${project.rootProject.ext.coverageEnabled}")
+            if (gradle.rootProject.ext.coverageEnabled) {
+                testCoverageEnabled = true
+            }
+
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            //testCoverageEnabled = false
+
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    implementation 'androidx.navigation:navigation-fragment:2.3.5'
+    implementation 'androidx.navigation:navigation-ui:2.3.5'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+
+    debugImplementation project(path: ':coverage-library')
+    releaseImplementation project(path: ':coverage-no-op')
+    //implementation "com.xx.com:coverage-library:$coverageVersion"
+    //releaseImplementation "com.xxx.com:coverage-no-op:$coverageVersion"
+
+    /*testImplementation 'junit:junit:'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'*/
+}

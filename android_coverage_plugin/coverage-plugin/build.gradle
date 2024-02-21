@@ -1,0 +1,86 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'groovy'
+    id 'maven-publish'
+    //id "com.duqian.publish"
+}
+
+/*publishPlugin {
+    groupId = "com.duqian.cc"
+    //artifactId = "publishPluginTest"
+    version = "1.3.6"
+    // 默认是 false，会发布到 release 仓库
+    isSnapshot = false
+}*/
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    gradlePluginPortal()
+    google()
+    mavenCentral()
+    maven { url "https://maven.aliyun.com/repository/jcenter" }
+    maven { url "https://maven.aliyun.com/repository/public" }
+}
+
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    // implementation  'com.android.tools.build:gradle:4.1.3'
+    implementation 'com.android.tools.build:gradle:7.0.4'
+
+    /*implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'*/
+    implementation 'com.google.code.gson:gson:2.2.4'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+}
+
+//version = "1.0.0"
+//group = 'com.duqian.coverage'
+//apply from: rootProject.file('scripts/publish_jar.gradle')
+
+
+/*group = 'com.duqian.coverage'
+version = '1.0.0'
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../repo'))
+        }
+    }
+}*/
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.duqian.coverage'
+                artifactId = 'coverage-plugin'
+                version = '1.0.3'
+
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                url = uri('../repo')
+                //url = layout.buildDirectory.dir('repo')
+            }
+        }
+    }
+}
+
+//也可以配置远程仓库
+/*repository(url: '私服仓库地址') {
+    authentication(userName: '账号', password: '密码')
+}
+snapshotRepository(url: '私服快照地址') {
+    authentication(userName: '账号', password: '密码')
+}*/
