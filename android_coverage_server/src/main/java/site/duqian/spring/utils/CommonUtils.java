@@ -116,6 +116,10 @@ public class CommonUtils {
                 if (requestUrl.contains(newPort)) {
                     serverHostUrl = Constants.LOCAL_REPORT_HOST_URL.replace(":8080", newPort);
                 }
+                /*String newPort2 = ":18080";
+                if (requestUrl.contains(newPort2)) {
+                    serverHostUrl = Constants.LOCAL_REPORT_HOST_URL.replace(":8080", newPort2);
+                }*/
             }
         }
         //logger.debug("getReportServerHost requestUrl=" + requestUrl + ",");

@@ -48,7 +48,7 @@ MAINTAINER 杜小菜,duqian2010@gmail.com
 # docker login site.duqian.cn
 
 # docker build -t jacoco-server .
-# docker run --rm -p 18090:8090 -p 18080:8080 -p 18081:8081 jacoco-server:latest
+# docker run --rm -p 18090:8090 -p 18080:8080 jacoco-server:latest
 
 # docker tag jacoco-server:latest site.duqian.cn/duqian02/android/jacoco-server:latest
 # docker push site.duqian.cn/duqian02/android/jacoco-server:latest

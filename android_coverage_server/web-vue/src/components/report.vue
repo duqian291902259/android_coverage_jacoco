@@ -140,7 +140,7 @@ export default {
         appName: "android",
         os: "Android",
         branch: "dev_dq_coverage",
-        base_branch: "",
+        base_branch: "master",
         commitId: "21acf983",
         commitId2: "ea7deb7e",
         incremental: false,
@@ -149,8 +149,8 @@ export default {
       },
       reportUrl: "",
       reportZipUrl: "",
-      appList: [],
-      branchList: [],
+      appList: ['coverage-demo'],
+      branchList: ['dev','master'],
       isLoading: false,
       groups: [
         {

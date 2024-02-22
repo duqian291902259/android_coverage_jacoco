@@ -54,7 +54,7 @@ export default {
         //   fileName: "dev_duqian_reprot111.zip",
         // },
       ],
-      appList: [],
+      appList: ['coverage-demo'],
     };
   },
   created(){

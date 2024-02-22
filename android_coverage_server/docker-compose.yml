@@ -12,7 +12,7 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
   http-server:
-    image: duqian2010/http-server:1.0.0
+    image: duqian2010/http-server:latest
     ports:
       - "18080:8080"
     volumes:

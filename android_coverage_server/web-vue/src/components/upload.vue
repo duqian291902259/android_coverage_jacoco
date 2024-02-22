@@ -86,7 +86,7 @@ export default {
             { min: 8, max: 8, message: 'CommitId长度为8，请重新填写', trigger: 'blur' }
           ],
       },
-      appList: [],
+      appList: ['coverage-demo'],
     };
   },
   created(){

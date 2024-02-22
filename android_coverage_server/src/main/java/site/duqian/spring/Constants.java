@@ -17,9 +17,9 @@ public class Constants {
     public static final String APP_CC_TASK_DEMO = "cc-task-demo";
     public static final String APP_CC_COVERAGE = "coverage-demo";
     public static final String SERVER_HOST_DOMAIN = "duqian.cn";
-    public static final String LOCAL_SERVER_HOST_URL = "http://127.0.0.1:8090";//本地调试服务器地址
-    public static final String LOCAL_REPORT_HOST_URL = "http://127.0.0.1:8080";//"http://10.255.209.49:8080";//本地调试report报告地址
-    public static final String JACOCO_SERVER_HOST_URL = LOCAL_SERVER_HOST_URL; //"http://jacoco.dev.mobile.cn";//android覆盖率平台服务器地址
+    public static final String LOCAL_SERVER_HOST_URL = "http://192.168.11.201:18090";//本地调试服务器地址.http://127.0.0.1:8090
+    public static final String LOCAL_REPORT_HOST_URL = "http://192.168.11.201:18080";////本地调试report报告地址
+    public static final String JACOCO_SERVER_HOST_URL = LOCAL_SERVER_HOST_URL; //android覆盖率平台服务器地址
     public static final String REPORT_SERVER_HOST_URL = "http://report.dev.mobile.cn";//报告地址，report前缀
     public static final String REPOSITORY_URL = "https://git-cc.nie.duqian.com/android/cc.git";
 
