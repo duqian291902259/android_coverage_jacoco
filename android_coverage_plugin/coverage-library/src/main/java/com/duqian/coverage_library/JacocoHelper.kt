@@ -33,7 +33,7 @@ object JacocoHelper {
     //private val mHandler = Handler(Looper.getMainLooper())
 
     private var hostUrl = ""//BuildConfig.JACOCO_HOST //服务器地址
-    private var mDeviceId: String? = ""
+    private var mDeviceId: String = ""
 
     private var mCallback: JacocoCallback? = null
 
@@ -60,7 +60,7 @@ object JacocoHelper {
         this.hostUrl = hostUrl
     }
 
-    fun generateEcFileAndUpload(context: Context?, deviceId: String?, callback: JacocoCallback?) {
+    fun generateEcFileAndUpload(context: Context?, deviceId: String, callback: JacocoCallback?) {
         mCallback = callback
         mDeviceId = deviceId
         if (isOpenCoverage) {
@@ -95,6 +95,10 @@ object JacocoHelper {
         var fileName = "jacoco_${currentCommitId}_$mDeviceId$SUFFIX"
         if (!isSingleFile) {  //按照时间戳命名,防止不同的人，不同设备重名覆盖远已经保存了的文件
             fileName = "$fileName-${System.currentTimeMillis()}$SUFFIX"
+        } else {
+            /*if (TextUtils.isEmpty(mDeviceId)){
+                return false
+            }*/
         }
         mRootDir = getJacocoEcFileSaveDir(context)
         val path = mRootDir + fileName
@@ -189,7 +193,7 @@ object JacocoHelper {
             mCallback?.onLog(TAG, "upload ec File list=" + Arrays.toString(files))
             for (f in files) {
                 val filename = f.name
-                if (!filename.endsWith(SUFFIX) || f.length() <= 0) {
+                if (!filename.endsWith(SUFFIX) || f.length() <= 0 || !filename.contains(mDeviceId)) {
                     continue
                 }
                 //application/plain  multipart/form-data
