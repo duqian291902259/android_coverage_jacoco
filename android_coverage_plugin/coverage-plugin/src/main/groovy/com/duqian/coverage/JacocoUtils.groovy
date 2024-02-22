@@ -20,6 +20,7 @@ class JacocoUtils {
     static String getCurrentBranchName() {
         //def currentBranchName = "git name-rev --name-only HEAD".execute().text.replaceAll("\n", "")
         def currentBranchName = "git rev-parse --abbrev-ref HEAD".execute().text.replaceAll("\n", "")
+        println "$TAG currentBranchName:$currentBranchName"
         if (currentBranchName.contains("/")) {
             currentBranchName = currentBranchName.substring(currentBranchName.lastIndexOf("/") + 1)
         }

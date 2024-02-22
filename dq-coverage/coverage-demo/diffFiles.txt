@@ -1,0 +1,1 @@
+android_coverage_plugin/app/src/main/java/com/duqian/coverage/MainActivity.kt

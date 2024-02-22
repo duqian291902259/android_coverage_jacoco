@@ -13,9 +13,10 @@ if (gradle.rootProject.ext.coverageEnabled == "true") {
     println("coverageEnabled jacoco-plugin")
     jacocoReportConfig {
         destination "$buildDir/jacoco/dq-report/"
-        branchName 'dev'//差异覆盖率,默认：dev
+        branchName 'main'//对比差异覆盖率,默认：dev
         packageName = "com.duqian.coverage" //用于过滤class,不能通过applicationId来获取，因为千差万别，还是要看源码实际的包名
         includes = [packageName] //后续支持多个，只处理这个包名的类
+        isDiffJacoco = true
     }
 }
 

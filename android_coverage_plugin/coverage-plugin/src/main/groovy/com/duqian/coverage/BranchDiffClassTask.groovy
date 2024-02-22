@@ -13,7 +13,7 @@ import org.gradle.api.tasks.TaskAction
 class BranchDiffClassTask extends DefaultTask {
     private final static String TAG = "dq-jacoco-BranchDiffClassTask"
     private final static String TEMP_DIR = "app"
-    def currentName//当前分支名
+    private def currentName = "dev"//当前分支名
     private JacocoReportExtension extension
 
     void setExtension(JacocoReportExtension extension) {
@@ -21,7 +21,7 @@ class BranchDiffClassTask extends DefaultTask {
     }
 
     @TaskAction
-    def getDiffClass() {
+    def makeDiffClass() {
         //获取差异class
         println "pullDiffClasses start"
         getDiffSrcAndClasses()
@@ -33,7 +33,7 @@ class BranchDiffClassTask extends DefaultTask {
         println "$TAG currentName:" + currentName + ",baseBranch=$extension.branchName"
         //获得两个分支的差异文件
         def diff = "git diff origin/${extension.branchName} origin/${currentName} --name-only".execute().text
-        //println "$TAG diff:$diff"
+        println "$TAG diff:$diff"
 
         //List<String> diffFiles = getDiffClassFiles(diff)
         List<String> diffFiles = getDiffSourceFiles(diff)
@@ -48,10 +48,10 @@ class BranchDiffClassTask extends DefaultTask {
         //copy all classes
 
         //两个分支差异文件的目录
-        handleDiffClasses(currentName, diffFiles)
+        //handleDiffClasses(currentName, diffFiles)
 
         //copy class到 app/classes
-        copyDiffClass(diffFiles)
+        //copyDiffClass(diffFiles)
     }
 
     private void copyDiffClass(List<String> diffFiles) {
