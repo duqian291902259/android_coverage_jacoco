@@ -114,7 +114,7 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
             //压缩并上传class/apk文件
             def uploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
             Task buildTask = project.tasks.findByName("assembleDebug")
-            //println("$TAG uploadTask $uploadTask,buildTask=$buildTask")
+            println("$TAG uploadTask $uploadTask,buildTask=$buildTask")
             if (buildTask != null && uploadTask != null) {
                 buildTask.finalizedBy(uploadTask)
             }

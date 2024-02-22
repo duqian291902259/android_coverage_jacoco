@@ -57,6 +57,7 @@ class HomeFragment : Fragment() {
             Log.d("dq-jacoco", msg)
             UIUtils.toast(context, msg)
         }
+        Log.d("dq-jacoco", "initAppData")
 
         JacocoHelper.initAppData(
             isOpenCoverage = BuildConfig.IS_JACOCO_ENABLE,
