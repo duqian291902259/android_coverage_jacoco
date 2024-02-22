@@ -204,6 +204,9 @@ export default {
     console.warn(`host=${jacocoHost}`);
     this.updateSelectList();
   },
+  mounted() {
+   // this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+  },
   methods: {
     validateForm() {
       console.log(this.$refs["ruleForm"]);
@@ -405,6 +408,10 @@ export default {
           this.updateOptions(data.branchList);
           this.branchList = data.branchList;
           this.appList = data.appList;
+          if(this.appList.length>0){
+            //this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+            //onSelectApp(this.form.appName)
+          }
           console.warn(this.branchList);
           console.warn("/api/init");
           console.warn(this.appList);
