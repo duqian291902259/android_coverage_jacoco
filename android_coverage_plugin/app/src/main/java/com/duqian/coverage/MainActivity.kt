@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         UIUtils.dp2px(this, 20f)
 
-        Log.d("dq-jacoco", "ext test66667888,20dp=  ${20.dp}")
+        Log.d("dq-jacoco", "test modify 666,20dp=  ${20.dp}")
 
         TestJava.test()
 
