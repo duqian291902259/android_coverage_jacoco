@@ -25,9 +25,12 @@ class CovDownLoadUtils {
                     .build()
             Call call = client.newCall(request)
             Response response = call.execute()
-            println "$TAG downloadFile string:${response.body().string()}"
+
             handleResponse(response, file)
 
+            /*def ecFileText = response.body().string()
+            println "$TAG downloadFile string:${ecFileText}"
+            FileUtil.saveStringToFile(ecFileText,file)*/
         } catch (Exception e) {
             println "$TAG downloadFile e:$e"
         }
@@ -50,18 +53,18 @@ class CovDownLoadUtils {
             if (parentFile != null && !parentFile.exists()) {
                 parentFile.mkdirs()
             }
-            if (target.exists()) {
-                target.delete()
-            } else {
+            if (!target.exists()) {
                 target.createNewFile()
+            } else {
+                //target.delete()
             }
-
+            target.exists()
             byte[] buffer = new byte[1024 * 2]
             int length
             while ((length = is.read(buffer)) > 0) {
                 os.write(buffer, 0, length)
             }
-            println("$TAG downloaded =${target}")
+            println("$TAG target.exists()=${target.exists()},downloaded =${target}")
         } catch (Exception e) {
             println("$TAG download error =$e")
         } finally {

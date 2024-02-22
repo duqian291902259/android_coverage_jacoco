@@ -27,11 +27,11 @@ class JacocoDownloadTask extends DefaultTask {
             rootFile.mkdirs()
 
             //本地拉取
-            boolean  isPulled = pullLocalEcFiles(dataDir)
+            boolean isPulled = pullLocalEcFiles(dataDir)
 
             //远程下载
-            println "downloadJacocoEcFile start local,isPulled="+isPulled
-            if (!isPulled){
+            println "downloadJacocoEcFile start local,isPulled=" + isPulled
+            if (!isPulled) {
                 downloadEcData(dataDir)
                 println "downloadJacocoEcFile end"
             }
@@ -92,10 +92,11 @@ class JacocoDownloadTask extends DefaultTask {
                 }
                 path = URLEncoder.encode(path, "utf-8")
                 String downloadUrl = "${host}/download?path=${path}"
-                def cmdDownload = "curl -o ${file.getAbsolutePath()} ${downloadUrl}"
+                /*def cmdDownload = "curl -o ${file.getAbsolutePath()} ${downloadUrl}"
                 def result = cmdDownload.execute().text
-                println "download cmdDownload=${cmdDownload}"
                 println "result=$result}"
+                */
+                println "download downloadUrl=${downloadUrl}"
 
                 CovDownLoadUtils.downloadFile(downloadUrl, file)
             }

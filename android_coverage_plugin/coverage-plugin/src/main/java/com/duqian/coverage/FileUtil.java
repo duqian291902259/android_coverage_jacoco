@@ -4,10 +4,12 @@ import org.gradle.api.Project;
 import org.gradle.internal.impldep.org.eclipse.jgit.annotations.NonNull;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -305,10 +307,40 @@ public class FileUtil {
         copyDirectory(from, new File(to, from.getName()));
     }
 
+    public static boolean saveStringToFile(String content, @NonNull final File file) throws IOException {
+        try {
+            File parentFile = file.getParentFile();
+            if (parentFile != null && !parentFile.exists()) {
+                parentFile.mkdirs();
+            }
+            if (file.exists()) {
+                file.delete();
+            } else {
+                file.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(file.getName(), false);
+
+            BufferedWriter bufferWriter = new BufferedWriter(fileWriter);
+
+            bufferWriter.write(content);
+
+            bufferWriter.close();
+
+            System.out.println("saveStringToFile Done");
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public static File mkdirs(File folder) {
         if (!folder.mkdirs() && !folder.isDirectory()) {
             throw new RuntimeException("Cannot create directory " + folder);
         }
         return folder;
     }
+
+
 }
