@@ -13,8 +13,8 @@ import org.gradle.api.plugins.PluginContainer
 class JacocoUtils {
 
     private static String TAG = "dq-jacoco-utils"
-    //static String JACOCO_HOST = "http://jacoco.dev.dq-mobile.cn"
-    static String JACOCO_HOST = "http://192.168.3.85:8090"
+    static String JACOCO_HOST = "http://192.168.11.201:18090" //默认的服务器地址，外部local.properties里面可以配置修改
+
     static String COV_APP_NAME = ""
 
     static String getCurrentBranchName() {

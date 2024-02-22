@@ -151,7 +151,7 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
             for (Project proj : set) {
                 def moduleName = proj.getName()
                 if (moduleName == "api") continue
-                if (moduleName.contains(entryModule) || moduleName.contains("main") || moduleName.contains("dq-start")) {
+                if (moduleName.contains(entryModule) || moduleName.contains("coverage-library") || moduleName.contains("app")) {
                     def defaultConfig = project.android.defaultConfig
                     defaultConfig.buildConfigField "String", "CURRENT_BRANCH_NAME", "\"" + currentBranchName + "\""
                     defaultConfig.buildConfigField "String", "CURRENT_COMMIT_ID", "\"" + commitId + "\""

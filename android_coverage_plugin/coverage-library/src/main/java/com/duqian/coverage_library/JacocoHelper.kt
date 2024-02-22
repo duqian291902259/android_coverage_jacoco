@@ -30,14 +30,10 @@ object JacocoHelper {
 
     //ec文件的路径
     private var mRootDir = ""
-    private val mHandler = Handler(Looper.getMainLooper())
+    //private val mHandler = Handler(Looper.getMainLooper())
 
-    @SuppressLint("CgiLint")
-    //const val LOCAL_HOST = "http://192.168.11.201:8090"
-    const val LOCAL_HOST = "http://192.168.3.85:8090"
-    const val JACOCO_HOST = LOCAL_HOST //Android覆盖率平台服务器地址
-    var hostUrl = JACOCO_HOST //BuildConfig.JACOCO_HOST //服务器地址
-    var mDeviceId: String? = ""
+    private var hostUrl = ""//BuildConfig.JACOCO_HOST //服务器地址
+    private var mDeviceId: String? = ""
 
     private var mCallback: JacocoCallback? = null
 
@@ -61,6 +57,7 @@ object JacocoHelper {
         JacocoHelper.currentCommitId = currentCommitId
         JacocoHelper.appName = appName
         JacocoHelper.hostUrl = hostUrl
+        this.hostUrl = hostUrl
     }
 
     fun generateEcFileAndUpload(context: Context?, deviceId: String?, callback: JacocoCallback?) {

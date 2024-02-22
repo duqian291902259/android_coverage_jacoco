@@ -14,7 +14,6 @@ import com.duqian.coverage.BuildConfig
 import com.duqian.coverage.R
 import com.duqian.coverage.utils.UIUtils
 import com.duqian.coverage_library.JacocoHelper
-import com.duqian.coverage_library.JacocoHelper.JACOCO_HOST
 import com.duqian.coverage_library.CoverageUtil
 import com.duqian.coverage_library.JacocoCallback
 import java.io.File
@@ -30,7 +29,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+            ViewModelProvider(this)[HomeViewModel::class.java]
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
         val btnDump: Button = root.findViewById(R.id.btn_dump)
