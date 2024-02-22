@@ -19,13 +19,15 @@ class CovDownLoadUtils {
         try {
             OkHttpClient client = buildHttpClient()
             String url = downloadUrl
-            //println("$TAG downloadFile url=$url")
+            println("$TAG downloadFile url=$url")
             Request request = new Request.Builder()
                     .url(url)
                     .build()
             Call call = client.newCall(request)
             Response response = call.execute()
+            println "$TAG downloadFile string:${response.body().string()}"
             handleResponse(response, file)
+
         } catch (Exception e) {
             println "$TAG downloadFile e:$e"
         }

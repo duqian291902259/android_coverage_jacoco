@@ -80,7 +80,7 @@ task jacocoReportForModule(type: JacocoReport) {
     reports {
         xml.enabled = false
         html.enabled = true
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+        html.outputLocation = layout.buildDirectory.dir('JacocoHtml')
     }
     def dirs = files(files(coverageClassDirs).files.collect {
         fileTree(dir: it,

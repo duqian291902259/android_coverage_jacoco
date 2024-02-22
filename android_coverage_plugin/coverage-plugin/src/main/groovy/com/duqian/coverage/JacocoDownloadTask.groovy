@@ -79,18 +79,23 @@ class JacocoDownloadTask extends DefaultTask {
             return
         }
         String[] paths = text.split(',')
-        println "download ec file, length=${paths.length}"
+        println "download ec file, dataDir=$dataDir,length=${paths.length}"
         if (paths != null && paths.size() > 0) {
             for (String path : paths) {
                 path = path.replace("\"", '')
                 def name = getOneParameter(path, "fileName")
                 def file = new File(dataDir, name)
+                println "download ec file, path=${path}"
+
                 if (file.exists() && file.length() > 0) { //存在
                     file.delete()
                 }
                 path = URLEncoder.encode(path, "utf-8")
                 String downloadUrl = "${host}/download?path=${path}"
-                //"curl -o ${file.getAbsolutePath()} ${host}/download?path=${path}".execute().text
+                def cmdDownload = "curl -o ${file.getAbsolutePath()} ${downloadUrl}"
+                def result = cmdDownload.execute().text
+                println "download cmdDownload=${cmdDownload}"
+                println "result=$result}"
 
                 CovDownLoadUtils.downloadFile(downloadUrl, file)
             }

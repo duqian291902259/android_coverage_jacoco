@@ -1,3 +1,4 @@
+/*
 package com.duqian.coverage
 
 import com.android.build.api.transform.QualifiedContent
@@ -12,11 +13,13 @@ import org.codehaus.groovy.runtime.IOGroovyMethods
 import org.gradle.api.Project
 import org.gradle.internal.FileUtils
 
+*/
 /**
  * Description:处理覆盖率相关的class操作，后续在此做增量探针的逻辑
  * @author n20241 Created by 杜小菜 on 2021/9/10 - 18:28 .
  * E-mail: duqian2010@gmail.com
- */
+ *//*
+
 class JacocoTransform extends Transform {
     private static final String TAG = "dq-jacocoTransform"
     private Project project
@@ -126,12 +129,14 @@ class JacocoTransform extends Transform {
             }
         }
 
-        /*if (!jarInputs.isEmpty()) {
+        */
+/*if (!jarInputs.isEmpty()) {
             jarInputs.each { jarInput ->
                 File jarInputFile = jarInput.file
                 copier.doJar(jarInputFile, null)
             }
-        }*/
+        }*//*
+
     }
 
 
@@ -158,10 +163,12 @@ class JacocoTransform extends Transform {
                                 if (fileInput.isDirectory()) {
                                     return // continue.
                                 }
-                                /*if (jacocoExtension.jacocoEnable &&
+                                */
+/*if (jacocoExtension.jacocoEnable &&
                                         DiffAnalyzer.getInstance().containsClass(getClassName(fileInput))) {
                                     injector.doClass(fileInput, fileOutputTransForm)
-                                } else {*/
+                                } else {*//*
+
                                 FileUtils.copyFile(fileInput, fileOutputTransForm)
                                 //}
                                 break
@@ -181,10 +188,12 @@ class JacocoTransform extends Transform {
                     dirInput.file.traverse(type: FileType.FILES) { fileInput ->
                         File fileOutputTransForm = new File(fileInput.getAbsolutePath().replace(dirInput.file.getAbsolutePath(), dirOutput.getAbsolutePath()))
                         FileUtils.mkdirs(fileOutputTransForm.parentFile)
-                        /*if (jacocoExtension.jacocoEnable &&
+                        */
+/*if (jacocoExtension.jacocoEnable &&
                                 DiffAnalyzer.getInstance().containsClass(getClassName(fileInput))) {
                             injector.doClass(fileInput, fileOutputTransForm)
-                        } else {*/
+                        } else {*//*
+
                         FileUtils.copyFile(fileInput, fileOutputTransForm)
                         //}
                     }
@@ -209,9 +218,11 @@ class JacocoTransform extends Transform {
                         break
                     case Status.ADDED:
                     case Status.CHANGED:
-                        /* if (jacocoExtension.jacocoEnable) {
+                        */
+/* if (jacocoExtension.jacocoEnable) {
                              injector.doJar(jarInputFile, jarOutputFile)
-                         } else {*/
+                         } else {*//*
+
                         FileUtils.copyFile(jarInputFile, jarOutputFile)
                         //}
                         break
@@ -246,4 +257,4 @@ class JacocoTransform extends Transform {
         println("${TAG} jacoco git result :$result,error=$error")
         pces.closeStreams()
     }
-}
+}*/

@@ -1,10 +1,11 @@
 package com.duqian.coverage
 
-import com.android.build.gradle.AppPlugin
+//import com.android.build.gradle.AppPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.ProjectInternal
+import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
 import org.gradle.testing.jacoco.tasks.JacocoReport
@@ -17,7 +18,7 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
 
     private static String TAG = "dq-jacoco"
-    private static String GROUP = "dq-jacoco"
+    private static String GROUP = TAG
     private static String TASK_JACOCO_ALL = "jacocoAllTaskLauncher"
     private static String TASK_JACOCO_DOWNLOAD_EC = "jacocoDownloadEcData"
     private static String TASK_JACOCO_UPLOAD_BUILD_FILES = "jacocoUploadBuildFiles"
@@ -40,12 +41,14 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
         //开启了jacoco才注册任务，只在application的模块注册
         if (isOpenJacoco) {
             project.plugins.all {
-                if (it instanceof AppPlugin) {
-                    registerJacocoTasks(project, jacocoReportExtension)
-                    //println "$TAG registerJacocoTasks"
+                registerJacocoTasks(project, jacocoReportExtension)
+                if (it instanceof ApplicationPlugin) {
+                    println "$TAG registerJacocoTasks $it"
                     /*JacocoTransform jacocoTransform = new JacocoTransform(project, jacocoReportExtension)
                     android.registerTransform(jacocoTransform)
                     println("$TAG,registerJacocoTransform $android")*/
+                } else {
+                    println "$TAG not registerJacocoTasks $it"
                 }
             }
 
@@ -60,8 +63,8 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
     }
 
     private registerJacocoTasks(ProjectInternal project, JacocoReportExtension jacocoReportExtension) {
-        project.afterEvaluate {
-            //目前只在cc-start里面处理，不用各个moudle里面搞task
+        //project.afterEvaluate {
+            //最好只在app里面处理，不用各个moudle里面搞task
             Task jacocoReportEntryTask = findOrCreateJacocoReportTask(project.tasks)
             JacocoDownloadTask jacocoDownloadTask = project.tasks.findByName(TASK_JACOCO_DOWNLOAD_EC)
             if (jacocoDownloadTask == null) {//download .ec
@@ -104,7 +107,7 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
                 println("$TAG jacocoReportEntryTask " + it)
             }
 
-            jacocoReportEntryTask.doLast {
+            jacocoReportEntryTask.doLast {//要有ec文件，否则本地无法生成
                 jacocoReportTask.generate()
             }
 
@@ -115,7 +118,7 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
             if (buildTask != null && uploadTask != null) {
                 buildTask.finalizedBy(uploadTask)
             }
-        }
+        //}
     }
 
     /**
@@ -203,7 +206,7 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
 
         JacocoReport reportTask = project.tasks.create(TASK_JACOCO_REPORT, JacocoReport)
         reportTask.doFirst {
-            //println("$TAG,createReportTask :do first.executionDataDir=$executionDataDir")
+            println("$TAG,createReportTask :do first.executionDataDir=$executionDataDir")
         }
         reportTask.group = GROUP
         reportTask.description = "Generates Jacoco coverage reports whole project."
@@ -216,8 +219,9 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
             def destination = project.jacocoReportConfig.destination
 
             csv.enabled project.jacocoReportConfig.csv.enabled
-            html.enabled project.jacocoReportConfig.html.enabled
             xml.enabled project.jacocoReportConfig.xml.enabled
+            html.enabled project.jacocoReportConfig.html.enabled
+            html.outputLocation = project.layout.buildDirectory.dir('JacocoHtml')
 
             if (csv.enabled) {
                 csv.destination new File((destination == null) ? "${project.buildDir}/jacoco/jacoco.csv" : "${destination.trim()}/jacoco.csv")

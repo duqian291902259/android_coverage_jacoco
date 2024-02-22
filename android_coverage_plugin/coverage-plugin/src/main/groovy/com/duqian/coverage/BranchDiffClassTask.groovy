@@ -48,10 +48,10 @@ class BranchDiffClassTask extends DefaultTask {
         //copy all classes
 
         //两个分支差异文件的目录
-        //handleDiffClasses(currentName, diffFiles)
+        handleDiffClasses(currentName, diffFiles)
 
         //copy class到 app/classes
-        //copyDiffClass(diffFiles)
+        copyDiffClass(diffFiles)
     }
 
     private void copyDiffClass(List<String> diffFiles) {
