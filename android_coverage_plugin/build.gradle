@@ -2,7 +2,7 @@
 buildscript {
     ext.kotlin_version = '1.7.10'//"1.4.32"
     ext.gradleVersion = '7.0.4' //'4.0.1'
-    ext.coverageVersion = '1.2.8'
+    ext.coverageVersion = '1.0.0'
 
     ext.coverageEnabled = project.property('coverageEnabled')
 
@@ -32,6 +32,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url uri('repo')
+        }
         mavenLocal()
         gradlePluginPortal()
         google()

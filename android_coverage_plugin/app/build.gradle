@@ -79,8 +79,8 @@ dependencies {
 
     debugImplementation project(path: ':coverage-library')
     releaseImplementation project(path: ':coverage-no-op')
-    //implementation "com.xx.com:coverage-library:$coverageVersion"
-    //releaseImplementation "com.xxx.com:coverage-no-op:$coverageVersion"
+    //debugImplementation "com.duqian.coverage:coverage-library:$coverageVersion"
+    //releaseImplementation "com.duqian.coverage:coverage-no-op:$coverageVersion"
 
     /*testImplementation 'junit:junit:'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

@@ -5,6 +5,34 @@ plugins {
     id 'maven-publish'
 }
 
+repositories {
+    gradlePluginPortal()
+    google()
+    mavenCentral()
+    maven { url "https://maven.aliyun.com/repository/jcenter" }
+    maven { url "https://maven.aliyun.com/repository/public" }
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.duqian.coverage'
+                artifactId = 'coverage-library'
+                version = '1.0.0'
+
+                //from components.java
+            }
+        }
+        repositories {
+            maven {
+                url = uri('../repo')
+                //url = layout.buildDirectory.dir('repo')
+            }
+        }
+    }
+}
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
@@ -35,7 +63,6 @@ android {
 }
 
 dependencies {
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //implementation 'androidx.core:core-ktx:1.7.0'
     //implementation 'androidx.appcompat:appcompat:1.4.1'
