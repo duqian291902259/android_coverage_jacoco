@@ -21,7 +21,7 @@
 ### 集成coverage-plugin
 在项目根build.gradle中添加插件依赖，配置插件属性，使用封装好的JacocoHelper类dump数据，即可完成覆盖率统计功能的集成：
 ```
-classpath "com.duqian.coverage:coverage-plugin:1.3.5"
+classpath "com.duqian.coverage:coverage-plugin:1.0.0"
 
 apply plugin: "com.duqian.coverage"
 
