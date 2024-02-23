@@ -1,6 +1,3 @@
-//apply plugin: 'digital.wup.android-maven-publish'
-
-
 private void checkApply(String name) {
     if (!project.plugins.hasPlugin(name)) {
         project.plugins.apply(name)
@@ -9,8 +6,8 @@ private void checkApply(String name) {
 
 checkApply('maven-publish')
 
-//group GROUP_ID
-//version sdkVersion
+group project.property("GROUP_ID")
+version "1.0.0"
 
 println(">>>>>>>>>>>>>>>>>> maven publish version:" + version)
 
@@ -23,7 +20,7 @@ println ">>>>>>>>>>>>> " + group
 
 def javadoc = task("Javadoc", type: Javadoc) {
     options.encoding = 'utf-8'
-    classpath += files(configurations.compile)
+    classpath += files(configurations.implementation)
     failOnError false
 }
 
@@ -56,23 +53,29 @@ if (JavaVersion.current().isJava8Compatible()) {
 publishing {
     publications {
         "${project.name}"(MavenPublication) {
+            //java/release/all
             from components.java
             groupId = group
             artifactId "${project.name}"
             version = version
-            artifact sourcesJar
-            artifact javadocJar
+            //artifact sourcesJar
+            //artifact javadocJar
         }
     }
 
     repositories {
         maven {
-            name "CcNexus"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            name "DQNexus"
+            url = uri('../repo')
+            //url = layout.buildDirectory.dir('repo')
+
+            /*url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username = System.getenv("nexusUsername")//duq...02
-                password = System.getenv("nexusPassword")//dq2
-            }
+                //username = System.getenv("nexusUsername")//duq...02
+                //password = System.getenv("nexusPassword")//dq2
+                username = project.property("nexusUsername")
+                password = project.property("nexusPassword")
+            }*/
         }
 
     }
