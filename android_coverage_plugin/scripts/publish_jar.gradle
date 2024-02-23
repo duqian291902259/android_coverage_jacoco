@@ -14,7 +14,7 @@ checkApply('maven-publish')
 
 println(">>>>>>>>>>>>>>>>>> maven publish version:" + version)
 
-def baseUrl = "http://nexus.cc.163.com/nexus/content/repositories"
+def baseUrl = "http://xx.com/nexus/content/repositories"
 def snapshotsRepoUrl = "$baseUrl/snapshots"
 def releasesRepoUrl = "$baseUrl/releases"
 
