@@ -1,8 +1,33 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    //id 'maven'
     id 'maven-publish'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.duqian.coverage'
+                artifactId = 'coverage-library'
+                version = '1.0.0'
+
+                from components.all
+            }
+        }
+        repositories {
+            maven {
+                url = uri('../repo')
+                //url = layout.buildDirectory.dir('repo')
+                //指定要上传的maven私服仓库
+                /*url = "http://dq.com:8080/maven/content/repositories/thirdparty/"
+                credentials {
+                    username 'admin'
+                    password 'maxrocky5721'
+                }*/
+            }
+        }
+    }
 }
 
 repositories {
@@ -13,26 +38,6 @@ repositories {
     maven { url "https://maven.aliyun.com/repository/public" }
 }
 
-
-afterEvaluate {
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId = 'com.duqian.coverage'
-                artifactId = 'coverage-library'
-                version = '1.0.0'
-
-                //from components.java
-            }
-        }
-        repositories {
-            maven {
-                url = uri('../repo')
-                //url = layout.buildDirectory.dir('repo')
-            }
-        }
-    }
-}
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"

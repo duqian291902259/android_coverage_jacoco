@@ -5,7 +5,6 @@ plugins {
 }
 
 repositories {
-    gradlePluginPortal()
     google()
     mavenCentral()
     maven { url "https://maven.aliyun.com/repository/jcenter" }
@@ -20,7 +19,7 @@ afterEvaluate {
                 artifactId = 'coverage-no-op'
                 version = '1.0.0'
 
-                //from components.java
+                from components.all
             }
         }
         repositories {
@@ -63,6 +62,6 @@ android {
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    //implementation 'androidx.core:core-ktx:1.7.0'
-    //implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
 }
