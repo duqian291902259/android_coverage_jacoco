@@ -9,6 +9,7 @@ cp -p -r src/main/resources/web/*  http-server/
 #docker 构建并node-http-server服务
 # shellcheck disable=SC2164
 TAG="latest"
+#TAG="1.0.0"
 cd http-server/
 docker build -t http-server .
 docker tag http-server:latest duqian2010/http-server:$TAG

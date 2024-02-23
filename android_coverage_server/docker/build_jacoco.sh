@@ -9,6 +9,7 @@ cp -p target/jacoco.web-1.0.0.jar  docker/
 #docker 构建并jacoco-server
 # shellcheck disable=SC2164
 TAG="latest"
+#TAG="1.0.0"
 #TAG="3.0.1"
 cd docker
 docker build -t jacoco-server .
