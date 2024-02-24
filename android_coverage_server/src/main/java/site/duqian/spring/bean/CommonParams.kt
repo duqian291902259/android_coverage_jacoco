@@ -3,7 +3,7 @@ package site.duqian.spring.bean
 import site.duqian.spring.Constants
 import site.duqian.spring.utils.TextUtils
 import java.io.Serializable
-import java.util.regex.Pattern
+import java.net.URL
 
 /**
  * Description:封装公参
@@ -26,6 +26,29 @@ data class CommonParams(
     var os: String? = "Android" //平台
     var uploadDir: String? = "" //自定义上传路径,部分相对路径，方便服务器生成目录
 
+    fun getHost(): String {
+        if (TextUtils.isEmpty(requestUrl)) return ""
+        val url = URL(requestUrl) // 创建URL对象
+        val host: String = url.host // 获取主机地址
+        println("getHostUrl：$host")
+        return host
+    }
+    fun getPath(): String {
+        if (TextUtils.isEmpty(requestUrl)) return ""
+        val url = URL(requestUrl) // 创建URL对象
+        val path: String = url.path
+        println("getPath：$path")
+        return path
+    }
+
+    fun getPort(): String {
+        if (TextUtils.isEmpty(requestUrl)) return ""
+        val url = URL(requestUrl) // 创建URL对象
+        val port: String = url.port.toString() // 获取主机地址
+        println("getPort：$port")
+        return port
+    }
+
     fun getBranchId(): String {
         //'dev_#411671_android_coverage'.match(/(?<=#)\d{6}/)[0]
         /*try {
@@ -38,7 +61,7 @@ data class CommonParams(
         var branchId = branchName
         val index = branchName?.indexOf("#") ?: -1
         if (index >= 0) {
-            branchId = branchName!!.substring(index + 1, index + 1+6)
+            branchId = branchName!!.substring(index + 1, index + 1 + 6)
         }
         return if (TextUtils.isEmpty(branchId)) "dev" else branchId!!
     }

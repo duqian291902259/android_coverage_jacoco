@@ -108,21 +108,22 @@ public class CommonUtils {
         String serverHostUrl = Constants.REPORT_SERVER_HOST_URL;
         String requestUrl = commonParams.getRequestUrl();
         if (!TextUtils.isEmpty(requestUrl)) {
+            String host = commonParams.getHost();
+            String port = commonParams.getPort();
+            String path = commonParams.getPath();
+            logger.debug("host=" + host + ",port=" + port + ",path=" + path);
             if (requestUrl.contains(Constants.SERVER_HOST_DOMAIN)) {
                 serverHostUrl = Constants.REPORT_SERVER_HOST_URL;
             } else {
                 serverHostUrl = Constants.LOCAL_REPORT_HOST_URL;
-                String newPort = ":18090";
-                if (requestUrl.contains(newPort)) {
-                    serverHostUrl = Constants.LOCAL_REPORT_HOST_URL.replace(":8080", newPort);
+                String requestPort = "8090";
+                if (requestUrl.contains(requestPort)) {
+                    //serverHostUrl = Constants.LOCAL_REPORT_HOST_URL.replace(requestPort, "8080");
+                    serverHostUrl = requestUrl.replace(path, "").replace(requestPort, "8080");
                 }
-                /*String newPort2 = ":18080";
-                if (requestUrl.contains(newPort2)) {
-                    serverHostUrl = Constants.LOCAL_REPORT_HOST_URL.replace(":8080", newPort2);
-                }*/
             }
         }
-        //logger.debug("getReportServerHost requestUrl=" + requestUrl + ",");
+        logger.debug("getReportServerHost requestUrl=" + requestUrl + ",serverHostUrl=" + serverHostUrl);
         return serverHostUrl;
     }
 }

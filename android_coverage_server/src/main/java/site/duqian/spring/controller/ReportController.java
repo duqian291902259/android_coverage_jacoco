@@ -285,9 +285,7 @@ public class ReportController {
         cmdList.add("--name=" + appName);
 
         String[] commandArray = new String[cmdList.size()];
-        for (
-                int i = 0;
-                i < commandArray.length; i++) {
+        for (int i = 0; i < commandArray.length; i++) {
             commandArray[i] = cmdList.get(i);
         }
         return CmdUtil.INSTANCE.runProcess(commandArray);
