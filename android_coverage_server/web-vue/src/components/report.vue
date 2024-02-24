@@ -205,7 +205,7 @@ export default {
     this.updateSelectList();
   },
   mounted() {
-   // this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+    //this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
   },
   methods: {
     validateForm() {

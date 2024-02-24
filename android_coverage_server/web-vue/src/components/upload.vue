@@ -71,8 +71,8 @@ export default {
       pageLoading: false,
       form: {
         appName: "android",
-        branch: "dev_dq_coverage",
-        commitId: "0230cf55",
+        branch: "dev",
+        commitId: "",
       },
       limit: 10,
       uploadUrl: `${jacocoHost}/coverage/upload`,

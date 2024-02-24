@@ -90,6 +90,11 @@ export default {
           this.appList = data.appList;
           console.warn("/api/init");
           console.warn(this.appList);
+
+          if(this.appList.length>0){
+            this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+            //updateReportList(this.appList[0])
+          }
         })
         .catch((error) => {
           console.error(error);

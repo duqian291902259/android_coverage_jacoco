@@ -149,9 +149,11 @@ public class WebApiController {
             long latestModifiedTime = 0;
             long oldModifiedTime = 0;
             try {
+                List<String> commitList = new ArrayList<>();
                 for (File file : dir.listFiles()) {
                     //有ec文件并且有class，src
                     if (file.isDirectory() && checkReportRes(file)) {
+                        commitList.add(file.getName());
                         long lastModified = file.lastModified();
                         if (lastModified >= latestModifiedTime) {
                             latestFile = file;
@@ -166,6 +168,7 @@ public class WebApiController {
                         }
                     }
                 }
+                branchItem.setCommitList(commitList);
             } catch (Exception e) {
                 e.printStackTrace();
             }

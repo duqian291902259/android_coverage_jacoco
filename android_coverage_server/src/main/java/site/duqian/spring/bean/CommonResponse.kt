@@ -80,6 +80,7 @@ data class BranchItem(
     var branchLabel: String? = "",
     var latestCommit: String? = "",
     var oldCommit: String? = "",
+    var commitList: List<String>? = null,
 ) : Serializable {
     override fun toString(): String {
         return "BranchItem(branchName=$branchName, branchLabel=$branchLabel, latestCommit=$latestCommit, oldCommit=$oldCommit)"
