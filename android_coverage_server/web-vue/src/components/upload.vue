@@ -71,8 +71,8 @@ export default {
       pageLoading: false,
       form: {
         appName: "android",
-        branch: "dev",
-        commitId: "",
+        branch: "master",
+        commitId: "efb5756b",
       },
       limit: 10,
       uploadUrl: `${jacocoHost}/coverage/upload`,
@@ -132,7 +132,7 @@ export default {
         .then((res) => {
           let { data = {} } = res || {};
           this.appList = data.appList;
-          console.warn("/api/init");
+          //this.form.commitId = this.[0]
           console.warn(this.appList);
         })
         .catch((error) => {
