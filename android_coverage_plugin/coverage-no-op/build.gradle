@@ -21,7 +21,7 @@ afterEvaluate {
             maven(MavenPublication) {
                 groupId = 'com.duqian.coverage'
                 artifactId = 'coverage-no-op'
-                version = '1.0.0'
+                version ='1.0.0-test-SNAPSHOT' //'1.0.0'
 
                 from components.all
             }
@@ -30,16 +30,32 @@ afterEvaluate {
             maven {
                 url = uri('../repo')
                 //url = layout.buildDirectory.dir('repo')
-                url = System.getenv("MAVEN_REPO_URL")
+                url = getLocalConfig("SNAPSHOT_URL", "")//System.getenv("MAVEN_REPO_URL")
                 println("repo url=$url")
                 allowInsecureProtocol = true
                 credentials {
-                    username "${System.getenv("MAVEN_REPO_NAME")}" //'develop-snapshot'
-                    password "${System.getenv("MAVEN_REPO_PWD")}"
+                    username getLocalConfig("MAVEN_USERNAME", "develop-snapshot")//"${System.getenv("MAVEN_REPO_NAME")}" //'develop-snapshot'
+                    password getLocalConfig("MAVEN_PASSWORD", "")//"${System.getenv("MAVEN_REPO_PWD")}"
                 }
             }
         }
     }
+}
+
+def enableDebug = getLocalConfig("dev.enableDebug", false) == "true"
+
+Object getLocalConfig(String key, Object defaultValue) {
+    try {
+        Properties properties = new Properties()
+        File file = project.rootProject.file('local.properties')
+        if (file == null || file.length() <= 0) return defaultValue
+        properties.load(file.newDataInputStream())
+        def switchStatus = properties.getProperty(key)
+        return switchStatus
+    } catch (Exception e) {
+        print("getLocalConfig error = $e")
+    }
+    return defaultValue
 }
 
 android {
