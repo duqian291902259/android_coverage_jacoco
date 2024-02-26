@@ -21,7 +21,7 @@ afterEvaluate {
         }
         repositories {
             maven {
-                url = uri('../repo')
+                //url = uri('../repo')
                 //url = layout.buildDirectory.dir('repo')
                 url =  System.getenv("MAVEN_REPO_URL") 
                 allowInsecureProtocol = true
