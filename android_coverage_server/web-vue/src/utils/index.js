@@ -1,17 +1,20 @@
 export const localHost = "http://127.0.0.1:8090"
 //export const remoteHost = "http://jacoco.dev.duqian.cn"
-export const remoteHost = "http://127.0.0.1:18090"
-export const jacocoHost = getHostUrl()//remoteHost
+export const remoteHost = "http://192.168.9.247:18090"
+export const jacocoHost = getHostUrl()
 
 function getHostUrl() {
     let origin = window.location.origin
     console.log(origin)
-    if (origin.indexOf("18080")>-1) {
-        console.log("origin remoteHost")
-        return remoteHost;
+    if (origin.indexOf(":8080")>-1 || origin.indexOf(":18080")>-1 ) {
+        console.log("origin 8080")
+        return origin.replace("8080", "8090");
+    } else if (origin.indexOf("http")==-1) {
+        console.log("localHost")
+        return localHost;
     }
-     console.log("origin localHost")
-    return localHost
+    console.log("origin")
+    return origin;
 }
 
 // 获取url中的参数值
