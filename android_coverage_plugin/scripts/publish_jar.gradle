@@ -1,6 +1,8 @@
 private void checkApply(String name) {
     if (!project.plugins.hasPlugin(name)) {
         project.plugins.apply(name)
+    } else {
+        println(">>>>has maven publish plugin:" + version)
     }
 }
 
@@ -24,7 +26,7 @@ def javadoc = task("Javadoc", type: Javadoc) {
     failOnError false
 }
 
-def javadocJar = task("javadocJar", type: Jar, dependsOn: javadoc) {
+/*def javadocJar = task("javadocJar", type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -39,7 +41,7 @@ def sourcesJar = task("sourcesJar", type: Jar) {
     }
 
     from srcDirs
-}
+}*/
 
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
@@ -52,9 +54,10 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 publishing {
     publications {
-        "${project.name}"(MavenPublication) {
+        //"${project.name}"(MavenPublication) {
+        maven (MavenPublication) {
             //java/release/all
-            from components.java
+            //from components.all
             groupId = group
             artifactId "${project.name}"
             version = version

@@ -4,6 +4,10 @@ plugins {
     id 'maven-publish'
 }
 
+version = "1.0.0"
+group = 'com.duqian.coverage'
+def artifactId = 'coverage-library'
+//apply from: rootProject.file('scripts/publish_jar.gradle')
 afterEvaluate {
     publishing {
         publications {
@@ -19,12 +23,6 @@ afterEvaluate {
             maven {
                 url = uri('../repo')
                 //url = layout.buildDirectory.dir('repo')
-                //指定要上传的maven私服仓库
-                /*url = "http://dq.com:8080/maven/content/repositories/thirdparty/"
-                credentials {
-                    username 'admin'
-                    password 'maxrocky5721'
-                }*/
             }
         }
     }

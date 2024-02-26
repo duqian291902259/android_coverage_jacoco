@@ -11,6 +11,10 @@ repositories {
     maven { url "https://maven.aliyun.com/repository/public" }
 }
 
+version = "1.0.0"
+group = 'com.duqian.coverage'
+def artifactId = 'coverage-no-op'
+//apply from: rootProject.file('scripts/publish_jar.gradle')
 afterEvaluate {
     publishing {
         publications {
@@ -30,6 +34,7 @@ afterEvaluate {
         }
     }
 }
+
 android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
@@ -60,7 +65,6 @@ android {
 }
 
 dependencies {
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
