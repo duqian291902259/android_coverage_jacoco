@@ -11,7 +11,7 @@ import java.net.URL
  * E-mail: duqian2010@gmail.com
  */
 data class CommonParams(
-    val appName: String? = "android",
+    val appName: String? = "DQLive",
     var branchName: String? = "dev",
     var commitId: String? = "10000",
     val type: String? = Constants.TYPE_FILE_EC //上传文件的类型：1，具体扩展名 2，自定义路径
@@ -19,7 +19,7 @@ data class CommonParams(
     var isIncremental = false //是否增量
     var commitId2: String? = "10000"
     var uid: String? = "21390839"
-    var userName: String? = "duqian02"
+    var userName: String? = "duqian"
     var baseBranchName: String? = "dev" //对比的分支
     var diffFileName: String? = "" //diff文件夹名字
     var requestUrl: String? = ""
