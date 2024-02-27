@@ -13,15 +13,15 @@ repositories {
 
 version = "1.0.0"
 group = 'com.duqian.coverage'
-def artifactId = 'coverage-no-op'
 //apply from: rootProject.file('scripts/publish_jar.gradle')
 afterEvaluate {
     publishing {
         publications {
             maven(MavenPublication) {
-                groupId = 'com.duqian.coverage'
+                groupId = group
                 artifactId = 'coverage-no-op'
-                version ='1.0.0-test-SNAPSHOT' //'1.0.0'
+                //version ='1.0.0-test-SNAPSHOT'
+                version = version
 
                 from components.all
             }
@@ -30,11 +30,11 @@ afterEvaluate {
             maven {
                 url = uri('../repo')
                 //url = layout.buildDirectory.dir('repo')
-                url = getLocalConfig("SNAPSHOT_URL", "")//System.getenv("MAVEN_REPO_URL")
+                url = getLocalConfig("RELEASE_URL", "")//System.getenv("MAVEN_REPO_URL")
                 println("repo url=$url")
                 allowInsecureProtocol = true
                 credentials {
-                    username getLocalConfig("MAVEN_USERNAME", "develop-snapshot")//"${System.getenv("MAVEN_REPO_NAME")}" //'develop-snapshot'
+                    username getLocalConfig("MAVEN_USERNAME", "develop-snapshot")//'develop-snapshot'
                     password getLocalConfig("MAVEN_PASSWORD", "")//"${System.getenv("MAVEN_REPO_PWD")}"
                 }
             }
