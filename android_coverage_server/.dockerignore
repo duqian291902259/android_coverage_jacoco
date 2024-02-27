@@ -5,7 +5,7 @@ web-vue/
 Dockerfile
 **.sh
 http-server/
-docker/
+jacoco-server/
 src/
 cache/
 README.md
