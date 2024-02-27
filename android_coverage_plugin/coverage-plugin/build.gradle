@@ -38,7 +38,7 @@ apply from: rootProject.file('scripts/publish_jar.gradle')
 afterEvaluate {
     publishing {
         publications {
-            maven (MavenPublication) {
+            maven(MavenPublication) {
                 groupId = 'com.duqian.coverage'
                 artifactId = 'coverage-plugin'
                 version = '1.0.0'
@@ -48,12 +48,13 @@ afterEvaluate {
         }
         repositories {
             maven {
-                url = uri('../repo')
-                /*url = "http://dq.com:8080/maven/content/repositories/thirdparty/"
+                //url = uri('../repo')
+                url =  System.getenv("MAVEN_REPO_URL") 
+                allowInsecureProtocol = true
                 credentials {
-                    username 'admin'
-                    password 'maxrocky5721'
-                }*/
+                    username 'develop-snapshot'
+                    password System.getenv("MAVEN_REPO_PWD")
+                }
             }
         }
     }

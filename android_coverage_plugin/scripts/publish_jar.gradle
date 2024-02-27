@@ -7,6 +7,7 @@ private void checkApply(String name) {
 }
 
 checkApply('maven-publish')
+apply plugin: 'maven-publish'
 
 group project.property("GROUP_ID")
 version "1.0.0"
@@ -20,13 +21,13 @@ def releasesRepoUrl = "$baseUrl/releases"
 println ">>>>>>>>>>>>> " + version
 println ">>>>>>>>>>>>> " + group
 
-def javadoc = task("Javadoc", type: Javadoc) {
+/*def javadoc = task("Javadoc", type: Javadoc) {
     options.encoding = 'utf-8'
     classpath += files(configurations.implementation)
     failOnError false
 }
 
-/*def javadocJar = task("javadocJar", type: Jar, dependsOn: javadoc) {
+def javadocJar = task("javadocJar", type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -63,6 +64,42 @@ publishing {
             version = version
             //artifact sourcesJar
             //artifact javadocJar
+
+            def isRelease
+            if (project.AAR_BUILD_TYPE == "undefined") {
+                if (rootProject.ext.has('isRelease')) {
+                    isRelease = rootProject.ext.isRelease
+                } else {
+                    println "================= build type unknown ================="
+                    return
+                }
+            } else if (project.AAR_BUILD_TYPE == "release") {
+                isRelease = true
+            } else if (project.AAR_BUILD_TYPE == "snapshot") {
+                isRelease = false
+            } else {
+                println "================= build type unknown ================="
+                return
+            }
+            println "==========repositories========= isRelease:" + isRelease
+            //name = 'mavenCentralReleaseDeployer'
+            def maven_password = System.getenv("MAVEN_REPO_PWD")//project.MAVEN_PASSWORD
+
+            if (isRelease) {
+                repository(url: project.RELEASE_URL) { //修改为自己刚才创建的仓库地址
+                    authentication(userName: project.MAVEN_USERNAME, password: maven_password)
+                }
+                pom.version = project.AAR_VERSION;
+            } else {
+                repository(url: project.SNAPSHOT_URL) {
+                    authentication(userName: project.MAVEN_USERNAME, password: maven_password)
+                }
+                pom.version = project.AAR_SNAPSHOT_VERSION;
+            }
+            pom.artifactId = project.POM_ARTIFACTID
+            pom.groupId = project.POM_GROUPID
+            pom.name = project.POM_NAME
+            pom.packaging = project.POM_PACKAGING
         }
     }
 

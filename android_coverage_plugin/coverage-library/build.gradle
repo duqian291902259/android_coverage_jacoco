@@ -14,15 +14,21 @@ afterEvaluate {
             maven(MavenPublication) {
                 groupId = 'com.duqian.coverage'
                 artifactId = 'coverage-library'
-                version = '1.0.0'
+                version = '1.0.0.'
 
                 from components.all
             }
         }
         repositories {
             maven {
-                url = uri('../repo')
+                //url = uri('../repo')
                 //url = layout.buildDirectory.dir('repo')
+                url =  System.getenv("MAVEN_REPO_URL") 
+                allowInsecureProtocol = true
+                credentials {
+                    username 'develop-snapshot'
+                    password System.getenv("MAVEN_REPO_PWD")
+                }
             }
         }
     }
