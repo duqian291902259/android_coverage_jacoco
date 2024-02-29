@@ -235,9 +235,10 @@ class JacocoUploadBuildFileTask extends DefaultTask {
                 String classesDir = "$currentBuildDir\\intermediates\\javac\\debug\\classes\\$packageNameToPath"
                 count = JacocoUtils.copyClasses(it, classesDir, packageNameToPath, targetDir, count)
 
-
                 //kotlin
-                flavor = "hiiclubApkDebug"
+                if (flavor == null || flavor == "") {
+                    flavor = "debug"
+                }
                 String classesDirKotlin = "$currentBuildDir\\tmp\\kotlin-classes\\" + flavor + "\\$packageNameToPath"
                 count = JacocoUtils.copyClasses(it, classesDirKotlin, packageNameToPath, targetDir, count)
                 println "$TAG kotlin=$kotlin,classesDirKotlin=$classesDirKotlin, count:$count"
