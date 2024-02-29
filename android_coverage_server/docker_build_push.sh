@@ -12,7 +12,7 @@ docker push duqian2010/http-server:$TAG
 #docker 构建jacoco-web服务
 cp -p target/jacoco.web-1.0.0.jar jar/
 #TAG="3.0.1"
-cd docker/
+cd jacoco-server/
 docker build -t jacoco-server .
 docker tag jacoco-server:latest duqian2010/jacoco-server:$TAG
 

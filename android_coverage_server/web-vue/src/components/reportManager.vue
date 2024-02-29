@@ -57,10 +57,13 @@ export default {
       appList: ['coverage-demo'],
     };
   },
-  created(){
+  async created(){
      console.warn(`host=${jacocoHost}`);
-     this.updateAppList();
-     this.updateReportList(this.form.appName)
+     await this.updateAppList();
+      if(this.appList.length>0){
+        this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+        this.updateReportList(this.form.appName)
+      }
   },
   methods: {
     handleClick(row) {
@@ -88,8 +91,6 @@ export default {
         .then((res) => {
           let { data = {} } = res || {};
           this.appList = data.appList;
-          console.warn("/api/init");
-          console.warn(this.appList);
         })
         .catch((error) => {
           console.error(error);

@@ -1,8 +1,6 @@
 package com.duqian.coverage_library
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import java.io.File

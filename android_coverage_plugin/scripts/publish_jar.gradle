@@ -1,16 +1,16 @@
-//apply plugin: 'digital.wup.android-maven-publish'
-
-
 private void checkApply(String name) {
     if (!project.plugins.hasPlugin(name)) {
         project.plugins.apply(name)
+    } else {
+        println(">>>>has maven publish plugin:" + version)
     }
 }
 
 checkApply('maven-publish')
+apply plugin: 'maven-publish'
 
-//group GROUP_ID
-//version sdkVersion
+group project.property("GROUP_ID")
+version "1.0.0"
 
 println(">>>>>>>>>>>>>>>>>> maven publish version:" + version)
 
@@ -21,9 +21,9 @@ def releasesRepoUrl = "$baseUrl/releases"
 println ">>>>>>>>>>>>> " + version
 println ">>>>>>>>>>>>> " + group
 
-def javadoc = task("Javadoc", type: Javadoc) {
+/*def javadoc = task("Javadoc", type: Javadoc) {
     options.encoding = 'utf-8'
-    classpath += files(configurations.compile)
+    classpath += files(configurations.implementation)
     failOnError false
 }
 
@@ -42,7 +42,7 @@ def sourcesJar = task("sourcesJar", type: Jar) {
     }
 
     from srcDirs
-}
+}*/
 
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
@@ -55,24 +55,67 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 publishing {
     publications {
-        "${project.name}"(MavenPublication) {
-            from components.java
+        //"${project.name}"(MavenPublication) {
+        maven (MavenPublication) {
+            //java/release/all
+            //from components.all
             groupId = group
             artifactId "${project.name}"
             version = version
-            artifact sourcesJar
-            artifact javadocJar
+            //artifact sourcesJar
+            //artifact javadocJar
+
+            def isRelease
+            if (project.AAR_BUILD_TYPE == "undefined") {
+                if (rootProject.ext.has('isRelease')) {
+                    isRelease = rootProject.ext.isRelease
+                } else {
+                    println "================= build type unknown ================="
+                    return
+                }
+            } else if (project.AAR_BUILD_TYPE == "release") {
+                isRelease = true
+            } else if (project.AAR_BUILD_TYPE == "snapshot") {
+                isRelease = false
+            } else {
+                println "================= build type unknown ================="
+                return
+            }
+            println "==========repositories========= isRelease:" + isRelease
+            //name = 'mavenCentralReleaseDeployer'
+            def maven_password = System.getenv("MAVEN_REPO_PWD")//project.MAVEN_PASSWORD
+
+            if (isRelease) {
+                repository(url: project.RELEASE_URL) { //修改为自己刚才创建的仓库地址
+                    authentication(userName: project.MAVEN_USERNAME, password: maven_password)
+                }
+                pom.version = project.AAR_VERSION;
+            } else {
+                repository(url: project.SNAPSHOT_URL) {
+                    authentication(userName: project.MAVEN_USERNAME, password: maven_password)
+                }
+                pom.version = project.AAR_SNAPSHOT_VERSION;
+            }
+            pom.artifactId = project.POM_ARTIFACTID
+            pom.groupId = project.POM_GROUPID
+            pom.name = project.POM_NAME
+            pom.packaging = project.POM_PACKAGING
         }
     }
 
     repositories {
         maven {
-            name "CcNexus"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            name "DQNexus"
+            url = uri('../repo')
+            //url = layout.buildDirectory.dir('repo')
+
+            /*url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username = System.getenv("nexusUsername")//duq...02
-                password = System.getenv("nexusPassword")//dq2
-            }
+                //username = System.getenv("nexusUsername")//duq...02
+                //password = System.getenv("nexusPassword")//dq2
+                username = project.property("nexusUsername")
+                password = project.property("nexusPassword")
+            }*/
         }
 
     }
