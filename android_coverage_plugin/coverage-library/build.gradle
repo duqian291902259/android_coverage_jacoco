@@ -8,14 +8,17 @@ version = "1.0.0"
 group = 'com.duqian.coverage'
 def artifactId = 'coverage-library'
 //apply from: rootProject.file('scripts/publish_jar.gradle')
+println("MAVEN_REPO_RELEASE_URL")
+println System.getenv("MAVEN_REPO_RELEASE_URL")
+println System.getenv("MAVEN_REPO_USER")
+println System.getenv("MAVEN_REPO_PWD")
 afterEvaluate {
     publishing {
         publications {
             maven(MavenPublication) {
                 groupId = 'com.duqian.coverage'
                 artifactId = 'coverage-library'
-                version = '1.0.0.'
-
+                version = '1.0.0'
                 from components.all
             }
         }
@@ -23,10 +26,10 @@ afterEvaluate {
             maven {
                 //url = uri('../repo')
                 //url = layout.buildDirectory.dir('repo')
-                url =  System.getenv("MAVEN_REPO_URL") 
+                url =  System.getenv("MAVEN_REPO_RELEASE_URL") //MAVEN_REPO_SNAPSHOTS_URL
                 allowInsecureProtocol = true
                 credentials {
-                    username 'develop-snapshot'
+                    username System.getenv("MAVEN_REPO_USER") //'develop-snapshot'
                     password System.getenv("MAVEN_REPO_PWD")
                 }
             }

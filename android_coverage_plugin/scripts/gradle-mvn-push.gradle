@@ -1,0 +1,99 @@
+apply plugin: 'maven'
+
+
+def isAndroid = project.plugins.hasPlugin("com.android.library")
+def sourceTask = null
+if (isAndroid) {
+    sourceTask = task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.kotlin.srcDirs
+    }
+}
+
+artifacts {
+    if (sourceTask != null && project.hasProperty("PACKAGE_SOURCE") && project.PACKAGE_SOURCE == "true") {
+        println "================= package source switch is true ================="
+        archives sourceTask
+    } else {
+        println "================= package source switch is false ================="
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            println "==========repositories========= isUseMaven:" + isUseMaven
+            if (isUseMaven == false) {
+                println "================= error  please  set isUseMaven true before upload ================="
+                return
+            }
+
+            def isRelease
+            if (project.AAR_BUILD_TYPE == "undefined") {
+                if (rootProject.ext.has('isRelease')) {
+                    isRelease = rootProject.ext.isRelease
+                } else {
+                    println "================= build type unknown ================="
+                    return
+                }
+            } else if (project.AAR_BUILD_TYPE == "release") {
+                isRelease = true
+            } else if (project.AAR_BUILD_TYPE == "snapshot") {
+                isRelease = false
+            } else {
+                println "================= build type unknown ================="
+                return
+            }
+            println "==========repositories========= isRelease:" + isRelease
+            name = 'mavenCentralReleaseDeployer'
+
+            if (isRelease) {
+                repository(url: project.RELEASE_URL) { //修改为自己刚才创建的仓库地址
+                    authentication(userName: project.MAVEN_USERNAME, password: project.MAVEN_PASSWORD)
+                }
+                pom.version = project.AAR_VERSION;
+            } else {
+                repository(url: project.SNAPSHOT_URL) {
+                    authentication(userName: project.MAVEN_USERNAME, password: project.MAVEN_PASSWORD)
+                }
+                pom.version = project.AAR_SNAPSHOT_VERSION;
+            }
+            pom.artifactId = project.POM_ARTIFACTID
+            pom.groupId = project.POM_GROUPID
+            pom.name = project.POM_NAME
+            pom.packaging = project.POM_PACKAGING
+        }
+    }
+    doLast {
+        //最后打tag
+        def tagName
+        if (project.AAR_BUILD_TYPE == 'release' ||
+                (project.AAR_BUILD_TYPE == 'undefined' && rootProject.ext.has('isRelease') && rootProject.ext.isRelease)) {
+            tagName = "${project.getProjectDir().getParentFile().name}_${project.name}_release_V${project.AAR_VERSION}"
+        }
+
+        def addTag = { name ->
+            def stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'tag', '-a', name, '-m', '“auto add tag when upload”'
+                standardOutput = stdout
+            }
+            return stdout.toString().trim()
+        }
+        def pushOrigin = { name ->
+            def stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'push', 'origin', name
+                standardOutput = stdout
+            }
+            return stdout.toString().trim()
+        }
+
+        if (tagName != null) {
+            println('auto add tag start -------' + tagName)
+            println addTag(tagName)
+            println pushOrigin(tagName)
+            println('auto add tag end -------' + tagName)
+        }
+    }
+}
