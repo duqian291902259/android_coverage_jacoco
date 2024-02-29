@@ -6,7 +6,6 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
-
 /**
  * Description:上传build后的产物，这里上传classes
  * @author n20241 Created by 杜小菜 on 2021/9/22 - 16:25 .
@@ -56,7 +55,7 @@ class JacocoUploadBuildFileTask extends DefaultTask {
     }
 
     private def uploadSourceFiles() {
-        //1,copy src,只处理自己包名下的class：com.duqian.cc
+        //1,copy src,只处理自己包名下的class
         String rootDir = getSrcSavedDir()
         def packageNameToPath = getPackagePath()
         String targetDir = rootDir + File.separator + packageNameToPath
@@ -216,23 +215,32 @@ class JacocoUploadBuildFileTask extends DefaultTask {
             File targetFile = new File(targetDir)
             FileUtil.deleteDirectory(targetDir)
             targetFile.mkdirs()
-            //println "$TAG copyBuildClassDirs to =${targetFile.getAbsolutePath()}"
+            println "$TAG copyBuildClassDirs targetDir=$targetDir，packageNameToPath=$packageNameToPath"
             Set<Project> projects = project.rootProject.subprojects
             int count = 0
+
+            //遍历kotlin编译的class
+            def kotlin = JacocoUtils.hasKotlin(project.plugins)
+
+            def flavorName = JacocoUtils.takeCurrentFlavor(project)
+            println "$TAG kotlin=$kotlin,flavorName=$flavorName"
+
+            def flavor = extension.flavorName
+            println "$TAG kotlin=$kotlin,flavorName=$flavorName,flavor=$flavor"
+
             projects.forEach {
                 def currentBuildDir = it.buildDir.getAbsolutePath()
-                if (!currentBuildDir.contains(File.separator + "api" + File.separator + "build")) {
-                    //copy java编译后的class
-                    String classesDir = "$currentBuildDir\\intermediates\\javac\\debug\\classes\\$packageNameToPath"
-                    count = JacocoUtils.copyClasses(it, classesDir, packageNameToPath, targetDir, count)
+                println "$TAG currentBuildDir=$currentBuildDir"
+                //copy java编译后的class
+                String classesDir = "$currentBuildDir\\intermediates\\javac\\debug\\classes\\$packageNameToPath"
+                count = JacocoUtils.copyClasses(it, classesDir, packageNameToPath, targetDir, count)
 
-                    //遍历kotlin编译的class
-                    def kotlin = JacocoUtils.hasKotlin(it.plugins)
-                    if (kotlin) {
-                        String classesDirKotlin = "$currentBuildDir\\tmp\\kotlin-classes\\debug\\$packageNameToPath"
-                        count = JacocoUtils.copyClasses(it, classesDirKotlin, packageNameToPath, targetDir, count)
-                    }
-                }
+
+                //kotlin
+                flavor = "hiiclubApkDebug"
+                String classesDirKotlin = "$currentBuildDir\\tmp\\kotlin-classes\\" + flavor + "\\$packageNameToPath"
+                count = JacocoUtils.copyClasses(it, classesDirKotlin, packageNameToPath, targetDir, count)
+                println "$TAG kotlin=$kotlin,classesDirKotlin=$classesDirKotlin, count:$count"
             }
             println "$TAG copy class count=${count}"
             return rootDir

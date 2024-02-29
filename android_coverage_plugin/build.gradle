@@ -8,9 +8,9 @@ buildscript {
 
     println("ext.coverageEnabled=${ext.coverageEnabled}")
     repositories {
-        maven {
+        /*maven {
             url uri('repo')
-        }
+        }*/
         mavenLocal()
         gradlePluginPortal()
         google()
@@ -32,9 +32,9 @@ buildscript {
 
 allprojects {
     repositories {
-        maven {
+        /*maven {
             url uri('repo')
-        }
+        }*/
         mavenLocal()
         gradlePluginPortal()
         google()

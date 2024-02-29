@@ -3,7 +3,11 @@ package com.duqian.coverage
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.ProjectInternal
+import org.gradle.api.invocation.Gradle
 import org.gradle.api.plugins.PluginContainer
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Description:覆盖率插件相关的工具方法
@@ -72,8 +76,11 @@ class JacocoUtils {
         return classDir
     }
 
+    /**
+     *  id 'kotlin-android-extensions' id 'kotlin-kapt' 'kotlin-android'
+     */
     static boolean hasKotlin(PluginContainer plugins) {
-        plugins.findPlugin('kotlin-android')
+        plugins.findPlugin('kotlin-android') || plugins.findPlugin('kotlin-android-extensions') || plugins.findPlugin('kotlin-kapt')
     }
 
     static String getUploadRootDir(ProjectInternal project, JacocoReportExtension extension) {
@@ -141,6 +148,8 @@ class JacocoUtils {
             project.fileTree(dir: it,
                     excludes: JacocoReportExtension.defaultExcludes)
         })
+        println "$TAG copyClasses finalClassDir=$finalClassDir"
+
         for (String path : finalClassDir) {
             println "$TAG copy class path=$path"
             int index = path.indexOf(packageNameToPath)
@@ -158,7 +167,7 @@ class JacocoUtils {
     }
 
     static int copySrcDir(srcDir, File targetFile, int count) {
-        println "$TAG copySourceFiles currentSrcDir=${srcDir}"
+        //println "$TAG copySourceFiles currentSrcDir=${srcDir}"
         if (!srcDir.contains(File.separator + "api" + File.separator)) {
             File srcFile = new File(srcDir)
             if (srcFile.isDirectory() && srcFile.listFiles() != null) {
@@ -171,5 +180,26 @@ class JacocoUtils {
             //println "$TAG copySourceFiles ingored src=${srcDir}"
         }
         return count
+    }
+
+    static String takeCurrentFlavor(Project project) {
+        String tskReqStr = project.getRootProject().gradle.getStartParameter().getTaskRequests().toString()
+        println "tskReqStr=$tskReqStr"
+
+        Pattern pattern
+
+        if (tskReqStr.contains("assemble"))
+            pattern = Pattern.compile("assemble(\\w+)(Release|Debug)")
+        else
+            pattern = Pattern.compile("generate(\\w+)(Release|Debug)")
+
+        Matcher matcher = pattern.matcher(tskReqStr)
+
+        if (matcher.find())
+            return matcher.group(1).toLowerCase()
+        else {
+            println "NO MATCH FOUND"
+            return ""
+        }
     }
 }

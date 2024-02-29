@@ -48,13 +48,13 @@ afterEvaluate {
         }
         repositories {
             maven {
-                //url = uri('../repo')
-                url =  System.getenv("MAVEN_REPO_URL") 
+                url = uri('../repo')
+                /*url =  System.getenv("MAVEN_REPO_URL")
                 allowInsecureProtocol = true
                 credentials {
                     username 'develop-snapshot'
                     password System.getenv("MAVEN_REPO_PWD")
-                }
+                }*/
             }
         }
     }
