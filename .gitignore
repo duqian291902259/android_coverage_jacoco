@@ -1,4 +1,6 @@
 HELP.md
+src.zip
+classes.zip
 target/
 temp/
 !.mvn/wrapper/maven-wrapper.jar
