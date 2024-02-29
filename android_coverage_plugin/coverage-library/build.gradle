@@ -18,7 +18,7 @@ afterEvaluate {
             maven(MavenPublication) {
                 groupId = 'com.duqian.coverage'
                 artifactId = 'coverage-library'
-                version = '1.0.0'
+                version = "$coverageVersion"
                 from components.all
             }
         }

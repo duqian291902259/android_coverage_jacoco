@@ -3,7 +3,7 @@ buildscript {
     ext {
         kotlin_version = '1.7.10'//"1.4.32"
         gradleVersion = '7.0.4' //'4.0.1'
-        coverageVersion = '1.0.0'
+        coverageVersion = '1.0.1' //'1.0.0-test-SNAPSHOT'
     }
 
     ext.coverageEnabled = project.property('coverageEnabled')
@@ -24,7 +24,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleVersion}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.duqian.coverage:coverage-plugin:$coverageVersion"
+        classpath "com.duqian.coverage:coverage-plugin:$coverageVersion" //先注释，本地生成再引入
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

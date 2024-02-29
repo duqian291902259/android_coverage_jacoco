@@ -20,8 +20,7 @@ afterEvaluate {
             maven(MavenPublication) {
                 groupId = group
                 artifactId = 'coverage-no-op'
-                //version ='1.0.0-test-SNAPSHOT'
-                version = version
+                version = "$coverageVersion"
 
                 from components.all
             }
