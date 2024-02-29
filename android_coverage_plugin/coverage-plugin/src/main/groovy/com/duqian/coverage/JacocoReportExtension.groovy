@@ -11,6 +11,8 @@ class JacocoReportExtension {
     ReportConfiguration xml
     //生成报告的目录
     String destination
+    //风味
+    String flavorName = "debug"
 
     JacocoReportExtension() {
         this.html = new ReportConfiguration(true)
@@ -53,7 +55,7 @@ class JacocoReportExtension {
              '**/Dagger*Component$Builder.class',
              '**/*Module_*Factory.class'].asImmutable()
 
-    public static final Collection<String> defaultExcludes = (thirdLibExcludes + androidDataBindingExcludes + androidExcludes + dagger2Excludes).asImmutable()
+    public static final Collection<String> defaultExcludes = (thirdLibExcludes + androidDataBindingExcludes + androidExcludes).asImmutable()
 
     public static final Collection<String> srcIncludes =
             ['**.java',
@@ -81,10 +83,10 @@ class JacocoReportExtension {
 
     //jacoco开关
     boolean isJacocoEnable = true
-    boolean isDiffJacoco = false //todo 是否差量更新
+    boolean isDiffJacoco = false //是否差量更新
 
-    //需要对比class的分支名,默认dev
-    String branchName = "dev"
+    //需要对比class的分支名,默认master
+    String branchName = "master"
     //需要插桩的文件
     List<String> includes
     String gitPushShell
