@@ -42,8 +42,6 @@ afterEvaluate {
     }
 }
 
-def enableDebug = getLocalConfig("dev.enableDebug", false) == "true"
-
 Object getLocalConfig(String key, Object defaultValue) {
     try {
         Properties properties = new Properties()
