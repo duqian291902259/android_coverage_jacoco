@@ -39,4 +39,8 @@ object JacocoHelper {
     fun getJacocoEcFileSaveDir(context: Context?): String {
         return ""
     }
+
+    fun deleteDirectory(filePath: String): Boolean {
+        return true
+    }
 }

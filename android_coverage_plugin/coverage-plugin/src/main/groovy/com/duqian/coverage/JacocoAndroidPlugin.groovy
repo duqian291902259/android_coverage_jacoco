@@ -48,7 +48,7 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
                     android.registerTransform(jacocoTransform)
                     println("$TAG,registerJacocoTransform $android")*/
                 } else {
-                   // println "$TAG not registerJacocoTasks $it"
+                    // println "$TAG not registerJacocoTasks $it"
                 }
             }
 
@@ -64,59 +64,63 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
 
     private registerJacocoTasks(ProjectInternal project, JacocoReportExtension jacocoReportExtension) {
         //project.afterEvaluate {
-            //最好只在app里面处理，不用各个moudle里面搞task
-            Task jacocoReportEntryTask = findOrCreateJacocoReportTask(project.tasks)
-            JacocoDownloadTask jacocoDownloadTask = project.tasks.findByName(TASK_JACOCO_DOWNLOAD_EC)
-            if (jacocoDownloadTask == null) {//download .ec
-                jacocoDownloadTask = project.tasks.create(TASK_JACOCO_DOWNLOAD_EC, JacocoDownloadTask)
-                jacocoDownloadTask.setExtension(jacocoReportExtension)
-                jacocoDownloadTask.setGroup(GROUP)
-            }
+        //最好只在app里面处理，不用各个moudle里面搞task
+        Task jacocoReportEntryTask = findOrCreateJacocoReportTask(project.tasks)
+        JacocoDownloadTask jacocoDownloadTask = project.tasks.findByName(TASK_JACOCO_DOWNLOAD_EC)
+        if (jacocoDownloadTask == null) {//download .ec
+            jacocoDownloadTask = project.tasks.create(TASK_JACOCO_DOWNLOAD_EC, JacocoDownloadTask)
+            jacocoDownloadTask.setExtension(jacocoReportExtension)
+            jacocoDownloadTask.setGroup(GROUP)
+        }
 
-            //todo-dq 本地提交点之间的增量，获取增量报告
-            BranchDiffClassTask branchDiffClassTask = project.tasks.findByName(TASK_JACOCO_BRANCH_DIFF_CLASS)
-            if (branchDiffClassTask == null) {//pull copy diff class
-                branchDiffClassTask = project.tasks.create(TASK_JACOCO_BRANCH_DIFF_CLASS, BranchDiffClassTask)
-                branchDiffClassTask.setGroup(GROUP)
-                branchDiffClassTask.setExtension(jacocoReportExtension)
-            }
+        //todo-dq 本地提交点之间的增量，获取增量报告
+        BranchDiffClassTask branchDiffClassTask = project.tasks.findByName(TASK_JACOCO_BRANCH_DIFF_CLASS)
+        if (branchDiffClassTask == null) {//pull copy diff class
+            branchDiffClassTask = project.tasks.create(TASK_JACOCO_BRANCH_DIFF_CLASS, BranchDiffClassTask)
+            branchDiffClassTask.setGroup(GROUP)
+            branchDiffClassTask.setExtension(jacocoReportExtension)
+        }
 
-            JacocoUploadBuildFileTask jacocoUploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
-            if (jacocoUploadTask == null) {//upload build classes
-                jacocoUploadTask = project.tasks.create(TASK_JACOCO_UPLOAD_BUILD_FILES, JacocoUploadBuildFileTask)
-                jacocoUploadTask.setExtension(jacocoReportExtension)
-                jacocoUploadTask.setGroup(GROUP)
-                //jacocoUploadTask.dependsOn(branchDiffClassTask)
-            }
+        JacocoUploadBuildFileTask jacocoUploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
+        if (jacocoUploadTask == null) {//upload build classes
+            jacocoUploadTask = project.tasks.create(TASK_JACOCO_UPLOAD_BUILD_FILES, JacocoUploadBuildFileTask)
+            jacocoUploadTask.setExtension(jacocoReportExtension)
+            jacocoUploadTask.setGroup(GROUP)
+            //jacocoUploadTask.dependsOn(branchDiffClassTask)
+        }
 
-            Task jacocoReportTask = project.tasks.findByName(TASK_JACOCO_REPORT)
-            if (jacocoReportTask == null) {//cc coverage report
-                jacocoReportTask = createReportTask(project, null)
-                //jacocoReportTask.enabled = false
-                println("$TAG,$TASK_JACOCO_REPORT " + jacocoReportTask)
-                //jacocoReportTask.dependsOn(jacocoDownloadTask)
-            }
+        Task jacocoReportTask = project.tasks.findByName(TASK_JACOCO_REPORT)
+        if (jacocoReportTask == null) {//cc coverage report
+            jacocoReportTask = createReportTask(project, null)
+            //jacocoReportTask.enabled = false
+            println("$TAG,$TASK_JACOCO_REPORT " + jacocoReportTask)
+            //jacocoReportTask.dependsOn(jacocoDownloadTask)
+        }
 
-            //自由组合、控制一些逻辑的执行
-            jacocoReportEntryTask.doFirst {
-                //jacocoDownloadTask.downloadJacocoEcFile()
-                if (jacocoReportExtension.isDiffJacoco) {
-                    branchDiffClassTask.makeDiffClass()
-                }
-                jacocoUploadTask.uploadBuildFile()
-                println("$TAG jacocoReportEntryTask " + it)
+        //自由组合、控制一些逻辑的执行
+        jacocoReportEntryTask.doFirst {
+            //jacocoDownloadTask.downloadJacocoEcFile()
+            if (jacocoReportExtension.isDiffJacoco) {
+                branchDiffClassTask.makeDiffClass()
             }
+            jacocoUploadTask.uploadBuildFile()
+            println("$TAG jacocoReportEntryTask " + it)
+        }
 
-            jacocoReportEntryTask.doLast {//要有ec文件，否则本地无法生成
-                jacocoReportTask.generate()
-            }
+        jacocoReportEntryTask.doLast {//要有ec文件，否则本地无法生成
+            jacocoReportTask.generate()
+        }
 
-            //压缩并上传class/apk文件
-            def uploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
-            Task buildTask = project.tasks.findByName("assembleDebug")
-            if (buildTask != null && uploadTask != null) {
-                buildTask.finalizedBy(uploadTask)
-            }
+        //压缩并上传class/apk文件
+        def uploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
+        def flavorName = jacocoReportExtension.flavorName
+        def flavor = flavorName.substring(0, 1).toUpperCase() + flavorName.substring(1)
+        Task buildTask = project.tasks.findByName("assemble" + flavor)
+        println("$TAG prepare buildTask=$buildTask,flavor=" + flavor)
+        if (buildTask != null && uploadTask != null) {
+            println("$TAG start uploadTask=" + buildTask)
+            buildTask.finalizedBy(uploadTask)
+        }
         //}
     }
 
@@ -164,8 +168,8 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
                     //println "$TAG updateBuildConfigField moduleName=$moduleName,entryModule=$entryModule"
                 }
             }
-        } catch (Exception e) {//cc的工程根目录也能获取到，作为模块名获取android就有异常
-            //println("$TAG updateBuildConfigField error $e")
+        } catch (Exception e) {//工程根目录也能获取到，作为模块名获取android就有异常
+            println("$TAG updateBuildConfigField error $e")
         }
     }
 

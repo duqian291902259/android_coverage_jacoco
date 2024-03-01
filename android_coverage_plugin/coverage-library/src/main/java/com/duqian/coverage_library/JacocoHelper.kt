@@ -256,4 +256,8 @@ object JacocoHelper {
             .readTimeout(10, TimeUnit.SECONDS)
             .build()
     }
+
+    fun deleteDirectory(filePath: String): Boolean {
+        return CoverageUtil.deleteDirectory(filePath)
+    }
 }

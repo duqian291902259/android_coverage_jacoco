@@ -14,7 +14,6 @@ import com.duqian.coverage.BuildConfig
 import com.duqian.coverage.R
 import com.duqian.coverage.utils.UIUtils
 import com.duqian.coverage_library.JacocoHelper
-import com.duqian.coverage_library.CoverageUtil
 import com.duqian.coverage_library.JacocoCallback
 import java.io.File
 import kotlin.concurrent.thread
@@ -52,7 +51,7 @@ class HomeFragment : Fragment() {
         btnClear.setOnClickListener {
             val ecDir = JacocoHelper.getJacocoEcFileSaveDir(context)
             val deleteDirectory =
-                CoverageUtil.deleteDirectory(ecDir)
+                JacocoHelper.deleteDirectory(ecDir)
             val msg = "deleteDirectory $ecDir=$deleteDirectory"
             Log.d("dq-jacoco", msg)
             UIUtils.toast(context, msg)

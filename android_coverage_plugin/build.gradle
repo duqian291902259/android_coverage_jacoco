@@ -3,7 +3,8 @@ buildscript {
     ext {
         kotlin_version = '1.7.10'//"1.4.32"
         gradleVersion = '7.0.4' //'4.0.1'
-        coverageVersion = '1.1.0' //'1.0.0-test-SNAPSHOT'
+        coverageVersionBuild = '1.1.1' //构建发布的版本
+        coverageVersion = '1.1.1' //引用的版本
     }
 
     ext.coverageEnabled = project.property('coverageEnabled')
