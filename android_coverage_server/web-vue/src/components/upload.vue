@@ -11,6 +11,7 @@
       <el-form-item label="应用名称">
         <el-radio-group v-model="form.appName"  style="width: 600px" >
           <el-radio
+            @change="onSelectApp"
             v-for="item in appList"
             :label="item"
             :key="item.value"
@@ -89,9 +90,23 @@ export default {
       appList: ['coverage-demo'],
     };
   },
+  props:{
+    allInfo: {
+      type: Object,
+      default: ()=>{}
+    }
+  },
+  watch: {
+    allInfo: {
+      handler(val){
+        this.updateAppList(val || {});
+      },
+      deep: true
+    }
+  },
   created(){
      console.warn(`host=${jacocoHost}`);
-     this.updateAppList();
+    //  this.updateAppList();
   },
   computed:{
     disableUpload(){
@@ -127,22 +142,41 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
-    updateAppList() {
+    updateAppList(res) {
+      // requestGet(`${jacocoHost}/api/init`, this.form)
+      //   .then((res) => {
+      //     let { data = {} } = res || {};
+      //     this.appList = data.appList;
+      //     //this.form.commitId = this.[0]
+      //     console.warn(this.appList);
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
+      let { data = {} } = res || {};
+      this.appList = data.appList;
+      console.warn(this.appList);
+      if(this.appList.length>0){
+        this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+      }
+    },
+    onSelectApp(val){
+      console.log(val)
+      this.updateSelectAppBranchList()
+    },
+    updateSelectAppBranchList() {
       requestGet(`${jacocoHost}/api/init`, this.form)
         .then((res) => {
           let { data = {} } = res || {};
-          this.appList = data.appList;
-          //this.form.commitId = this.[0]
-          console.warn(this.appList);
+          let branchList = data.branchList || []
+          let {branchName = '', latestCommit =''} = branchList[0] || {}
+          this.branchList = branchList;
+          this.form.branch = branchName || ''
+          this.form.commitId = latestCommit || ''
         })
         .catch((error) => {
           console.error(error);
         });
-    },
-    onSelectApp(val){
-      let that = this 
-      console.log(val)
-      //this.updateReportList(val)
     },
   }
 };

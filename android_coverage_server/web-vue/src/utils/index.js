@@ -9,6 +9,9 @@ function getHostUrl() {
     if (origin.indexOf(":8080")>-1 || origin.indexOf(":18080")>-1 ) {
         console.log("origin 8080")
         return origin.replace("8080", "8090");
+    }else if (origin.indexOf(":8010")>-1 || origin.indexOf(":18010")>-1 ) {
+        console.log("origin 8010")
+        return origin.replace("8010", "8090");
     } else if (origin.indexOf("http")==-1) {
         console.log("localHost")
         return localHost;

@@ -1,10 +1,7 @@
 package site.duqian.spring.utils
 
 import org.slf4j.LoggerFactory
-import site.duqian.spring.Constants
 import site.duqian.spring.bean.CommonParams
-import site.duqian.spring.gitlab.DiffCallBack
-import site.duqian.spring.gitlab.DiffClassCallBack
 import site.duqian.spring.gitlab.GitLabService
 import java.io.File
 
@@ -21,97 +18,115 @@ object DiffUtils {
      */
     fun handleDiffClasses(commonParams: CommonParams?): String {
         val diffFilePath = FileUtils.getDiffFilePath(commonParams)
+        logger.debug("handleDiff  diffFilePath=$diffFilePath")
+
         val diffFiles = FileUtils.readDiffFilesFromTxt(diffFilePath)
+
         val diffClassesPath = getDiffClasses(commonParams, diffFiles)
-        logger.debug("generateReport diffClassesPath=$diffClassesPath")
+        logger.debug("handleDiff diffClassesPath=$diffClassesPath")
         //也copy一下源码
-        getDiffSrc(commonParams, diffFiles);
+        getDiffSrc(commonParams, diffFiles)
         return diffClassesPath
     }
 
+    private var mCountDiffFile = 0
     private fun getDiffSrc(commonParams: CommonParams?, diffFiles: List<String>?): String? {
         val diffSrcDirPath = FileUtils.getDiffSrcDirPath(commonParams)
-        var hasDiffSrc = false
-        var count = 0
+        val diffDirFile = File(diffSrcDirPath)
+        if (diffDirFile.isDirectory && diffDirFile.listFiles()?.isNotEmpty() == true) {
+            mCountDiffFile = diffDirFile.listFiles()?.size ?: 0
+            return diffSrcDirPath
+        }
+        mCountDiffFile = 0
         if (diffFiles != null && diffFiles.isNotEmpty()) {
             val srcDirPath = FileUtils.getSourceDir(commonParams)
             logger.debug("getDiffSrc srcDirPath=$srcDirPath")
+            logger.debug("getDiffSrc diffSrcDirPath=$diffSrcDirPath")
             for (diffFile in diffFiles) {
                 try {
-                    var index = diffFile.indexOf(Constants.APP_PACKAGE_NAME)
-                    if (index < 0) {
-                        index = diffFile.indexOf(Constants.APP_PACKAGE_NAME2)
-                    }
-                    if (index < 0 || !diffFile.endsWith(".java") && !diffFile.endsWith(".kt")) {
+                    if (!diffFile.endsWith(".java") && !diffFile.endsWith(".kt")) {
                         continue
                     }
-                    val relativePath = diffFile.substring(index)
-                    val realFilePath = srcDirPath + relativePath
-                    //logger.debug("getDiffSrc realFilePath=$realFilePath")
-                    val destFile = File(diffSrcDirPath + relativePath)
-                    //System.out.println("getDiffSrc destFile=" + destFile.getAbsolutePath());
-                    val hasCopied = FileUtils.copyFile(File(realFilePath), destFile, true)
-                    if (hasCopied) {
-                        hasDiffSrc = true
-                        count++
-                    }
+                    val fileName = diffFile.substring(diffFile.lastIndexOf(File.separator) + 1)
+                    val rootDir = File(srcDirPath)
+                    //logger.debug("getDiffSrc rootDir=$rootDir,fileName=$fileName")
+                    repeatCopyFiles(rootDir, fileName, diffSrcDirPath)
                 } catch (e: Exception) {
                     logger.debug("getDiffSrc error=$e")
                 }
             }
-            logger.debug("getDiffSrc count file=$count")
+            logger.debug("getDiffSrc count file=$mCountDiffFile")
         }
-        return if (!hasDiffSrc) {
+        return if (mCountDiffFile == 0) {
             ""
         } else diffSrcDirPath
     }
 
+    private fun repeatCopyFiles(
+        rootDir: File,
+        fileName: String,
+        diffDirPath: String,
+    ) {
+        if (rootDir.exists() && rootDir.isDirectory && rootDir.listFiles() != null) {
+            //logger.debug("start repeatCopyFiles rootDir=$rootDir,fileName=$fileName")
+            for (file in rootDir.listFiles()) {
+                val name = file.name
+                if (file.isFile) {
+                    if (!name.contains(fileName)) continue
+                    //logger.debug("getDiffFile file=$file")
+                    var relativePath = name
+                    val absolutePath = file.absolutePath
+                    val srcStr = File.separator + "src" + File.separator
+                    val classesStr = File.separator + "classes" + File.separator
+                    if (absolutePath.contains(srcStr)) {
+                        relativePath = absolutePath.substring(
+                            absolutePath.indexOf(srcStr) + srcStr.length,
+                            absolutePath.length
+                        )
+                    }
+                    if (absolutePath.contains(classesStr)) {
+                        relativePath = absolutePath.substring(
+                            absolutePath.indexOf(classesStr) + classesStr.length,
+                            absolutePath.length
+                        )
+                    }
+                    val destFile = File(diffDirPath + File.separator + relativePath)
+                    //logger.debug("copyDiffFile destFile=" + destFile.absolutePath)
+                    val hasCopied = FileUtils.copyFile(file, destFile, true)
+                    if (hasCopied) {
+                        mCountDiffFile++
+                    }
+                } else {
+                    repeatCopyFiles(file, fileName, diffDirPath)
+                }
+            }
+        }
+    }
+
     private fun getDiffClasses(commonParams: CommonParams?, diffFiles: List<String>?): String {
         val diffClassDirPath = FileUtils.getDiffClassDirPath(commonParams)
-        var hasDiffClass = false
-        var count = 0
+        val diffClassDirFile = File(diffClassDirPath)
+        if (diffClassDirFile.isDirectory && diffClassDirFile.listFiles()?.isNotEmpty() == true) {
+            mCountDiffFile = diffClassDirFile.listFiles()?.size ?: 0
+            return diffClassDirPath
+        }
+        mCountDiffFile = 0
         if (diffFiles != null && diffFiles.isNotEmpty()) {
             val classDir = FileUtils.getClassDir(commonParams)
             logger.debug("getDiffClasses classDir=$classDir")
             for (diffFile in diffFiles) {
                 try {
-                    var index = diffFile.indexOf(Constants.APP_PACKAGE_NAME)
-                    if (index < 0) {
-                        index = diffFile.indexOf(Constants.APP_PACKAGE_NAME2)
-                    }
-                    if (index < 0) {
-                        continue
-                    }
                     val fileName = File(diffFile).name
+                    val rootDir = File(classDir)
                     val realName = fileName.substring(0, fileName.lastIndexOf("."))
-                    val lastSeparatorIndex = diffFile.lastIndexOf("/")
-                    //取出差异class的路径
-                    val relativePath = diffFile.substring(index, lastSeparatorIndex + 1)
-                    val realDirPath = classDir + relativePath
-                    val rootDir = File(realDirPath)
-                    if (rootDir.exists() && rootDir.isDirectory && rootDir.listFiles() != null) {
-                        for (file in rootDir.listFiles()) {
-                            val name = file.name
-                            if (name.contains(realName)) {
-                                //logger.debug("getDiffClasses file=$file")
-                                val destFile = File(diffClassDirPath + relativePath + name)
-                                //System.out.println("getDiffClasses destFile=" + destFile.getAbsolutePath());
-                                val hasCopied = FileUtils.copyFile(file, destFile, true)
-                                if (hasCopied) {
-                                    hasDiffClass = true
-                                    count++
-                                }
-                            }
-                        }
-                    }
+                    repeatCopyFiles(rootDir, realName, diffClassDirPath)
                 } catch (e: Exception) {
-                    //e.printStackTrace();
                     logger.debug("getDiffClasses error=$e")
                 }
             }
-            logger.debug("getDiffClasses count file=$count")
+            logger.debug("getDiffClasses count file=$mCountDiffFile")
         }
-        return if (!hasDiffClass) {
+        return if (mCountDiffFile == 0) {
             ""
         } else diffClassDirPath
     }

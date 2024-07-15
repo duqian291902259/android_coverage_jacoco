@@ -57,14 +57,28 @@ export default {
       appList: ['coverage-demo'],
     };
   },
-  async created(){
-     console.warn(`host=${jacocoHost}`);
-     await this.updateAppList();
-      if(this.appList.length>0){
-        this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
-        this.updateReportList(this.form.appName)
-      }
+  props:{
+    allInfo: {
+      type: Object,
+      default: ()=>{}
+    }
   },
+  watch: {
+    allInfo: {
+      handler(val){
+        this.updateAppList(val || {});
+      },
+      deep: true
+    }
+  },
+  // async created(){
+  //    console.warn(`host=${jacocoHost}`);
+  //    await this.updateAppList();
+  //     if(this.appList.length>0){
+  //       this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+  //       this.updateReportList(this.form.appName)
+  //     }
+  // },
   methods: {
     handleClick(row) {
       console.log(row);
@@ -86,15 +100,21 @@ export default {
           console.error(error);
         });
     },
-    updateAppList() {
-      requestGet(`${jacocoHost}/api/init`, this.form)
-        .then((res) => {
-          let { data = {} } = res || {};
-          this.appList = data.appList;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    updateAppList(res) {
+      // requestGet(`${jacocoHost}/api/init`, this.form)
+      //   .then((res) => {
+      //     let { data = {} } = res || {};
+      //     this.appList = data.appList;
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
+        let { data = {} } = res || {};
+        this.appList = data.appList;
+        if(this.appList.length>0){
+          this.form.appName = this.appList[0]; // 将第一个元素作为默认选项
+          this.updateReportList(this.form.appName)
+        }
     },
     openReport(row) {
         console.log(row);

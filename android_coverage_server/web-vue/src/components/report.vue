@@ -30,8 +30,6 @@
           placeholder="请选择生成报告的分支"
           style="width: 300px"
           @change="onSelectedBranch"
-          @blur="selectBlur"
-          @clear="selectClear"
           prop="branch"
           clearable
           filterable
@@ -47,7 +45,6 @@
               :label="item.branchName"
               :value="item.branchLabel"
               :key="item.value"
-              @click="onOptionSelect(index)"
             ></el-option>
           </el-option-group>
         </el-select>
@@ -71,13 +68,28 @@
         prop="commitId"
         style="margin-bottom: 18px"
       >
-        <el-input
+        <!-- <el-input
           v-model="form.commitId"
           style="width: 300px"
           clearable
           placeholder="应用对应的最新commit-id"
         >
-        </el-input>
+        </el-input> -->
+        <el-select
+          v-model="form.commitId"
+          placeholder="应用对应的最新commit-id"
+          style="width: 300px"
+          clearable
+          filterable
+          allow-create
+        >
+        <el-option
+          v-for="(item, index) in commitList"
+          :label="item"
+          :value="item"
+          :key="item"
+        ></el-option>
+        </el-select>
       </el-form-item>
 
       <el-form-item
@@ -141,7 +153,7 @@ export default {
         os: "Android",
         branch: "dev_dq_coverage",
         base_branch: "master",
-        commitId: "21acf983",
+        commitId: "",
         commitId2: "ea7deb7e",
         incremental: false,
         env: "Debug",
@@ -151,7 +163,7 @@ export default {
       reportZipUrl: "",
       appList: ['coverage-demo'],
       branchList: ['dev','master'],
-      commitList: ['efb5756b'],
+      commitList: [],
       isLoading: false,
       groups: [
         {
@@ -359,52 +371,13 @@ export default {
       window.open(url);
       console.warn(url);
     },
-    selectBlur(e) {
-      var that = this;
-      var branchName = e.target.value;
-      if (branchName !== "") {
-        this.form.branch = branchName;
-        that.branchList.forEach((item, index) => {
-          console.warn(item);
-          if (item.branchName === branchName) {
-            this.form.commitId = item.latestCommit;
-            this.form.commitId2 = item.oldCommit;
-          } else {
-            this.form.commitId = "";
-            this.form.commitId2 = "";
-          }
-        });
-        //this.$forceUpdate()   // 强制更新
-      }
-      console.warn("selectBlur");
-      console.warn(e.target.value);
-    },
-    selectClear() {
-      this.value = "";
-      this.form.commitId = "";
-      this.form.commitId2 = "";
-      //this.$forceUpdate()
-      console.warn("selectClear");
-    },
     onSelectedBranch(branchName) {
-      console.warn(branchName);
-      console.warn(this.branchList);
-      this.value = branchName;
-      //this.$forceUpdate()
-      this.branchList.forEach((item, index) => {
-        console.warn(item);
-        if (item.branchName == branchName) {
-          this.form.commitId = item.latestCommit;
-          this.form.commitId2 = item.oldCommit;
-        }
-      });
+      let targetItem =  this.branchList.find(ls=>ls.branchName === branchName) || {}
+      this.setCommitInfo(targetItem || {})
+      this.form.commitId2 = targetItem.oldCommit;
     },
     onVsBranch(branchName) {
       this.form.commitId2 = "";
-    },
-    onOptionSelect(index) {
-      console.warn(index);
-      this.form.commitId = this.branchList[index].latestCommit;
     },
     updateSelectList() {
       requestGet(`${jacocoHost}/api/init`, this.form)
@@ -423,18 +396,32 @@ export default {
       console.warn(data);
       this.$set(this.groups[0], "options", data);
       if (data != null && data[0]) {
-        let firstBranch = data[0];
-        this.form.branch = firstBranch.branchName;
-        this.form.commitId = firstBranch.latestCommit;
-        this.form.commitId2 = firstBranch.oldCommit;
+        let {branchName = '', oldCommit= ''} = data[0] || {}
+        this.form.branch = branchName;
+        this.form.commitId2 = oldCommit;
+        this.setCommitInfo(data[0])
       } else {
         this.resetFormData();
+      }
+    },
+    /**
+     *  设置当前CommitId下拉数组&绑定值
+     */
+    setCommitInfo(item){
+      let {latestCommit = '', commitList = []} = item || {}
+      this.commitList = commitList;
+      if(commitList.length){
+        let haslatestCommit =  latestCommit ? this.commitList.find(ls=>ls===latestCommit) : false
+        this.form.commitId = (haslatestCommit ? latestCommit : this.commitList[0]) || '';
+      }else{
+        this.form.commitId = ''
       }
     },
     resetFormData() {
       this.form.branch = "";
       this.form.base_branch = "";
-      this.form.commitId = "";
+      // this.form.commitId = "";
+      this.setCommitInfo({})
       this.form.commitId2 = "";
     },
   },

@@ -22,7 +22,7 @@ import java.util.Random;
 @Controller
 @RequestMapping("/coverage")
 public class ReportController {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ReportController.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(site.duqian.spring.controller.ReportController.class);
 
     /**
      * 生成报告
@@ -89,7 +89,7 @@ public class ReportController {
             if (generateReportCode == Constants.ERROR_CODE_DIFF_FAILED) {
                 errorMsg = "未获取到增量修改，可尝试生成全量报告";
             } else if (generateReportCode == Constants.ERROR_CODE_NO_EC_FILE) {
-                errorMsg = "没有上传ec文件，请进入APP调试面板，点击生成并上传覆盖率文件";
+                errorMsg = "没有上传ec文件，请进入APP彩蛋/调试面板，点击生成并上传覆盖率文件";
             } else if (generateReportCode == Constants.ERROR_CODE_NO_CLASSES) {
                 errorMsg = "没有找到class文件，请确认打包机是否正常构建APK，或者手动上传";
             } else if (generateReportCode == Constants.ERROR_CODE_NO_SRC) {
@@ -208,7 +208,7 @@ public class ReportController {
         }
         logger.error("generateReport rootEcDir=" + rootEcDir.getAbsolutePath());
         if (rootEcDir.exists() && rootEcDir.isDirectory() && rootEcDir.listFiles() != null) {
-            int length = "jacoco_115999be_31fcb2373e8b341d.ec".length();
+            //int length = "jacoco_115999be_31fcb2373e8b341d.ec".length();
             for (File file : rootEcDir.listFiles()) {
                 String fileName = file.getName();
                 if (fileName.endsWith(Constants.TYPE_FILE_EC)) {
@@ -231,7 +231,7 @@ public class ReportController {
      */
     private int handleDiffReport(CommonParams commonParams, String reportPath, String jarPath, List<String> ecFileList, String classesPath, String srcPath) {
         String diffClassPath = "";
-        //gitlab获取两个分支点的diff信息
+        //todo-dq gitlab获取两个分支点的diff信息
         diffClassPath = DiffUtils.INSTANCE.handleDiffFileByGitlab(commonParams);
         if (TextUtils.isEmpty(diffClassPath)) {//取本地上传的差异的分支文件列表
             diffClassPath = DiffUtils.INSTANCE.handleDiffClasses(commonParams);
@@ -242,11 +242,14 @@ public class ReportController {
         if (!TextUtils.isEmpty(diffClassPath)) {
             classesPath = diffClassPath;
             srcPath = FileUtils.getDiffSrcDirPath(commonParams);
+            logger.error("generateReport,classesPath=" + classesPath);
+            logger.error("generateReport,srcPath=" + srcPath);
         } else {
             logger.error("generateReport,found no diff classes " + diffClassPath);
             return Constants.ERROR_CODE_DIFF_FAILED;
         }
 
+        logger.debug("start generateReport：" + commonParams);
         boolean isGenerated = generateReport(reportPath, jarPath, ecFileList, classesPath, srcPath, commonParams.getAppName());
         logger.debug("generateReport=" + isGenerated + "," + commonParams);
         if (isGenerated) {

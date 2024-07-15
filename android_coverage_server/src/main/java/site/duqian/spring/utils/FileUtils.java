@@ -77,8 +77,11 @@ public class FileUtils {
     }
 
     public static String getEcFilesDir(CommonParams commonParams) {
-        return getBranchDir(commonParams) + File.separator + Constants.EC_FILES_DIR_NAME;
-        //return getSaveDir(commonParams);
+        String newEcFileDirPath = getSaveDir(commonParams) + File.separator + Constants.EC_FILES_DIR_NAME;
+        if (!new File(newEcFileDirPath).exists()) {//返回旧版本的路径
+            return getBranchDir(commonParams) + File.separator + Constants.EC_FILES_DIR_NAME;
+        }
+        return newEcFileDirPath;
     }
 
     public static String getDiffFilePath(CommonParams commonParams) {
