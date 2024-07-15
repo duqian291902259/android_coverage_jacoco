@@ -6,7 +6,7 @@ TAG="latest"
 #docker 构建jacoco-vue前端服务
 cd http-server/
 ls
-#sh build_node.sh
+#sh build_web.sh
 docker build -t http-server .
 docker tag http-server:latest duqian2010/http-server:$TAG
 cd ../

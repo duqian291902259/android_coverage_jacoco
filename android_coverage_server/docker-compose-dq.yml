@@ -1,0 +1,27 @@
+version: "3.2"
+services:
+  jacoco-server:
+    image: duqian2010/jacoco-server:latest
+    ports:
+      - "18090:8090"
+    volumes:
+      - dq-coverage:/dq-coverage
+    environment:
+      PROFILE_NAME: product
+    restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
+  http-server:
+    image: duqian2010/http-server:latest
+    ports:
+      - "18080:8080"
+    volumes:
+      - dq-coverage:/dq-coverage
+    environment:
+      PROFILE_NAME: product
+    restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+volumes:
+  dq-coverage:
