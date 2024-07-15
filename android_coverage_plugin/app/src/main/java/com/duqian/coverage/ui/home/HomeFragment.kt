@@ -59,36 +59,39 @@ class HomeFragment : Fragment() {
         Log.d("dq-jacoco", "initAppData")
 
         JacocoHelper.initAppData(
-            isOpenCoverage = BuildConfig.IS_JACOCO_ENABLE,
-            BuildConfig.CURRENT_BRANCH_NAME,
-            BuildConfig.CURRENT_COMMIT_ID,
-            BuildConfig.COV_APP_NAME,
-            BuildConfig.JACOCO_HOST
+            isOpenCoverage = BuildConfig.IS_COV_ENABLE,
+            currentBranchName = BuildConfig.CUR_BCH_NAME,
+            currentCommitId = BuildConfig.CUR_CMT_ID,
+            appName = BuildConfig.COV_P_NAME,
+            hostUrl = BuildConfig.COV_HOST
         )
 
         btnUpload.setOnClickListener {
             thread {
-                JacocoHelper.generateEcFileAndUpload(this.context, "6666666", object : JacocoCallback {
-                    override fun onEcDumped(ecPath: String?) {
-                        val msg = "onEcDumped $ecPath"
-                        Log.d("dq-jacoco", msg)
-                        UIUtils.toast(context, msg)
-                    }
+                JacocoHelper.generateEcFileAndUpload(
+                    this.context,
+                    "6666666",
+                    object : JacocoCallback {
+                        override fun onEcDumped(ecPath: String?) {
+                            val msg = "onEcDumped $ecPath"
+                            Log.d("dq-jacoco", msg)
+                            UIUtils.toast(context, msg)
+                        }
 
-                    override fun onEcUploaded(isSingleFile: Boolean, ecFile: File) {
-                        Log.d("dq-jacoco", "onEcUploaded $isSingleFile,ecFile=$ecFile")
-                        UIUtils.toast(context, "上传成功 ${ecFile.name}")
-                    }
+                        override fun onEcUploaded(isSingleFile: Boolean, ecFile: File) {
+                            Log.d("dq-jacoco", "onEcUploaded $isSingleFile,ecFile=$ecFile")
+                            UIUtils.toast(context, "上传成功 ${ecFile.name}")
+                        }
 
-                    override fun onIgnored(failedMsg: String?) {
-                        Log.d("dq-jacoco", "onIgnored $failedMsg")
-                        UIUtils.toast(context, "失败 $failedMsg")
-                    }
+                        override fun onIgnored(failedMsg: String?) {
+                            Log.d("dq-jacoco", "onIgnored $failedMsg")
+                            UIUtils.toast(context, "失败 $failedMsg")
+                        }
 
-                    override fun onLog(TAG: String?, msg: String?) {
-                        Log.d(TAG, "$msg")
-                    }
-                })
+                        override fun onLog(TAG: String?, msg: String?) {
+                            Log.d(TAG, "$msg")
+                        }
+                    })
             }
         }
 

@@ -5,13 +5,13 @@ import okhttp3.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Description:gradle下载工具
- * @author n20241 Created by 杜小菜 on 2022/2/15 - 11:31 .
+ * Description:gradle下载工具:network同步ec或者pull sdcard里面的ec文件
+ * Created by 杜乾 on 2024/7/15 - 10:20.
  * E-mail: duqian2010@gmail.com
  */
 class CovDownLoadUtils {
 
-    private static String TAG = "Cov-DownloadUtils"
+    private static String TAG = CovDownLoadUtils.simpleName
     /**
      * 文件上传，如果是本地server，要确保测试设备与server在同一个局域网
      * */

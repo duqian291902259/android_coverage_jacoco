@@ -4,8 +4,8 @@ import android.content.Context
 
 /**
  * Description:Jacoco工具类:空实现，用于release包
- *
- * @author n20241 Created by 杜小菜 on 2021/9/8 - 11:55 . E-mail: duqian2010@gmail.com
+ * Created by 杜乾 on 2024/7/15 - 10:19.
+ * E-mail: duqian2010@gmail.com
  */
 object JacocoHelper {
 

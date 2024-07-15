@@ -3,20 +3,19 @@ package com.duqian.coverage
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.ProjectInternal
-import org.gradle.api.invocation.Gradle
 import org.gradle.api.plugins.PluginContainer
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
- * Description:覆盖率插件相关的工具方法
+ * Description:插件相关的工具方法
  * @author n20241 Created by 杜小菜 on 2021/9/27 - 11:26 .
  * E-mail: duqian2010@gmail.com
  */
-class JacocoUtils {
+class CoverageUtils {
 
-    private static String TAG = "dq-jacoco-utils"
+    private static String TAG = CoverageUtils.simpleName
     static String JACOCO_HOST = "http://192.168.11.201:18090" //默认的服务器地址，外部local.properties里面可以配置修改
 
     static String COV_APP_NAME = ""
@@ -83,9 +82,14 @@ class JacocoUtils {
         plugins.findPlugin('kotlin-android') || plugins.findPlugin('kotlin-android-extensions') || plugins.findPlugin('kotlin-kapt')
     }
 
-    static String getUploadRootDir(ProjectInternal project, JacocoReportExtension extension) {
+    static String getUploadRootDir(ProjectInternal project, CoverageReportExtension extension) {
+        String rootDir = project.projectDir.getAbsolutePath() + File.separator + "build" + File.separator + "coverage" + File.separator + CoverageUtils.COV_APP_NAME
+        return rootDir
+    }
+
+    static String getUploadRootDirOld(ProjectInternal project, CoverageReportExtension extension) {
         File parentFile = project.projectDir.getParentFile().getParentFile()
-        String rootDir = parentFile.getAbsolutePath() + File.separator + "dq-coverage" + File.separator + JacocoUtils.COV_APP_NAME
+        String rootDir = parentFile.getAbsolutePath() + File.separator + "dq-coverage" + File.separator + CoverageUtils.COV_APP_NAME
         return rootDir
     }
 
@@ -146,12 +150,12 @@ class JacocoUtils {
         // 过滤不需要统计的class文件
         def finalClassDir = project.files(project.files(classesDir).files.collect {
             project.fileTree(dir: it,
-                    excludes: JacocoReportExtension.defaultExcludes)
+                    excludes: CoverageReportExtension.defaultExcludes)
         })
-        println "$TAG copyClasses finalClassDir=$finalClassDir"
+        //println "$TAG copyClasses finalClassDir=$finalClassDir"
 
         for (String path : finalClassDir) {
-            println "$TAG copy class path=$path"
+            //println "$TAG copy class path=$path"
             int index = path.indexOf(packageNameToPath)
             if (index >= 0) {
                 String suffix = path.substring(index + packageNameToPath.length())

@@ -8,11 +8,17 @@ import org.gradle.api.tasks.TaskAction
  * @author n20241 Created by 杜小菜 on 2021/9/10 - 18:39 .
  * E-mail: duqian2010@gmail.com
  */
-class JacocoDownloadTask extends DefaultTask {
+/**
+ * Description:
+ *
+ * Created by 杜乾 on 2024/7/15 - 10:29.
+ * E-mail: duqian2010@gmail.com
+ */
+class DownloadEcTask extends DefaultTask {
 
-    private JacocoReportExtension extension
+    private CoverageReportExtension extension
 
-    void setExtension(JacocoReportExtension extension) {
+    void setExtension(CoverageReportExtension extension) {
         this.extension = extension
     }
 
@@ -36,7 +42,7 @@ class JacocoDownloadTask extends DefaultTask {
                 println "downloadJacocoEcFile end"
             }
             //copy到外部目录备用，"ec-" + commitId
-            File targetDir = new File(JacocoUtils.getUploadRootDir(project, extension) + File.separator + "ec")
+            File targetDir = new File(CoverageUtils.getUploadRootDir(project, extension) + File.separator + "ec")
             targetDir.deleteDir()
             FileUtil.copyDirectory(rootFile, targetDir)
         } catch (Exception e) {
@@ -56,13 +62,13 @@ class JacocoDownloadTask extends DefaultTask {
 
     //下载ec数据文件
     private static def downloadEcData(String dataDir) {
-        def host = JacocoUtils.JACOCO_HOST
-        def appName = JacocoUtils.COV_APP_NAME
-        def branch = JacocoUtils.getCurrentBranchName()
+        def host = CoverageUtils.JACOCO_HOST
+        def appName = CoverageUtils.COV_APP_NAME
+        def branch = CoverageUtils.getCurrentBranchName()
         branch = URLEncoder.encode(branch, "utf-8")
 
-        String commitId = JacocoUtils.getCurrentCommitId()
-        def downloadQueryUrl = "${host}/coverage/queryFile?appName=${appName}&branch=${branch}&commitId=${commitId}&type=${JacocoUploadBuildFileTask.TYPE_FILE_EC}"
+        String commitId = CoverageUtils.getCurrentCommitId()
+        def downloadQueryUrl = "${host}/coverage/queryFile?appName=${appName}&branch=${branch}&commitId=${commitId}&type=${UploadBuildFileTask.TYPE_FILE_EC}"
         def curl = "curl $downloadQueryUrl"
         //println "curl = ${curl}"
         def text = curl.execute().text

@@ -2,18 +2,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 //子模块引用
-apply from: '../scripts/jacoco_build.gradle'
+//apply from: '../scripts/jacoco_build.gradle'
 println("coverageEnabled2=${gradle.rootProject.ext.coverageEnabled == "true"}")
 
-apply plugin: 'com.duqian.coverage'
+apply plugin: 'site.dusan.coverage'
 
 //一定要字符串判断
 if (gradle.rootProject.ext.coverageEnabled == "true") {
     apply plugin: 'jacoco'
-    println("coverageEnabled jacoco-plugin")
-    jacocoReportConfig {
-        destination "$buildDir/jacoco/dq-report/"
-        branchName 'main'//对比差异覆盖率,默认：dev
+    println("coverageEnabled coverage-plugin")
+    CoverageReportConfig {
+        destination "$buildDir/report/"
+        branchName 'master'//对比差异覆盖率
         packageName = "com.duqian.coverage" //用于过滤class,不能通过applicationId来获取，因为千差万别，还是要看源码实际的包名
         includes = [packageName] //后续支持多个，只处理这个包名的类
         isDiffJacoco = true
@@ -34,6 +34,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -61,10 +63,53 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    lint {
+        baseline = file("lint-baseline.xml")
+        abortOnError false
+        htmlReport true
+        htmlOutput file("build/lint/lint-report.html")
+    }
+}
+
+afterEvaluate {
+    //def curFlavor = flavor.curFlavor.toLowerCase(Locale.default)
+    def preBuildTask = tasks.findByPath(":app:preBuild")
+    println("preBuildTask=" + preBuildTask)
+    try {
+        Map<Project, Set<Task>> allTasks = project.getAllTasks(true)
+        for (Map.Entry<Project, Set<Task>> projectSetEntry : allTasks.entrySet()) {
+            Set<Task> value = projectSetEntry.getValue()
+            for (Task task : value) {
+                def name = task.getName()
+                //编译打包结束后，恢复美颜assets目录// app:bundleLivmetApkRelease
+                if ((name.startsWithAny("assemble") || name.startsWithAny("bundle")) && name.toLowerCase().contains("app") && !name.toLowerCase().contains("test")) {
+                    Task jacocoUploadTask = project.tasks.findByName("jacocoUploadBuildFiles")
+                    println("assembleTask=" + task)
+                    if (jacocoUploadTask != null) {
+                        println("jacocoUploadTask1=" + jacocoUploadTask)
+                        task.finalizedBy(jacocoUploadTask)
+                    }
+                }
+                //buildHiiclubGpDebugPreBundle mergeProjectDexHiiclubGpDebug
+                if (name.startsWithAny("mergeProjectDex")) { // && name.toLowerCase().contains("app")
+                    Task jacocoUploadTask = project.tasks.findByName("jacocoUploadBuildFiles")
+                    println("mergeProjectDex=" + task)
+                    if (jacocoUploadTask != null) {
+                        println("jacocoUploadTask2=" + jacocoUploadTask)
+                        //jacocoUploadTask.dependsOn(task)
+                        task.finalizedBy(jacocoUploadTask)
+                    }
+                }
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace()
+    }
 }
 
 dependencies {
-
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -80,6 +125,6 @@ dependencies {
 
     debugImplementation project(path: ':coverage-library')
     releaseImplementation project(path: ':coverage-no-op')
-    //debugImplementation "com.duqian.coverage:coverage-library:$coverageVersion"
-    //releaseImplementation "com.duqian.coverage:coverage-no-op:$coverageVersion"
+    //debugImplementation "com.duqian.coverage:coverage-library:$coverageVersionBuildLib"
+    //releaseImplementation "com.duqian.coverage:coverage-no-op:$coverageVersionBuildLib"
 }

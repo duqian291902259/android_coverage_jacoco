@@ -38,6 +38,6 @@ dependencies {
     implementation gradleApi()
     //implementation localGroovy()
 
-    runtime subprojects.collect { owner.project(it.path) }
+    //runtime subprojects.collect { owner.project(it.path) }
     //implementation project(path: ':coverage-plugin')
 }

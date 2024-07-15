@@ -4,7 +4,7 @@ package com.duqian.coverage
  * @author n20241 Created by 杜小菜 on 2021/9/10 - 18:29 .
  * E-mail: duqian2010@gmail.com
  */
-class JacocoReportExtension {
+class CoverageReportExtension {
 
     ReportConfiguration csv
     ReportConfiguration html
@@ -14,7 +14,7 @@ class JacocoReportExtension {
     //风味
     String flavorName = "debug"
 
-    JacocoReportExtension() {
+    CoverageReportExtension() {
         this.html = new ReportConfiguration(true)
         this.csv = new ReportConfiguration(false)
         this.xml = new ReportConfiguration(false)
@@ -25,7 +25,6 @@ class JacocoReportExtension {
             ['**/io/realm/**.class',
              '**/site/duqian/**.*',
              '**/*_Factory.class',
-             '**SubApp.class'
             ].asImmutable()
 
     public static final Collection<String> androidDataBindingExcludes =
@@ -44,16 +43,6 @@ class JacocoReportExtension {
              '**/BuildConfig.*',
              '**/*JavascriptBridge.class',
              '**/Manifest*.*'].asImmutable()
-
-    public static final Collection<String> dagger2Excludes =
-            ['**/*_MembersInjector.class',
-             '**/Dagger**.class',
-             '**/**Event.class',
-             '**/**Protocol.class',
-             '**/**Register.class',
-             '**/Dagger*Component.class',
-             '**/Dagger*Component$Builder.class',
-             '**/*Module_*Factory.class'].asImmutable()
 
     public static final Collection<String> defaultExcludes = (thirdLibExcludes + androidDataBindingExcludes + androidExcludes).asImmutable()
 
@@ -89,16 +78,13 @@ class JacocoReportExtension {
     String branchName = "master"
     //需要插桩的文件
     List<String> includes
-    String gitPushShell
-    String pullDiffClassShell
 
-    //gitPushShell = "${project.projectDir}/shell/gitPushShell.sh" //commit&push命令
-    //pullDiffClassShell = "${project.projectDir}/shell/pullDiffClass.sh" //获取差异class
+    //String gitPushShell = "${project.projectDir}/shell/gitPushShell.sh" //commit&push命令
+    //String pullDiffClassShell = "${project.projectDir}/shell/pullDiffClass.sh" //获取差异class
 
     //git-bash的路径，如果找不到，自行配置
     private String gitBashPath
-    String appName = ""
-    String packageName = "com.duqian.cc"
+    String packageName = "site.duqian"
 
     String getGitBashPath() {
         if (gitBashPath == null || gitBashPath.isEmpty()) {

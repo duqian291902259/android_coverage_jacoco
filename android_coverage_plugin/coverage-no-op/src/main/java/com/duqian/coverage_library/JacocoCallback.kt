@@ -3,8 +3,9 @@ package com.duqian.coverage_library
 import java.io.File
 
 /**
- * Description:回调
- * @author n20241 Created by 杜小菜 on 2022/1/21 - 10:01 .
+ * Description:coverage callback
+ *
+ * Created by 杜乾 on 2024/7/15 - 10:19.
  * E-mail: duqian2010@gmail.com
  */
 interface JacocoCallback {

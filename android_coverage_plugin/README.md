@@ -25,7 +25,7 @@ classpath "com.duqian.coverage:coverage-plugin:1.0.0"
 
 apply plugin: "com.duqian.coverage"
 
-jacocoReportConfig {
+CoverageReportConfig {
     //报告生成位置
     destination "$buildDir/jacoco/report/"
     branchName 'dev'//差异覆盖率,默认：dev
@@ -39,7 +39,6 @@ jacocoReportConfig {
 ```
 #本地开发，如果要debug包开启覆盖率插件，设置true
 coverageEnabled = true
-coverageEnabledCi = true
 android.forceJacocoOutOfProcess=true
 #定义的名字将用于后端显示、创建目录
 COV_APP_NAME=coverage-demo2

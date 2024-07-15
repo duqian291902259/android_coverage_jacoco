@@ -6,20 +6,21 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
+
 /**
  * Description:上传build后的产物，这里上传classes
- * @author n20241 Created by 杜小菜 on 2021/9/22 - 16:25 .
+ * Created by 杜乾 on 2024/7/15 - 10:29.
  * E-mail: duqian2010@gmail.com
  */
-class JacocoUploadBuildFileTask extends DefaultTask {
-    private static final String TAG = "dq-JacocoUploadClassTask"
+class UploadBuildFileTask extends DefaultTask {
+    private static final String TAG = "dq-"+UploadBuildFileTask.class.simpleName
     public static final String TYPE_FILE_EC = ".ec"
     public static final String TYPE_FILE_ZIP = ".zip"
     public static final String TYPE_FILE_APK = ".apk"
     public static final String TYPE_FILE_TXT = ".txt"
-    private JacocoReportExtension extension
+    private CoverageReportExtension extension
 
-    void setExtension(JacocoReportExtension extension) {
+    void setExtension(CoverageReportExtension extension) {
         this.extension = extension
     }
 
@@ -57,7 +58,7 @@ class JacocoUploadBuildFileTask extends DefaultTask {
     private def uploadSourceFiles() {
         //1,copy src,只处理自己包名下的class
         String rootDir = getSrcSavedDir()
-        def packageNameToPath = getPackagePath()
+        def packageNameToPath = getPackagePath()//todo-dq includes适配多个包名的src和classes
         String targetDir = rootDir + File.separator + packageNameToPath
         File targetFile = new File(targetDir)
         FileUtil.deleteDirectory(targetDir)
@@ -72,15 +73,15 @@ class JacocoUploadBuildFileTask extends DefaultTask {
         projects.forEach {
             def rootSrcPath = it.projectDir.getAbsolutePath() + File.separator
             def mainSrcDir = rootSrcPath + "src/main/java/" + packageNameToPath
-            count = JacocoUtils.copySrcDir(mainSrcDir, targetFile, count)
+            count = CoverageUtils.copySrcDir(mainSrcDir, targetFile, count)
 
             //debug的目录也要copy
             def debugSrcDir = rootSrcPath + "src/debug/java/" + packageNameToPath
-            count = JacocoUtils.copySrcDir(debugSrcDir, targetFile, count)
+            count = CoverageUtils.copySrcDir(debugSrcDir, targetFile, count)
 
             //release的
             def releaseSrcDir = rootSrcPath + "src/release/java/" + packageNameToPath
-            count = JacocoUtils.copySrcDir(releaseSrcDir, targetFile, count)
+            count = CoverageUtils.copySrcDir(releaseSrcDir, targetFile, count)
         }
 
         println "$TAG src count=${count}"
@@ -102,22 +103,6 @@ class JacocoUploadBuildFileTask extends DefaultTask {
         } else {
             println "$TAG uploadSourceFiles failed,file not exists: ${file}"
         }
-    }
-
-    private static int copySrcDir(srcDir, File targetFile, int count) {
-        println "$TAG copySourceFiles currentSrcDir=${srcDir}"
-        if (!srcDir.contains(File.separator + "api" + File.separator)) {
-            File srcFile = new File(srcDir)
-            if (srcFile.isDirectory() && srcFile.listFiles() != null) {
-                FileUtil.copyDirectory(srcFile, targetFile)
-                count++
-            } else {
-                //println "$TAG copySourceFiles ingored srcFile=${srcFile}"
-            }
-        } else {
-            //println "$TAG copySourceFiles ingored src=${srcDir}"
-        }
-        return count
     }
 
     private def copyClassesAndZip() {
@@ -148,7 +133,7 @@ class JacocoUploadBuildFileTask extends DefaultTask {
     private String getUploadRootDir() {
         //File parentFile = project.projectDir.getParentFile().getParentFile()
         //String rootDir = parentFile.getAbsolutePath() + File.separator + "jacoco_upload"
-        return JacocoUtils.getUploadRootDir(project, extension)
+        return CoverageUtils.getUploadRootDir(project, extension)
     }
 
     private String getClassSavedDir() {
@@ -178,28 +163,6 @@ class JacocoUploadBuildFileTask extends DefaultTask {
         return packagePath
     }
 
-    /*private static int copyClasses(Project it, String classesDir, String packageNameToPath, String targetDir, int count) {
-        def project = it
-        // 过滤不需要统计的class文件
-        def finalClassDir = project.files(project.files(classesDir).files.collect {
-            project.fileTree(dir: it,
-                    excludes: JacocoReportExtension.defaultExcludes)
-        })
-        for (String path : finalClassDir) {
-            println "$TAG copy class path=$path"
-            int index = path.indexOf(packageNameToPath)
-            if (index >= 0) {
-                String suffix = path.substring(index + packageNameToPath.length())
-                boolean copied = FileUtil.copyFile(new File(path), new File(targetDir + suffix))
-                if (copied) {
-                    count++
-                } else {
-                    println "$TAG ignored copy-->path=${targetDir + suffix},copied=$copied"
-                }
-            }
-        }
-        return count
-    }*/
 
     /**
      * copy指定目录下面的class
@@ -210,7 +173,7 @@ class JacocoUploadBuildFileTask extends DefaultTask {
         try {
             String rootDir = getClassSavedDir()
             //只处理自己包名下的class：com.duqian.cc
-            String packageNameToPath = getPackagePath()
+            String packageNameToPath = getPackagePath()//todo-dq支持多包名路径配置配置
             String targetDir = rootDir + File.separator + packageNameToPath
             File targetFile = new File(targetDir)
             FileUtil.deleteDirectory(targetDir)
@@ -220,9 +183,9 @@ class JacocoUploadBuildFileTask extends DefaultTask {
             int count = 0
 
             //遍历kotlin编译的class
-            def kotlin = JacocoUtils.hasKotlin(project.plugins)
+            def kotlin = CoverageUtils.hasKotlin(project.plugins)
 
-            def flavorName = JacocoUtils.takeCurrentFlavor(project)
+            def flavorName = CoverageUtils.takeCurrentFlavor(project)
             println "$TAG kotlin=$kotlin,flavorName=$flavorName"
 
             def flavor = extension.flavorName
@@ -230,17 +193,17 @@ class JacocoUploadBuildFileTask extends DefaultTask {
 
             projects.forEach {
                 def currentBuildDir = it.buildDir.getAbsolutePath()
-                println "$TAG currentBuildDir=$currentBuildDir"
+                //println "$TAG currentBuildDir=$currentBuildDir"
                 //copy java编译后的class
                 String classesDir = "$currentBuildDir\\intermediates\\javac\\debug\\classes\\$packageNameToPath"
-                count = JacocoUtils.copyClasses(it, classesDir, packageNameToPath, targetDir, count)
+                count = CoverageUtils.copyClasses(it, classesDir, packageNameToPath, targetDir, count)
 
                 //kotlin
                 if (flavor == null || flavor == "") {
                     flavor = "debug"
                 }
                 String classesDirKotlin = "$currentBuildDir\\tmp\\kotlin-classes\\" + flavor + "\\$packageNameToPath"
-                count = JacocoUtils.copyClasses(it, classesDirKotlin, packageNameToPath, targetDir, count)
+                count = CoverageUtils.copyClasses(it, classesDirKotlin, packageNameToPath, targetDir, count)
                 println "$TAG kotlin=$kotlin,classesDirKotlin=$classesDirKotlin, count:$count"
             }
             println "$TAG copy class count=${count}"
@@ -299,8 +262,8 @@ class JacocoUploadBuildFileTask extends DefaultTask {
      * */
     private def syncUploadFiles(File file, String type) {
         try {
-            String currentBranchName = JacocoUtils.getCurrentBranchName()
-            String currentCommitId = JacocoUtils.getCurrentCommitId()
+            String currentBranchName = CoverageUtils.getCurrentBranchName()
+            String currentCommitId = CoverageUtils.getCurrentCommitId()
             //println("$TAG currentBranchName:$currentBranchName,currentCommitId=$currentCommitId")
             OkHttpClient client = buildHttpClient()
             RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), file)
@@ -309,13 +272,13 @@ class JacocoUploadBuildFileTask extends DefaultTask {
             RequestBody body = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("file", fileName, fileBody)
-                    .addFormDataPart("appName", JacocoUtils.COV_APP_NAME)
+                    .addFormDataPart("appName", CoverageUtils.COV_APP_NAME)
                     .addFormDataPart("branch", currentBranchName)
                     .addFormDataPart("commitId", currentCommitId)
                     .addFormDataPart("type", "$type")
                     .build()
-            String url = "${JacocoUtils.JACOCO_HOST}/coverage/upload"
-            println("$TAG syncUploadFiles,appName=${JacocoUtils.COV_APP_NAME},commitId=$currentCommitId,size=${file.length()},currentBranchName=$currentBranchName")
+            String url = "${CoverageUtils.JACOCO_HOST}/coverage/upload"
+            println("$TAG syncUploadFiles,appName=${CoverageUtils.COV_APP_NAME},commitId=$currentCommitId,size=${file.length()},currentBranchName=$currentBranchName")
             println("$TAG upload url =$url")
             Request request = new Request.Builder()
                     .url(url)

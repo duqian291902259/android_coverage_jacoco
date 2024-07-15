@@ -4,6 +4,12 @@ plugins {
     id 'maven-publish'
 }
 
+//上传脚本中新增task，类型为Jar
+task androidSourceJar(type: Jar) {
+    from project.android.sourceSets.main.java.getSrcDirs() //包括Kotlin文件
+    archiveClassifier = 'sources'
+}
+
 version = "1.0.0"
 group = 'com.duqian.coverage'
 def artifactId = 'coverage-library'
@@ -18,7 +24,8 @@ afterEvaluate {
             maven(MavenPublication) {
                 groupId = 'com.duqian.coverage'
                 artifactId = 'coverage-library'
-                version = "$coverageVersionBuild"
+                artifact androidSourceJar //设置artifact为上面定义的task
+                version = "$coverageVersionBuildLib"
                 from components.all
             }
         }

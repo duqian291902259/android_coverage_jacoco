@@ -2,9 +2,10 @@
 buildscript {
     ext {
         kotlin_version = '1.7.10'//"1.4.32"
-        gradleVersion = '7.0.4' //'4.0.1'
-        coverageVersionBuild = '1.1.1' //构建发布的版本
-        coverageVersion = '1.1.1' //引用的版本
+        gradleVersion = '7.2.1' //'4.0.1'
+        coverageVersionBuildLib = '1.1.5' //构建发布的lib版本
+        coverageVersionBuildPlugin = '1.2.1' //构建发布的插件版本
+        coverageVersion = '1.2.1' //引用的版本,需要publishToMavenLocal
     }
 
     ext.coverageEnabled = project.property('coverageEnabled')

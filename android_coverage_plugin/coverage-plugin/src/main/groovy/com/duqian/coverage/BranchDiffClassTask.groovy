@@ -7,16 +7,16 @@ import org.gradle.api.tasks.TaskAction
 
 /**
  * Description:获取当前分支与基准分支（gradle中可以配置，默认master）的差异class，并保存
- * @author n20241 Created by 杜小菜 on 2021/9/16 - 17:52 .
+ * Created by 杜乾 on 2024/7/15 - 10:19.
  * E-mail: duqian2010@gmail.com
  */
 class BranchDiffClassTask extends DefaultTask {
-    private final static String TAG = "dq-jacoco-BranchDiffClassTask"
+    private final static String TAG = BranchDiffClassTask.simpleName
     private final static String TEMP_DIR = "app"
     private def currentName = "dev"//当前分支名
-    private JacocoReportExtension extension
+    private CoverageReportExtension extension
 
-    void setExtension(JacocoReportExtension extension) {
+    void setExtension(CoverageReportExtension extension) {
         this.extension = extension
     }
 
@@ -29,7 +29,7 @@ class BranchDiffClassTask extends DefaultTask {
     }
 
     private def getDiffSrcAndClasses() {
-        currentName = JacocoUtils.getCurrentBranchName()
+        currentName = CoverageUtils.getCurrentBranchName()
         println "$TAG currentName:" + currentName + ",baseBranch=$extension.branchName"
         //获得两个分支的差异文件
         def diff = "git diff origin/${extension.branchName} origin/${currentName} --name-only".execute().text
@@ -43,7 +43,7 @@ class BranchDiffClassTask extends DefaultTask {
         File diffFile = new File(path)
         println("$TAG,diffFiles size=" + diffFiles.size() + ",path=" + path)
 
-        FileUtil.copyFile(diffFile, new File(JacocoUtils.getUploadRootDir(project, extension) + File.separator + diffFile.getName()))
+        FileUtil.copyFile(diffFile, new File(CoverageUtils.getUploadRootDir(project, extension) + File.separator + diffFile.getName()))
 
         //copy all classes
 

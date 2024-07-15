@@ -5,7 +5,7 @@ import java.io.File
 /**
  * Description:覆盖率工具类
  *
- * @author n20241 Created by 杜小菜 on 2022/1/24 - 17:15 .
+ * Created by 杜乾 on 2024/7/15 - 10:18.
  * E-mail: duqian2010@gmail.com
  */
 object CoverageUtil {

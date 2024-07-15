@@ -11,9 +11,10 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Description:Jacoco工具类:覆盖率文件保存、上传
+ * Description:覆盖率文件dump，保存、上传
  *
- * @author n20241 Created by 杜小菜 on 2021/9/8 - 11:55 . E-mail: duqian2010@gmail.com
+ * Created by 杜乾 on 2024/7/15 - 10:18.
+ * E-mail: duqian2010@gmail.com
  */
 object JacocoHelper {
     private const val TAG = "dq-jacoco-JacocoHelper"
@@ -50,11 +51,11 @@ object JacocoHelper {
         appName: String = "",
         hostUrl: String = "",
     ) {
-        JacocoHelper.isOpenCoverage = isOpenCoverage
-        JacocoHelper.currentBranchName = currentBranchName
-        JacocoHelper.currentCommitId = currentCommitId
-        JacocoHelper.appName = appName
-        JacocoHelper.hostUrl = hostUrl
+        this.isOpenCoverage = isOpenCoverage
+        this.currentBranchName = currentBranchName
+        this.currentCommitId = currentCommitId
+        this.appName = appName
+        this.hostUrl = hostUrl
         this.hostUrl = hostUrl
     }
 
@@ -121,7 +122,7 @@ object JacocoHelper {
                         .invoke(agent, isSingleFile) as ByteArray
                 )
                 if (isSingleFile) {
-                    mCallback?.onLog(TAG, "generateEcFile ec文件已生成：$fileName")
+                    mCallback?.onLog(TAG, "generateEcFile success：$fileName")
                 }
             } else {
                 mCallback?.onLog(TAG, "generateEcFile agent =null")
@@ -168,7 +169,7 @@ object JacocoHelper {
     @Synchronized
     private fun upload() {
         try {
-            mCallback?.onLog(TAG, "开始上传覆盖率文件")
+            mCallback?.onLog(TAG, "start to upload ec files")
             syncUploadFiles()
             mCallback?.onLog(TAG, "upload finished")
         } catch (e: Exception) {

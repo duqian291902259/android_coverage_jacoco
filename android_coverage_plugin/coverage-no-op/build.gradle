@@ -20,7 +20,7 @@ afterEvaluate {
             maven(MavenPublication) {
                 groupId = group
                 artifactId = 'coverage-no-op'
-                version = "$coverageVersionBuild"
+                version = "$coverageVersionBuildLib"
 
                 from components.all
             }
@@ -29,19 +29,25 @@ afterEvaluate {
             maven {
                 url = uri('../repo')
                 //url = layout.buildDirectory.dir('repo')
-                url = getLocalConfig("RELEASE_URL", "")//System.getenv("MAVEN_REPO_URL")
+                /*url = getLocalConfig("RELEASE_URL", "")//System.getenv("MAVEN_REPO_URL")
                 println("repo url=$url")
                 allowInsecureProtocol = true
                 credentials {
                     username getLocalConfig("MAVEN_USERNAME", "develop-snapshot")//'develop-snapshot'
                     password getLocalConfig("MAVEN_PASSWORD", "")//"${System.getenv("MAVEN_REPO_PWD")}"
+                }*/
+                url =  System.getenv("MAVEN_REPO_RELEASE_URL") //MAVEN_REPO_SNAPSHOTS_URL
+                allowInsecureProtocol = true
+                credentials {
+                    username System.getenv("MAVEN_REPO_USER") //'develop-snapshot'
+                    password System.getenv("MAVEN_REPO_PWD")
                 }
             }
         }
     }
 }
 
-Object getLocalConfig(String key, Object defaultValue) {
+/*Object getLocalConfig(String key, Object defaultValue) {
     try {
         Properties properties = new Properties()
         File file = project.rootProject.file('local.properties')
@@ -53,7 +59,7 @@ Object getLocalConfig(String key, Object defaultValue) {
         print("getLocalConfig error = $e")
     }
     return defaultValue
-}
+}*/
 
 android {
     compileSdkVersion 31

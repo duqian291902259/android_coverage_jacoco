@@ -1,74 +1,72 @@
 package com.duqian.coverage
 
-//import com.android.build.gradle.AppPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.ProjectInternal
-import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 /**
- * Description:Jacoco,覆盖率插件
- * @author n20241 Created by 杜小菜 on 2021/9/10 - 10:04 .
+ * Description:覆盖率插件
+ *
+ * Created by 杜乾 on 2024/7/15 - 10:52.
  * E-mail: duqian2010@gmail.com
  */
-class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
+class AndroidCoveragePlugin implements Plugin<ProjectInternal> {
 
-    private static String TAG = "dq-jacoco"
+    private static String TAG = "DQ-Coverage"
     private static String GROUP = TAG
-    private static String TASK_JACOCO_ALL = "jacocoAllTaskLauncher"
-    private static String TASK_JACOCO_DOWNLOAD_EC = "jacocoDownloadEcData"
-    private static String TASK_JACOCO_UPLOAD_BUILD_FILES = "jacocoUploadBuildFiles"
-    private static String TASK_JACOCO_BRANCH_DIFF_CLASS = "jacocoBranchDiffClass"
-    private static String TASK_JACOCO_REPORT = "jacocoReport"
+    private static String TASK_JACOCO_ALL = "coverageAllTaskLauncher"
+    private static String TASK_JACOCO_DOWNLOAD_EC = "coverageDownloadEcData"
+    private static String TASK_JACOCO_UPLOAD_BUILD_FILES = "coverageUploadBuildFiles"
+    private static String TASK_JACOCO_BRANCH_DIFF_CLASS = "coverageBranchDiffClass"
+    private static String TASK_JACOCO_REPORT = "coverageReport"
+    private static String entryModule = "app" // 入口模块
 
     @Override
     void apply(ProjectInternal project) {
-        JacocoReportExtension jacocoReportExtension = project.extensions.create("jacocoReportConfig", JacocoReportExtension)
+        CoverageReportExtension jacocoReportExtension = project.extensions.create("CoverageReportConfig", CoverageReportExtension)
         project.plugins.apply(JacocoPlugin)
 
         //配置BuildConfig.因为无论release还是debug都需要根据是否开启覆盖率统计来设置下相关信息，代码里面需要。
-        boolean isGitlabCiOpen = JacocoUtils.isGitlabCi() && "${project.rootProject.ext.coverageEnabledCi}" == "true"
-        def isOpenJacoco = isGitlabCiOpen || "${project.rootProject.ext.coverageEnabled}" == "true"
-        println "$TAG dq-coverage isGitlabCiOpen=$isGitlabCiOpen,coverageEnable=${isOpenJacoco}"
+        def isOpenJacoco = "${project.rootProject.ext.coverageEnabled}" == "true"
+        println "$TAG coverageEnable=${isOpenJacoco}"
+
+        if (project.hasProperty("COV_ENTRY_MODULE")) {
+            entryModule = project.rootProject.ext.COV_ENTRY_MODULE + ""
+        }
+        println "$TAG entryModule=${entryModule}"
 
         //外部项目模块存在依赖，所以都更新下此刻拿不到JacocoReportExtension属性值
         updateBuildConfigField(project, isOpenJacoco)
 
-        //开启了jacoco才注册任务，只在application的模块注册
+        //开启了jacoco才注册任务，只在application的模块注册。todo-dq src和classes的路径问题，精简到只copy开启了覆盖率统计的模块
         if (isOpenJacoco) {
-            project.plugins.all {
+            //project.plugins.all {
+            def isEntry = project.name == entryModule
+            println "$TAG project=${project.name},isEntry=$isEntry"
+            if (isEntry) {
                 registerJacocoTasks(project, jacocoReportExtension)
-                if (it instanceof ApplicationPlugin) {
-                    println "$TAG registerJacocoTasks $it"
-                    /*JacocoTransform jacocoTransform = new JacocoTransform(project, jacocoReportExtension)
-                    android.registerTransform(jacocoTransform)
-                    println("$TAG,registerJacocoTransform $android")*/
-                } else {
-                    // println "$TAG not registerJacocoTasks $it"
+            }
+        }
+        project.afterEvaluate {
+            println "$TAG afterEvaluate"
+            project.tasks.forEach {
+                if (it.name.toLowerCase().contains("jacoco")) {
+                    println "$TAG taskName = ${it.name}"
                 }
             }
-
-            /*project.tasks.whenTaskAdded {
-                if (it.name.startsWith(TASK_JACOCO_UPLOAD_BUILD_FILES)) {
-                    it.doLast {
-                        println "$TAG  upload for jacoco,finished"
-                    }
-                }
-            }*/
         }
     }
 
-    private registerJacocoTasks(ProjectInternal project, JacocoReportExtension jacocoReportExtension) {
-        //project.afterEvaluate {
+    private registerJacocoTasks(ProjectInternal project, CoverageReportExtension jacocoReportExtension) {
         //最好只在app里面处理，不用各个moudle里面搞task
         Task jacocoReportEntryTask = findOrCreateJacocoReportTask(project.tasks)
-        JacocoDownloadTask jacocoDownloadTask = project.tasks.findByName(TASK_JACOCO_DOWNLOAD_EC)
+        DownloadEcTask jacocoDownloadTask = project.tasks.findByName(TASK_JACOCO_DOWNLOAD_EC)
         if (jacocoDownloadTask == null) {//download .ec
-            jacocoDownloadTask = project.tasks.create(TASK_JACOCO_DOWNLOAD_EC, JacocoDownloadTask)
+            jacocoDownloadTask = project.tasks.create(TASK_JACOCO_DOWNLOAD_EC, DownloadEcTask)
             jacocoDownloadTask.setExtension(jacocoReportExtension)
             jacocoDownloadTask.setGroup(GROUP)
         }
@@ -81,12 +79,12 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
             branchDiffClassTask.setExtension(jacocoReportExtension)
         }
 
-        JacocoUploadBuildFileTask jacocoUploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
+        UploadBuildFileTask jacocoUploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
         if (jacocoUploadTask == null) {//upload build classes
-            jacocoUploadTask = project.tasks.create(TASK_JACOCO_UPLOAD_BUILD_FILES, JacocoUploadBuildFileTask)
+            jacocoUploadTask = project.tasks.create(TASK_JACOCO_UPLOAD_BUILD_FILES, UploadBuildFileTask)
             jacocoUploadTask.setExtension(jacocoReportExtension)
             jacocoUploadTask.setGroup(GROUP)
-            //jacocoUploadTask.dependsOn(branchDiffClassTask)
+            jacocoUploadTask.dependsOn(branchDiffClassTask)
         }
 
         Task jacocoReportTask = project.tasks.findByName(TASK_JACOCO_REPORT)
@@ -112,44 +110,58 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
         }
 
         //压缩并上传class/apk文件
-        def uploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
+        /*def uploadTask = project.tasks.findByName(TASK_JACOCO_UPLOAD_BUILD_FILES)
         def flavorName = jacocoReportExtension.flavorName
         def flavor = flavorName.substring(0, 1).toUpperCase() + flavorName.substring(1)
         Task buildTask = project.tasks.findByName("assemble" + flavor)
-        println("$TAG prepare buildTask=$buildTask,flavor=" + flavor)
         if (buildTask != null && uploadTask != null) {
             println("$TAG start uploadTask=" + buildTask)
             buildTask.finalizedBy(uploadTask)
-        }
-        //}
+        }*/
     }
+
+    /**
+     * 设置BuildConfig的值
+     * @param currentBranchName
+     * @param commitId
+     * @param jacocoHost
+     * @param appName
+     * @param isJacocoEnable
+     */
+    private static void resetBuildConfig(Project project, String currentBranchName, String commitId, String jacocoHost, String appName, boolean isJacocoEnable) {
+        println("$TAG resetBuildConfig,isJacocoEnable=$isJacocoEnable")
+        def defaultConfig = project.android.defaultConfig
+        defaultConfig.buildConfigField "String", "CUR_BCH_NAME", "\"" + currentBranchName + "\""
+        defaultConfig.buildConfigField "String", "CUR_CMT_ID", "\"" + commitId + "\""
+        defaultConfig.buildConfigField "String", "COV_HOST", "\"" + jacocoHost + "\""
+        defaultConfig.buildConfigField "String", "COV_P_NAME", "\"" + appName + "\""
+        defaultConfig.buildConfigField "boolean", "IS_COV_ENABLE", "" + isJacocoEnable + ""
+    }
+
 
     /**
      * 初始化构建的module到BuildConfig
      */
     private static void updateBuildConfigField(Project project, boolean isJacocoEnable) {
-        def currentBranchName = JacocoUtils.getCurrentBranchName()
-        String commitId = JacocoUtils.getCurrentCommitId()
+        def currentBranchName = CoverageUtils.getCurrentBranchName()
+        String commitId = CoverageUtils.getCurrentCommitId()
 
-        String entryModule = ""
-        if (project.hasProperty("COV_ENTRY_MODULE")) {
-            entryModule = project.rootProject.ext.COV_ENTRY_MODULE + ""
+        if (!isJacocoEnable) {//设置默认值
+            resetBuildConfig(project, "", commitId, "", "", false)
+            return
         }
 
-        def jacocoHost = JacocoUtils.JACOCO_HOST
+        def jacocoHost = CoverageUtils.JACOCO_HOST
         if (project.hasProperty("COV_JACOCO_HOST")) {
             jacocoHost = project.rootProject.ext.COV_JACOCO_HOST + ""
-            JacocoUtils.JACOCO_HOST = jacocoHost
+            CoverageUtils.JACOCO_HOST = jacocoHost
         }
-
         //自定义应用名称，一定要有,不设置，让报错
         if (!project.hasProperty("COV_APP_NAME")) {
             println("覆盖率系统需要一个自定义显示的AppName，请在项目根目录的gradle.properties中定义：COV_APP_NAME=yourAppName")
         }
         String appName = project.rootProject.ext.COV_APP_NAME + ""
-        JacocoUtils.COV_APP_NAME = appName
-
-        //println "$TAG updateBuildConfigField appName=$appName,project=${project.getName()},entryModule=$entryModule,jacocoHost=$jacocoHost"
+        CoverageUtils.COV_APP_NAME = appName
 
         Set<Project> set = project.getRootProject().getAllprojects()
         println("$TAG currentBranchName ${currentBranchName},commitId ${commitId},isJacocoEnable ${isJacocoEnable}")
@@ -158,19 +170,13 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
                 def moduleName = proj.getName()
                 if (moduleName == "api") continue
                 if (moduleName.contains(entryModule) || moduleName.contains("coverage-library") || moduleName.contains("app")) {
-                    def defaultConfig = project.android.defaultConfig
-                    defaultConfig.buildConfigField "String", "CURRENT_BRANCH_NAME", "\"" + currentBranchName + "\""
-                    defaultConfig.buildConfigField "String", "CURRENT_COMMIT_ID", "\"" + commitId + "\""
-                    defaultConfig.buildConfigField "boolean", "IS_JACOCO_ENABLE", "" + isJacocoEnable + ""
-                    defaultConfig.buildConfigField "String", "JACOCO_HOST", "\"" + jacocoHost + "\""
-                    defaultConfig.buildConfigField "String", "COV_APP_NAME", "\"" + appName + "\""
-
-                    //println "$TAG updateBuildConfigField moduleName=$moduleName,entryModule=$entryModule"
+                    resetBuildConfig(project, currentBranchName, commitId, jacocoHost, appName, isJacocoEnable)
                 }
             }
         } catch (Exception e) {//工程根目录也能获取到，作为模块名获取android就有异常
             println("$TAG updateBuildConfigField error $e")
         }
+
     }
 
     private static Task findOrCreateJacocoReportTask(TaskContainer tasks) {
@@ -184,19 +190,19 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
     }
 
     private static JacocoReport createReportTask(ProjectInternal project, variant) {
-        def sourceDirs = JacocoUtils.getAllJavaDir(project) //sourceDirs(variant)
+        def sourceDirs = CoverageUtils.getAllJavaDir(project) //sourceDirs(variant)
         def classDir
-        /*if (project.jacocoReportConfig.isDiffJacoco) {//todo-dq 增量覆盖率 diffFiles
+        /*if (project.CoverageReportConfig.isDiffJacoco) {//todo-dq 增量覆盖率 diffFiles
             classDir = new ArrayList<>()
             classDir.add("$project.projectDir/classes")
         } else {
             classDir = JacocoUtils.getAllClassDir(project)
         }*/
-        classDir = JacocoUtils.getAllClassDir(project)
+        classDir = CoverageUtils.getAllClassDir(project)
         // 过滤不需要统计的class文件
         def finalClassDir = project.files(project.files(classDir).files.collect {
             project.fileTree(dir: it,
-                    excludes: JacocoReportExtension.defaultExcludes)
+                    excludes: CoverageReportExtension.defaultExcludes)
         })
         //println("$TAG java classDir size= ${classDir.size()},finalClassDir.size=${finalClassDir.size()}")
 
@@ -219,11 +225,11 @@ class JacocoAndroidPlugin implements Plugin<ProjectInternal> {
         reportTask.classDirectories.setFrom(finalClassDir)
 
         reportTask.reports {
-            def destination = project.jacocoReportConfig.destination
+            def destination = project.CoverageReportConfig.destination
 
-            csv.enabled project.jacocoReportConfig.csv.enabled
-            xml.enabled project.jacocoReportConfig.xml.enabled
-            html.enabled project.jacocoReportConfig.html.enabled
+            csv.enabled project.CoverageReportConfig.csv.enabled
+            xml.enabled project.CoverageReportConfig.xml.enabled
+            html.enabled project.CoverageReportConfig.html.enabled
             html.outputLocation = project.layout.buildDirectory.dir('JacocoHtml')
 
             if (csv.enabled) {

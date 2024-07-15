@@ -4,9 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 
 /**
- * Description:某些功能key-value存储需要绑定一些信息，用sp方便点
+ * Description:SP工具类
  *
- * @author n20241 Created by 杜小菜 on 2021/3/29 - 16:39 . E-mail: duqian2010@gmail.com
+ * Created by 杜乾 on 2024/7/15 - 10:17.
+ * E-mail: duqian2010@gmail.com
  */
 class SPUtil {
     companion object {
